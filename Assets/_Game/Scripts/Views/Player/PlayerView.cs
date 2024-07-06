@@ -188,9 +188,7 @@ namespace Game.Views.Player
             
             movedVector *= GetSpeedMultiplier();
 
-            var relativeMove = (Body.localRotation * new Vector3(_currentMoveInput.x, 0, _currentMoveInput.y));
-            
-            Debug.Log($"LEFT/RIGHT: {relativeMove.x}, FORWARD/BACKWARD: {relativeMove.z}");
+            var relativeMove = CalculateRelativeMovement(_currentMoveInput);
             
             Animator.SetFloat(SpeedAnimation, movedVector.magnitude / Time.deltaTime);
             Animator.SetFloat(DirectionX, relativeMove.x);
@@ -199,6 +197,18 @@ namespace Game.Views.Player
             movedVector.y = force;
             
             CharacterController.Move(movedVector);
+        }
+        
+        private Vector3 CalculateRelativeMovement(Vector2 moveInput)
+        {
+            var inputDirection = new Vector3(moveInput.x, 0, moveInput.y);
+
+            var forward = Body.forward;
+            var right = Body.right;
+
+            var relativeForward = Vector3.Dot(forward, inputDirection);
+            var relativeRight = Vector3.Dot(right, inputDirection);
+            return new Vector3(relativeRight, 0, relativeForward);
         }
 
         private bool IsGrounded()
