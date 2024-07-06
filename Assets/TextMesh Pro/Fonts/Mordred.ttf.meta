@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 588aae27b1c3c35498c1b0e64d476440
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Mordred
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: a59fa97453ba1c84c8e9c2eefde8864f, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

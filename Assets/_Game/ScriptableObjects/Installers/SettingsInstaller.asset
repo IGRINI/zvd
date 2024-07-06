@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36c462b80ecc21f41a5ebee7a55121bd, type: 3}
+  m_Name: SettingsInstaller
+  m_EditorClassIdentifier: 
+  _bootstrapSettings:
+    StartFrameRate: 240
+  _interactiveSettings:
+    Mouse:
+      InteractiveRayDistance: 3
+      InteractiveRayRadius: 0.2
+      InteractiveSphereLayerMask:
+        serializedVersion: 2
+        m_Bits: 256
+  _playerMoveSettings:
+    Speed: 3
+    JumpForce: 5
+    SprintMultuplier: 2.5
+    MoveSyncThreshold: 1
+    RotateSyncThreshold: 20
+    GroundCheck:
+      SphereRadius: 0.5
+      SphereDownOffset: 0.3
+      GroundLayerMask:
+        serializedVersion: 2
+        m_Bits: 321
+  _mouseLookSettings:
+    Sensitivity: {x: 0, y: 0}
+    MouseOffset: {x: 0, y: -15}
+    RotationSpeed: 5
+  _handsSettings:
+    MoveTiming: 0.5
