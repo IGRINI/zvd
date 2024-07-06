@@ -42,6 +42,8 @@ namespace Game.Views.Player
         private float _yForce;
         private static readonly int AttackAnimation = Animator.StringToHash("Attack");
         private static readonly int SpeedAnimation = Animator.StringToHash("Speed");
+        private static readonly int DirectionX = Animator.StringToHash("DirectionX");
+        private static readonly int DirectionY = Animator.StringToHash("DirectionY");
         private static readonly int HeavyAttackAnimation = Animator.StringToHash("HeavyAttack");
 
         private bool _isHeavyAttack;
@@ -176,6 +178,8 @@ namespace Game.Views.Player
             if (_currentMoveInput.Equals(Vector3.zero) || !_isMoveOnServer)
             {
                 Animator.SetFloat(SpeedAnimation, 0);
+                Animator.SetFloat(DirectionX, 0);
+                Animator.SetFloat(DirectionY, 0);
                 CharacterController.Move(movedVector);
                 return;
             }
@@ -183,8 +187,10 @@ namespace Game.Views.Player
             movedVector += new Vector3(_currentMoveInput.x * speedMultiplier, 0, _currentMoveInput.y * speedMultiplier);
             
             movedVector *= GetSpeedMultiplier();
-
+            
             Animator.SetFloat(SpeedAnimation, movedVector.magnitude / Time.deltaTime);
+            Animator.SetFloat(DirectionX, _currentMoveInput.x);
+            Animator.SetFloat(DirectionY, _currentMoveInput.y);
             
             movedVector.y = force;
             
