@@ -188,7 +188,7 @@ namespace Game.Views.Player
             
             movedVector *= GetSpeedMultiplier();
 
-            var relativeMove = (Body.localRotation * new Vector3(_currentMoveInput.x, 0, _currentMoveInput.y)) * -1;
+            var relativeMove = (Body.localRotation * new Vector3(_currentMoveInput.x, 0, _currentMoveInput.y));
             
             Debug.Log($"LEFT/RIGHT: {relativeMove.x}, FORWARD/BACKWARD: {relativeMove.z}");
             
