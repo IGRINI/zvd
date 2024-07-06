@@ -13,11 +13,11 @@ namespace Game.Entities
     {
         protected virtual void Awake()
         {
-            Animator = GetComponent<Animator>();
         }
-
+        
         #region Animations
 
+        [SerializeField]
         protected Animator Animator;
         protected event Action<string> AnimationEvent;
         public void OnAnimationEvent(string name)

@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Entities.Modifiers;
+using Game.Utils;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace Game.Views.Player
         
         [SerializeField] private Transform _body;
         [SerializeField] private Collider _attackCollider;
+        [SerializeField] private AnimationEventHandler _animationEventHandler;
 
         [SerializeField] [Sirenix.OdinInspector.ReadOnly]
         private float _currentHealth;
@@ -39,6 +41,7 @@ namespace Game.Views.Player
         private bool _isMoveOnServer;
         private float _yForce;
         private static readonly int AttackAnimation = Animator.StringToHash("Attack");
+        private static readonly int SpeedAnimation = Animator.StringToHash("Speed");
         private static readonly int HeavyAttackAnimation = Animator.StringToHash("HeavyAttack");
 
         private bool _isHeavyAttack;
@@ -55,6 +58,8 @@ namespace Game.Views.Player
             AnimationEvent += OnAnimationEvent;
 
             _sprintModifier = new SprintModifier(NetworkInfoController.Singleton.MoveSettings.SprintMultuplier);
+
+            _animationEventHandler.OnAnimationEvent += OnAnimationEvent;
         }
 
         private List<PlayerView> _attackedUnits = new();
@@ -170,6 +175,7 @@ namespace Game.Views.Player
             
             if (_currentMoveInput.Equals(Vector3.zero) || !_isMoveOnServer)
             {
+                Animator.SetFloat(SpeedAnimation, 0);
                 CharacterController.Move(movedVector);
                 return;
             }
@@ -177,6 +183,8 @@ namespace Game.Views.Player
             movedVector += new Vector3(_currentMoveInput.x * speedMultiplier, 0, _currentMoveInput.y * speedMultiplier);
             
             movedVector *= GetSpeedMultiplier();
+
+            Animator.SetFloat(SpeedAnimation, movedVector.magnitude / Time.deltaTime);
             
             movedVector.y = force;
             
