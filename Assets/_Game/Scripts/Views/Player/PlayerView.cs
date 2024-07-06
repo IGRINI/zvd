@@ -263,6 +263,7 @@ namespace Game.Views.Player
                 RemoveModifiers<HeavyAttackModifier>();
                 if(isHeavyAttack)
                     AddModifier(_heavyAttackModifier);
+                Animator.SetLayerWeight(1, 1);
                 Animator.SetTrigger(isHeavyAttack ? HeavyAttackAnimation : AttackAnimation);
                 _isHeavyAttack = isHeavyAttack;
                 _lastAttackTime = Time.timeSinceLevelLoad;
@@ -273,6 +274,7 @@ namespace Game.Views.Player
         {
             if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackAnimationTime())
             {
+                Animator.SetLayerWeight(1, 1);
                 Animator.SetTrigger(isHeavyAttack ? HeavyAttackAnimation : AttackAnimation);
                 
                 if(IsOwner && !IsServer)
