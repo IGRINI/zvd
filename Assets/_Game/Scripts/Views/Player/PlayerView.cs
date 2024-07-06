@@ -193,7 +193,7 @@ namespace Game.Views.Player
             Animator.SetFloat(SpeedAnimation, movedVector.magnitude / Time.deltaTime);
             Animator.SetFloat(DirectionX, relativeMove.x);
             Animator.SetFloat(DirectionY, relativeMove.z);
-            
+
             movedVector.y = force;
             
             CharacterController.Move(movedVector);
