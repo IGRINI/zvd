@@ -187,10 +187,14 @@ namespace Game.Views.Player
             movedVector += new Vector3(_currentMoveInput.x * speedMultiplier, 0, _currentMoveInput.y * speedMultiplier);
             
             movedVector *= GetSpeedMultiplier();
+
+            var relativeMove = (Body.localRotation * new Vector3(_currentMoveInput.x, 0, _currentMoveInput.y)) * -1;
+            
+            Debug.Log($"LEFT/RIGHT: {relativeMove.x}, FORWARD/BACKWARD: {relativeMove.z}");
             
             Animator.SetFloat(SpeedAnimation, movedVector.magnitude / Time.deltaTime);
-            Animator.SetFloat(DirectionX, _currentMoveInput.x);
-            Animator.SetFloat(DirectionY, _currentMoveInput.y);
+            Animator.SetFloat(DirectionX, relativeMove.x);
+            Animator.SetFloat(DirectionY, relativeMove.z);
             
             movedVector.y = force;
             
