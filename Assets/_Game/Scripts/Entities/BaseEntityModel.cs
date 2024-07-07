@@ -113,7 +113,6 @@ namespace Game.Entities
             }
             else
             {
-                NetworkObject.Despawn();
                 Destroy(gameObject);
             }
 
