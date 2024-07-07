@@ -82,7 +82,7 @@ public class UnitView : BaseEntityModel
                     Attack();
                 }
             }
-            Animator.SetFloat(SpeedAnimation, _navMeshAgent.acceleration);
+            Animator.SetFloat(SpeedAnimation, _navMeshAgent.velocity.magnitude);
         }
     }
 
