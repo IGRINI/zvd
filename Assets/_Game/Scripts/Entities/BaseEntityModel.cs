@@ -76,6 +76,7 @@ namespace Game.Entities
         public float CurrentHealth => Health.Value;
         public bool IsDied { protected set; get; }
         protected NetworkVariable<float> Health = new();
+        [HideInInspector]
         public NetworkVariable<Team> TeamNumber = new();
 
         public void ApplyDamage(float damage)
@@ -112,7 +113,7 @@ namespace Game.Entities
             }
             else
             {
-                GetNetworkObject(NetworkObjectId).Despawn();
+                NetworkObject.Despawn();
                 Destroy(gameObject);
             }
 
