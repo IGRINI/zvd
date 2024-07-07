@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Game.Entities;
 using Game.Utils.PlayerCharInfo;
 using Game.Views.Player;
 using UnityEngine.Serialization;
@@ -60,22 +61,22 @@ namespace Game.Controllers.Gameplay
             }
         }
         
-        public bool IsFriendlyTeam(int teamA, int teamB)
+        public bool IsFriendlyTeam(Team teamA, Team teamB)
         {
             return GetRelationType(teamA, teamB) == RelationType.Friendly;
         }
 
-        public bool IsNeutralTeam(int teamA, int teamB)
+        public bool IsNeutralTeam(Team teamA, Team teamB)
         {
             return GetRelationType(teamA, teamB) == RelationType.Neutral;
         }
 
-        public bool IsEnemyTeam(int teamA, int teamB)
+        public bool IsEnemyTeam(Team teamA, Team teamB)
         {
             return GetRelationType(teamA, teamB) == RelationType.Hostile;
         }
 
-        private RelationType GetRelationType(int teamA, int teamB)
+        private RelationType GetRelationType(Team teamA, Team teamB)
         {
             foreach (var relation in UnitsSettings.TeamRelations)
             {
@@ -95,8 +96,8 @@ namespace Game.Controllers.Gameplay
             [Serializable]
             public class TeamRelation
             {
-                public int TeamA;
-                public int TeamB;
+                public Team TeamA;
+                public Team TeamB;
                 public RelationType Relation;
             }
         }

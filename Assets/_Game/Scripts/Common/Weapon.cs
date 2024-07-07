@@ -28,6 +28,7 @@ namespace Game.Common
                     break;
                 case "AttackFinish":
                     AttackCollider.enabled = false;
+                    ClearAttackedUnits();
                     break;
             }
         }

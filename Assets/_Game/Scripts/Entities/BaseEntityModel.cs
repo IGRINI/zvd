@@ -8,7 +8,6 @@ using Game.Utils;
 using Game.Views.Player;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.Entities
 {
@@ -77,7 +76,7 @@ namespace Game.Entities
         public float CurrentHealth => Health.Value;
         public bool IsDied { protected set; get; }
         protected NetworkVariable<float> Health = new();
-        public NetworkVariable<int> TeamNumber = new();
+        public NetworkVariable<Team> TeamNumber = new();
 
         public void ApplyDamage(float damage)
         {
@@ -162,19 +161,26 @@ namespace Game.Entities
             SetHealth(current);
         }
 
-        public bool IsFriendlyTeam(int teamNumber)
+        public bool IsFriendlyTeam(Team teamNumber)
         {
             return NetworkInfoController.Singleton.IsFriendlyTeam(TeamNumber.Value, teamNumber);
         }
 
-        public bool IsEnemyTeam(int teamNumber)
+        public bool IsEnemyTeam(Team teamNumber)
         {
             return NetworkInfoController.Singleton.IsEnemyTeam(TeamNumber.Value, teamNumber);
         }
 
-        public bool IsNeutralTeam(int teamNumber)
+        public bool IsNeutralTeam(Team teamNumber)
         {
             return NetworkInfoController.Singleton.IsNeutralTeam(TeamNumber.Value, teamNumber);
         }
+    }
+
+    public enum Team : int
+    {
+        Villagers = 0,
+        Zombies = 1,
+        Animals = 2,
     }
 }

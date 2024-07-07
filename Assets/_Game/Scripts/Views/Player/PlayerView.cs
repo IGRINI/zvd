@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
+﻿using Cysharp.Threading.Tasks;
 using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Entities.Modifiers;
