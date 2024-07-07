@@ -157,11 +157,10 @@ namespace Game.Views.Player
 
             var movedVector = new Vector3(0f, force);
 
-            if ((IsOwner || IsServer) && (_currentMoveInput.Equals(Vector3.zero) || !_isMoveOnServer))
+            if (_currentMoveInput.Equals(Vector3.zero) || !_isMoveOnServer)
             {
-                Animator.SetFloat(SpeedAnimation, 0);
-                Animator.SetFloat(DirectionX, 0);
-                Animator.SetFloat(DirectionY, 0);
+                ChangeMoveAnimations(0, 0, 0);
+
                 CharacterController.Move(movedVector);
                 return;
             }
@@ -172,13 +171,21 @@ namespace Game.Views.Player
 
             var relativeMove = CalculateRelativeMovement(_currentMoveInput);
 
-            Animator.SetFloat(SpeedAnimation, movedVector.magnitude / Time.deltaTime);
-            Animator.SetFloat(DirectionX, relativeMove.x);
-            Animator.SetFloat(DirectionY, relativeMove.z);
+            ChangeMoveAnimations(movedVector.magnitude / Time.deltaTime, relativeMove.x, relativeMove.z);
 
             movedVector.y = force;
 
             CharacterController.Move(movedVector);
+        }
+
+        private void ChangeMoveAnimations(float speed, float directionX, float directionY)
+        {
+            if (IsOwner || IsServer)
+            {
+                Animator.SetFloat(SpeedAnimation, speed);
+                Animator.SetFloat(DirectionX, directionX);
+                Animator.SetFloat(DirectionY, directionY);
+            }
         }
 
         private Vector3 CalculateRelativeMovement(Vector2 moveInput)
