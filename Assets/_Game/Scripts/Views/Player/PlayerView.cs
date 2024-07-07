@@ -34,6 +34,7 @@ namespace Game.Views.Player
         private Quaternion _targetRotation;
         private float _lastAttackTime;
 
+        [SerializeField] [Sirenix.OdinInspector.ReadOnly]
         private bool _isMoveOnServer;
         private float _yForce;
         private static readonly int AttackAnimation = Animator.StringToHash("Attack");

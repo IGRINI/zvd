@@ -134,7 +134,7 @@ namespace Game.Entities
 
         public void PerformAttack(BaseEntityModel target)
         {
-            if (IsFriendlyTeam(target.TeamNumber.Value))
+            if (target.TeamNumber.Value == TeamNumber.Value || IsFriendlyTeam(target.TeamNumber.Value))
                 return;
 
             target.ApplyDamage(GetAttackDamage());
