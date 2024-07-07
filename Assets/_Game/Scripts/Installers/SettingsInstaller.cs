@@ -12,6 +12,7 @@ namespace Game.Installers
         [SerializeField] private InteractionController.Settings _interactiveSettings;
         [SerializeField] private PlayerMoveController.Settings _playerMoveSettings;
         [SerializeField] private MouseLookController.Settings _mouseLookSettings;
+        [SerializeField] private NetworkInfoController.Settings _unitsSettings;
         [SerializeField] private HandsController.Settings _handsSettings; 
         
         public override void InstallBindings()
@@ -20,6 +21,7 @@ namespace Game.Installers
             Container.Bind<InteractionController.Settings>().FromInstance(_interactiveSettings).AsSingle().CopyIntoAllSubContainers().NonLazy();
             Container.Bind<PlayerMoveController.Settings>().FromInstance(_playerMoveSettings).AsSingle().CopyIntoAllSubContainers().NonLazy();
             Container.Bind<MouseLookController.Settings>().FromInstance(_mouseLookSettings).AsSingle().CopyIntoAllSubContainers().NonLazy();
+            Container.Bind<NetworkInfoController.Settings>().FromInstance(_unitsSettings).AsSingle().CopyIntoAllSubContainers().NonLazy();
             Container.Bind<HandsController.Settings>().FromInstance(_handsSettings).AsSingle().CopyIntoAllSubContainers().NonLazy();
         }
     }

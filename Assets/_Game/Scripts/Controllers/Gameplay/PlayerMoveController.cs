@@ -98,6 +98,7 @@ namespace Game.Controllers.Gameplay
         public class Settings
         {
             public float Speed;
+            public float Acceleration;
             public float JumpForce;
             public float SprintMultuplier;
             [Range(0, 5f)]

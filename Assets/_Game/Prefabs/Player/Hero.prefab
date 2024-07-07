@@ -134,9 +134,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Animator: {fileID: 1656999729054960078}
+  AnimationEventHandler: {fileID: 4839007527580462387}
+  TeamNumber:
+    m_InternalValue: 0
   _body: {fileID: 2954489515079636551}
-  _attackCollider: {fileID: 2507108948954576326}
-  _animationEventHandler: {fileID: 4839007527580462387}
   _currentHealth: 0
 --- !u!143 &6909182062709583981
 CharacterController:
@@ -410,6 +411,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 913a5210b1125ab4a9e9e0feb3e5c092, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2507108948954576326}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 913a5210b1125ab4a9e9e0feb3e5c092, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3726846067177472379}
   m_SourcePrefab: {fileID: 100100000, guid: 913a5210b1125ab4a9e9e0feb3e5c092, type: 3}
 --- !u!1 &8240879598281835584 stripped
 GameObject:
@@ -437,6 +441,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.005554041, y: 0.011313837, z: 0.019644445}
   m_Center: {x: -0.000091560316, y: -0.00033189758, z: 0.00382253}
+--- !u!114 &3726846067177472379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8240879598281835584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b7f4b6d0770421ca3f29ee15f2c764b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttackCollider: {fileID: 2507108948954576326}
 --- !u!4 &8725351516726763258 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 913a5210b1125ab4a9e9e0feb3e5c092, type: 3}

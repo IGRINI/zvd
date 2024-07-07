@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Entities.Modifiers;
@@ -8,7 +9,6 @@ using Game.Utils;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
-using Zenject;
 
 namespace Game.Views.Player
 {
@@ -16,22 +16,18 @@ namespace Game.Views.Player
     {
         private readonly HeavyAttackModifier _heavyAttackModifier = new();
         private SprintModifier _sprintModifier;
-        
+
         [SerializeField] private Transform _body;
-        [SerializeField] private Collider _attackCollider;
-        [SerializeField] private AnimationEventHandler _animationEventHandler;
 
         [SerializeField] [Sirenix.OdinInspector.ReadOnly]
         private float _currentHealth;
-        
-        public Transform CameraTransform { get; private set; }
 
+        public Transform CameraTransform { get; private set; }
         public Transform Transform { get; private set; }
         public NetworkTransform NetworkTransform { get; private set; }
         public Transform Body => _body;
 
         public CharacterController CharacterController { get; private set; }
-
 
         private Vector2 _previousMoveInput;
         private Vector2 _currentMoveInput;
@@ -41,10 +37,15 @@ namespace Game.Views.Player
         private bool _isMoveOnServer;
         private float _yForce;
         private static readonly int AttackAnimation = Animator.StringToHash("Attack");
+        private static readonly int HeavyAttackAnimation = Animator.StringToHash("HeavyAttack");
         private static readonly int SpeedAnimation = Animator.StringToHash("Speed");
         private static readonly int DirectionX = Animator.StringToHash("DirectionX");
         private static readonly int DirectionY = Animator.StringToHash("DirectionY");
-        private static readonly int HeavyAttackAnimation = Animator.StringToHash("HeavyAttack");
+
+        private const int AttackLayerIndex = 1;
+        private const float AttackStartWeight = 1;
+        private const float AttackFinalWeight = 0;
+        private const float AttackWeightTransitionTime = .5f;
 
         private bool _isHeavyAttack;
 
@@ -56,39 +57,19 @@ namespace Game.Views.Player
             NetworkTransform = GetComponent<NetworkTransform>();
 
             MaxHealth = 100f;
-            
-            AnimationEvent += OnAnimationEvent;
 
             _sprintModifier = new SprintModifier(NetworkInfoController.Singleton.MoveSettings.SprintMultuplier);
 
-            _animationEventHandler.OnAnimationEvent += OnAnimationEvent;
+            AnimationEventHandler.OnAnimationEnded += OnAnimationEnded;
         }
 
-        private List<PlayerView> _attackedUnits = new();
-        
-        private void OnAnimationEvent(string name)
+        private void OnAnimationEnded(string name)
         {
             switch (name)
             {
-                case "AttackStarted":
-                    _attackCollider.enabled = true;
+                case "Attack":
+                    Animator.DOLayerWeight(AttackLayerIndex, AttackFinalWeight, AttackWeightTransitionTime);
                     break;
-                case "AttackFinish":
-                    _attackCollider.enabled = false;
-                    break;
-            }
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            if(!IsServer) return;
-            if(other == _attackCollider) return;
-            var attacker = other.GetComponentInParent<PlayerView>();
-            if(attacker._attackedUnits.Contains(this)) return;
-            if (attacker)
-            {
-                ApplyDamage(attacker.GetAttackDamage());
-                _attackedUnits.Add(this);
             }
         }
 
@@ -107,15 +88,15 @@ namespace Game.Views.Player
 
         public void Move(Vector2 inputs)
         {
-            if(_previousMoveInput.Equals(inputs)) return;
-            
+            if (_previousMoveInput.Equals(inputs)) return;
+
             _previousMoveInput = inputs;
-            
+
             if (IsOwner && IsClient)
             {
                 _currentMoveInput = inputs.normalized;
             }
-            
+
             if (_previousMoveInput.Equals(Vector2.zero) && inputs.Equals(Vector2.zero))
             {
                 StopMoveRpc();
@@ -128,7 +109,7 @@ namespace Game.Views.Player
                 StartMoveRpc();
                 _isMoveOnServer = true;
             }
-            
+
             MoveRpc(inputs);
         }
 
@@ -137,7 +118,7 @@ namespace Game.Views.Player
             RotateRpc(pointToLook);
 
             if (!IsOwner || !IsClient) return;
-            
+
             var direction = pointToLook - Body.position;
             direction.y = 0f;
 
@@ -162,19 +143,19 @@ namespace Game.Views.Player
         private void Update()
         {
             _currentHealth = CurrentHealth;
-            
+
             Body.rotation = Quaternion.Slerp(Body.rotation, _targetRotation, NetworkInfoController.Singleton.MouseLookSettings.RotationSpeed * Time.deltaTime);
-            
+
             if (!IsGrounded())
                 _yForce += Physics.gravity.y * 1.5f * Time.deltaTime;
             else if (_yForce < 0f)
                 _yForce = 0f;
             var force = _yForce * 1.5f * Time.deltaTime;
-            
+
             var speedMultiplier = Time.deltaTime * NetworkInfoController.Singleton.MoveSettings.Speed;
-            
+
             var movedVector = new Vector3(0f, force);
-            
+
             if (_currentMoveInput.Equals(Vector3.zero) || !_isMoveOnServer)
             {
                 Animator.SetFloat(SpeedAnimation, 0);
@@ -183,22 +164,22 @@ namespace Game.Views.Player
                 CharacterController.Move(movedVector);
                 return;
             }
-            
+
             movedVector += new Vector3(_currentMoveInput.x * speedMultiplier, 0, _currentMoveInput.y * speedMultiplier);
-            
+
             movedVector *= GetSpeedMultiplier();
 
             var relativeMove = CalculateRelativeMovement(_currentMoveInput);
-            
+
             Animator.SetFloat(SpeedAnimation, movedVector.magnitude / Time.deltaTime);
             Animator.SetFloat(DirectionX, relativeMove.x);
             Animator.SetFloat(DirectionY, relativeMove.z);
 
             movedVector.y = force;
-            
+
             CharacterController.Move(movedVector);
         }
-        
+
         private Vector3 CalculateRelativeMovement(Vector2 moveInput)
         {
             var inputDirection = new Vector3(moveInput.x, 0, moveInput.y);
@@ -215,13 +196,13 @@ namespace Game.Views.Player
         {
             var bounds = CharacterController.bounds;
             return Physics.CheckSphere(
-                new Vector3(bounds.center.x, 
-                    bounds.min.y + NetworkInfoController.Singleton.MoveSettings.GroundCheck.SphereDownOffset, 
+                new Vector3(bounds.center.x,
+                    bounds.min.y + NetworkInfoController.Singleton.MoveSettings.GroundCheck.SphereDownOffset,
                     bounds.center.z),
                 NetworkInfoController.Singleton.MoveSettings.GroundCheck.SphereRadius,
                 NetworkInfoController.Singleton.MoveSettings.GroundCheck.GroundLayerMask);
         }
-        
+
         public void SetSprint(bool sprint)
         {
             if (sprint)
@@ -233,7 +214,7 @@ namespace Game.Views.Player
                 RemoveModifiers<SprintModifier>();
             }
 
-            if(IsOwner && !IsServer)
+            if (IsOwner && !IsServer)
                 SetSprintRpc(sprint);
         }
 
@@ -242,28 +223,28 @@ namespace Game.Views.Player
         {
             _isMoveOnServer = true;
         }
-        
+
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable, RequireOwnership = true)]
         private void StopMoveRpc()
         {
             _isMoveOnServer = false;
         }
-        
+
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable, RequireOwnership = true)]
         private void SetSprintRpc(bool sprint)
         {
             SetSprint(sprint);
         }
-        
+
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable, RequireOwnership = true)]
         private void AttackRpc(bool isHeavyAttack)
         {
             if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackAnimationTime())
             {
                 RemoveModifiers<HeavyAttackModifier>();
-                if(isHeavyAttack)
+                if (isHeavyAttack)
                     AddModifier(_heavyAttackModifier);
-                Animator.SetLayerWeight(1, 1);
+                Animator.DOLayerWeight(AttackLayerIndex, AttackStartWeight, AttackWeightTransitionTime);
                 Animator.SetTrigger(isHeavyAttack ? HeavyAttackAnimation : AttackAnimation);
                 _isHeavyAttack = isHeavyAttack;
                 _lastAttackTime = Time.timeSinceLevelLoad;
@@ -274,10 +255,10 @@ namespace Game.Views.Player
         {
             if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackAnimationTime())
             {
-                Animator.SetLayerWeight(1, 1);
+                Animator.DOLayerWeight(AttackLayerIndex, AttackStartWeight, AttackWeightTransitionTime);
                 Animator.SetTrigger(isHeavyAttack ? HeavyAttackAnimation : AttackAnimation);
-                
-                if(IsOwner && !IsServer)
+
+                if (IsOwner && !IsServer)
                 {
                     AttackRpc(isHeavyAttack);
                 }
@@ -288,14 +269,14 @@ namespace Game.Views.Player
 
         public async void StartRespawn()
         {
-            if(!IsServer) return;
+            if (!IsServer) return;
             await UniTask.Delay(5000);
             NetworkTransform.Teleport(Vector3.zero, Quaternion.identity, Vector3.one);
             IsDied = false;
             SetHealth(MaxHealth);
             gameObject.SetActive(true);
             await UniTask.NextFrame();
-            
+
             RespawnRpc(NetworkObjectId, Vector3.zero);
         }
 

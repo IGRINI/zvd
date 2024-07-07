@@ -1,5 +1,8 @@
-﻿using Game.Utils.PlayerCharInfo;
+﻿using System;
+using System.Collections.Generic;
+using Game.Utils.PlayerCharInfo;
 using Game.Views.Player;
+using UnityEngine.Serialization;
 
 namespace Game.Controllers.Gameplay
 {
@@ -9,6 +12,7 @@ namespace Game.Controllers.Gameplay
 
         public readonly MouseLookController.Settings MouseLookSettings;
         public readonly PlayerMoveController.Settings MoveSettings;
+        public readonly Settings UnitsSettings;
         
         private readonly MouseLookController _mouseLookController;
         private readonly PlayerMoveController _playerMoveController;
@@ -19,6 +23,7 @@ namespace Game.Controllers.Gameplay
             PlayerMoveController playerMoveController,
             MouseLookController.Settings mouseLookSettings,
             PlayerMoveController.Settings moveSettings,
+            Settings unitsSettings,
             PlayerStatsContainer playerStatsContainer)
         {
             Singleton = this;
@@ -28,6 +33,7 @@ namespace Game.Controllers.Gameplay
 
             MouseLookSettings = mouseLookSettings;
             MoveSettings = moveSettings;
+            UnitsSettings = unitsSettings;
 
             _playerStatsContainer = playerStatsContainer;
         }
@@ -53,5 +59,53 @@ namespace Game.Controllers.Gameplay
                 _playerStatsContainer.UnregisterPlayer(playerView);
             }
         }
+        
+        public bool IsFriendlyTeam(int teamA, int teamB)
+        {
+            return GetRelationType(teamA, teamB) == RelationType.Friendly;
+        }
+
+        public bool IsNeutralTeam(int teamA, int teamB)
+        {
+            return GetRelationType(teamA, teamB) == RelationType.Neutral;
+        }
+
+        public bool IsEnemyTeam(int teamA, int teamB)
+        {
+            return GetRelationType(teamA, teamB) == RelationType.Hostile;
+        }
+
+        private RelationType GetRelationType(int teamA, int teamB)
+        {
+            foreach (var relation in UnitsSettings.TeamRelations)
+            {
+                if ((relation.TeamA == teamA && relation.TeamB == teamB) || (relation.TeamA == teamB && relation.TeamB == teamA))
+                {
+                    return relation.Relation;
+                }
+            }
+            return RelationType.Neutral;
+        }
+        
+        [Serializable]
+        public class Settings
+        {
+            public List<TeamRelation> TeamRelations;
+            
+            [Serializable]
+            public class TeamRelation
+            {
+                public int TeamA;
+                public int TeamB;
+                public RelationType Relation;
+            }
+        }
+    }
+    
+    public enum RelationType
+    {
+        Friendly,
+        Neutral,
+        Hostile
     }
 }

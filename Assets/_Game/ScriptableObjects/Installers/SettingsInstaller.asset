@@ -23,6 +23,7 @@ MonoBehaviour:
         m_Bits: 256
   _playerMoveSettings:
     Speed: 3
+    Acceleration: 2
     JumpForce: 5
     SprintMultuplier: 2.5
     MoveSyncThreshold: 1
@@ -37,5 +38,7 @@ MonoBehaviour:
     Sensitivity: {x: 0, y: 0}
     MouseOffset: {x: 0, y: -15}
     RotationSpeed: 5
+  _unitsSettings:
+    TeamRelations: []
   _handsSettings:
     MoveTiming: 0.5
