@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Common;
 using Game.Controllers.Gameplay;
 using Game.Entities.Modifiers;
 using Game.Utils;
@@ -17,6 +18,8 @@ namespace Game.Entities
         protected Animator Animator;
         [SerializeField] 
         protected AnimationEventHandler AnimationEventHandler;
+        [SerializeField] 
+        protected Weapon Weapon;
 
         public AnimationEventHandler AnimationEvents => AnimationEventHandler;
 
@@ -27,6 +30,7 @@ namespace Game.Entities
 
         protected virtual void Awake()
         {
+            SetAttackAnimationTime(Animator.GetAnimationClipLength("Attack"));
         }
 
         public void AddModifier(Modifier modifier)

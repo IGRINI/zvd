@@ -244,6 +244,7 @@ namespace Game.Views.Player
                 RemoveModifiers<HeavyAttackModifier>();
                 if (isHeavyAttack)
                     AddModifier(_heavyAttackModifier);
+                Weapon.ClearAttackedUnits();
                 Animator.DOLayerWeight(AttackLayerIndex, AttackStartWeight, AttackWeightTransitionTime);
                 Animator.SetTrigger(isHeavyAttack ? HeavyAttackAnimation : AttackAnimation);
                 _isHeavyAttack = isHeavyAttack;
@@ -255,6 +256,7 @@ namespace Game.Views.Player
         {
             if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackAnimationTime())
             {
+                Weapon.ClearAttackedUnits();
                 Animator.DOLayerWeight(AttackLayerIndex, AttackStartWeight, AttackWeightTransitionTime);
                 Animator.SetTrigger(isHeavyAttack ? HeavyAttackAnimation : AttackAnimation);
 

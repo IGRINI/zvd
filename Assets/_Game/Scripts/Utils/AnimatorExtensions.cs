@@ -16,5 +16,18 @@ namespace Game.Utils
                 animator.SetLayerWeight(layerIndex, currentWeight);
             }, targetWeight, duration);
         }
+        
+        public static float GetAnimationClipLength(this Animator animator, string clipName)
+        {
+            foreach (var clip in animator.runtimeAnimatorController.animationClips)
+            {
+                if (clip.name == clipName)
+                {
+                    return clip.length;
+                }
+            }
+            Debug.LogWarning($"Animation clip '{clipName}' not found in the animator.");
+            return 0f;
+        }
     }
 }
