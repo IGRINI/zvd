@@ -50,6 +50,7 @@ namespace Game.Common
 
         private void OnTriggerEnter(Collider other)
         {
+            if(other.isTrigger) return;
             var target = other.GetComponentInParent<BaseEntityModel>();
             if (target == null || target == Owner) return;
             if (!HasAttacked(target))

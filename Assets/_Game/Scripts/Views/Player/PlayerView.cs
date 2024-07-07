@@ -157,7 +157,7 @@ namespace Game.Views.Player
             if (_currentMoveInput.Equals(Vector3.zero) || !_isMoveOnServer)
             {
                 ChangeMoveAnimations(0, 0, 0);
-
+                
                 CharacterController.Move(movedVector);
                 return;
             }

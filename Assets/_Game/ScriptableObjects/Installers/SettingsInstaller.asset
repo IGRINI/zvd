@@ -12,16 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36c462b80ecc21f41a5ebee7a55121bd, type: 3}
   m_Name: SettingsInstaller
   m_EditorClassIdentifier: 
-  _bootstrapSettings:
+  BootstrapSettings:
     StartFrameRate: 240
-  _interactiveSettings:
-    Mouse:
-      InteractiveRayDistance: 3
-      InteractiveRayRadius: 0.2
-      InteractiveSphereLayerMask:
-        serializedVersion: 2
-        m_Bits: 256
-  _playerMoveSettings:
+  PlayerMoveSettings:
     Speed: 3
     Acceleration: 2
     JumpForce: 5
@@ -34,11 +27,15 @@ MonoBehaviour:
       GroundLayerMask:
         serializedVersion: 2
         m_Bits: 321
-  _mouseLookSettings:
+  MouseLookSettings:
     Sensitivity: {x: 0, y: 0}
     MouseOffset: {x: 0, y: -15}
     RotationSpeed: 5
-  _unitsSettings:
-    TeamRelations: []
-  _handsSettings:
-    MoveTiming: 0.5
+  UnitsSettings:
+    TeamRelations:
+    - TeamA: 1
+      TeamB: 0
+      Relation: 2
+    - TeamA: 2
+      TeamB: 1
+      Relation: 2
