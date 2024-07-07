@@ -72,7 +72,6 @@ public class UnitView : BaseEntityModel
         {
             if (_currentTarget != null)
             {
-                Animator.SetFloat(SpeedAnimation, _navMeshAgent.acceleration);
                 
                 _navMeshAgent.SetDestination(_currentTarget.transform.position);
 
@@ -83,6 +82,7 @@ public class UnitView : BaseEntityModel
                     Attack();
                 }
             }
+            Animator.SetFloat(SpeedAnimation, _navMeshAgent.acceleration);
         }
     }
 

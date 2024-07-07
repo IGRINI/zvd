@@ -95,7 +95,7 @@ namespace Game.Entities
             Health.Value = health;
             HealthChanged?.Invoke(health);
 
-            if (IsServer && health == 0)
+            if (IsServer && health == 0 && !IsDied)
             {
                 HandleDeath();
             }
@@ -113,6 +113,7 @@ namespace Game.Entities
             }
             else
             {
+                NetworkObject.Despawn();
                 Destroy(gameObject);
             }
 

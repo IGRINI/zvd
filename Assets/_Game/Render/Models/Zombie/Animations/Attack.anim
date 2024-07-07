@@ -73200,7 +73200,7 @@ AnimationClip:
     messageOptions: 0
   - time: 1.3
     functionName: AnimationEvent
-    data: AttackStarted
+    data: AttackFinish
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
