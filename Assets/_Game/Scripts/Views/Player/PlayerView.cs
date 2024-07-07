@@ -157,7 +157,7 @@ namespace Game.Views.Player
 
             var movedVector = new Vector3(0f, force);
 
-            if (IsOwner && (_currentMoveInput.Equals(Vector3.zero) || !_isMoveOnServer))
+            if ((IsOwner || IsServer) && (_currentMoveInput.Equals(Vector3.zero) || !_isMoveOnServer))
             {
                 Animator.SetFloat(SpeedAnimation, 0);
                 Animator.SetFloat(DirectionX, 0);
