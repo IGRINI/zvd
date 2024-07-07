@@ -196,7 +196,8 @@ namespace Game.Views.Player
             var relativeRight = Vector3.Dot(right, inputDirection);
             return new Vector3(relativeRight, 0, relativeForward);
         }
-
+        
+        
         private bool IsGrounded()
         {
             var bounds = CharacterController.bounds;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Game.Entities;
 using Game.Utils.PlayerCharInfo;
 using Game.Views.Player;
-using UnityEngine.Serialization;
 
 namespace Game.Controllers.Gameplay
 {
@@ -19,13 +18,15 @@ namespace Game.Controllers.Gameplay
         private readonly PlayerMoveController _playerMoveController;
         
         private readonly PlayerStatsContainer _playerStatsContainer;
+        private readonly PlayerInventoryContainer _playerInventoryContainer;
 
         private NetworkInfoController(MouseLookController mouseLookController,
             PlayerMoveController playerMoveController,
             MouseLookController.Settings mouseLookSettings,
             PlayerMoveController.Settings moveSettings,
             Settings unitsSettings,
-            PlayerStatsContainer playerStatsContainer)
+            PlayerStatsContainer playerStatsContainer,
+            PlayerInventoryContainer playerInventoryContainer)
         {
             Singleton = this;
 
@@ -37,6 +38,23 @@ namespace Game.Controllers.Gameplay
             UnitsSettings = unitsSettings;
 
             _playerStatsContainer = playerStatsContainer;
+            _playerInventoryContainer = playerInventoryContainer;
+        }
+
+        public void RegisterInventory(InventoryView inventoryView, bool isOwner)
+        {
+            if (isOwner)
+            {
+                _playerInventoryContainer.SetPlayerInventory(inventoryView);
+            }
+        }
+
+        public void UnregisterInventory(InventoryView inventoryView, bool isOwner)
+        {
+            if (isOwner)
+            {
+                _playerInventoryContainer.UnregisterInventory(inventoryView);
+            }
         }
 
         public void RegisterPlayer(PlayerView playerView, bool isOwner)

@@ -5,6 +5,6 @@ namespace Game.Interactables
 {
     public interface IInteractable
     {
-        void Interact(RaycastHit hit);
+        void Interact();
     }
 }

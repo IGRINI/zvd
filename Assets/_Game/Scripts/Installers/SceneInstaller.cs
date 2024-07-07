@@ -14,6 +14,7 @@ namespace Game.Installers
         [SerializeField] private CinemachineVirtualCamera _cinemachineVirtualCamera;
         [SerializeField] private Camera _camera;
         [FormerlySerializedAs("_playerContainer")] [SerializeField] private PlayerStatsContainer playerStatsContainer;
+        [SerializeField] private PlayerInventoryContainer _playerInventoryContainer;
         
         public override void InstallBindings()
         {
@@ -28,6 +29,7 @@ namespace Game.Installers
             BindInstance(_cinemachineVirtualCamera);
             BindInstance(_camera);
             BindInstance(playerStatsContainer);
+            BindInstance(_playerInventoryContainer);
             BindSingle<PlayerMoveController>();
             BindSingle<MouseLookController>();
             BindSingle<NetworkInfoController>();
