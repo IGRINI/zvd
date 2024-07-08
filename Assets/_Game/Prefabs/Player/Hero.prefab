@@ -137,6 +137,7 @@ MonoBehaviour:
   Animator: {fileID: 1656999729054960078}
   AnimationEventHandler: {fileID: 4839007527580462387}
   Weapon: {fileID: 3726846067177472379}
+  _healthBarOffset: 2.5
   TeamNumber:
     m_InternalValue: 0
   _body: {fileID: 2954489515079636551}

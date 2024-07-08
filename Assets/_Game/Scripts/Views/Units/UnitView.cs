@@ -2,8 +2,10 @@
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Game.Entities;
+using Game.Utils;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
 namespace Game.Views.Units
 {
@@ -11,8 +13,13 @@ public class UnitView : BaseEntityModel
 {
     [SerializeField] private Team _startTeam;
     [SerializeField] private NavMeshAgent _navMeshAgent;
+    [SerializeField] private SphereCollider _aggroTrigger;
     [SerializeField] private float _rotationSpeed = 5f;
     [SerializeField] private float _distanceToAttack = 2f;
+    [SerializeField] private float _aggroRange = 2f;
+    [SerializeField] private float _unAggroRange = 2f;
+    [SerializeField] private float _maxHealth = 60f;
+    [SerializeField] private float _startAttackDamage = 10f;
 
     private List<BaseEntityModel> _nearbyEnemies = new();
     private BaseEntityModel _currentTarget;
@@ -20,11 +27,17 @@ public class UnitView : BaseEntityModel
     protected override void Awake()
     {
         base.Awake();
-        MaxHealth = 100f;
         
-        SetAttackDamage(10);
+        MaxHealth = _maxHealth;
+        
+        SetAttackDamage(_startAttackDamage);
 
         _navMeshAgent.stoppingDistance = _distanceToAttack;
+    }
+
+    private void OnValidate()
+    {
+        _aggroTrigger.radius = _aggroRange;
     }
 
     public override void OnNetworkSpawn()
@@ -72,14 +85,20 @@ public class UnitView : BaseEntityModel
         {
             if (_currentTarget != null)
             {
-                
-                _navMeshAgent.SetDestination(_currentTarget.transform.position);
-
-                if ((_currentTarget.transform.position - transform.position).sqrMagnitude <= _distanceToAttack * _distanceToAttack)
+                if (!transform.position.CheckDistanceTo(_currentTarget.transform.position, _unAggroRange))
                 {
-                    RotateTowardsTarget();
+                    _currentTarget = null;
+                }
+                else
+                {
+                    _navMeshAgent.SetDestination(_currentTarget.transform.position);
+
+                    if (transform.position.CheckDistanceTo(_currentTarget.transform.position, _distanceToAttack))
+                    {
+                        RotateTowardsTarget();
                     
-                    Attack();
+                        Attack();
+                    }
                 }
             }
             Animator.SetFloat(SpeedAnimation, _navMeshAgent.velocity.magnitude);

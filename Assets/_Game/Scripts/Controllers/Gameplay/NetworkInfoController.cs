@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Game.Entities;
 using Game.Utils.PlayerCharInfo;
 using Game.Views.Player;
+using UnityEngine;
 
 namespace Game.Controllers.Gameplay
 {
@@ -19,6 +20,10 @@ namespace Game.Controllers.Gameplay
         
         private readonly PlayerStatsContainer _playerStatsContainer;
         private readonly PlayerInventoryContainer _playerInventoryContainer;
+
+        private PlayerView _playerView;
+
+        public PlayerView PlayerView => _playerView;
 
         private NetworkInfoController(MouseLookController mouseLookController,
             PlayerMoveController playerMoveController,
@@ -65,6 +70,8 @@ namespace Game.Controllers.Gameplay
                 _playerMoveController.SetPlayerView(playerView);
 
                 _playerStatsContainer.SetPlayer(playerView);
+
+                _playerView = playerView;
             }
         }
 
@@ -76,27 +83,30 @@ namespace Game.Controllers.Gameplay
                 _playerMoveController.SetPlayerMoveActive(false);
                 
                 _playerStatsContainer.UnregisterPlayer(playerView);
+
+                _playerView = null;
             }
         }
         
-        public bool IsFriendlyTeam(Team teamA, Team teamB)
+        public static bool IsFriendlyTeam(Team teamA, Team teamB)
         {
             return GetRelationType(teamA, teamB) == RelationType.Friendly;
         }
 
-        public bool IsNeutralTeam(Team teamA, Team teamB)
+        public static bool IsNeutralTeam(Team teamA, Team teamB)
         {
             return GetRelationType(teamA, teamB) == RelationType.Neutral;
         }
 
-        public bool IsEnemyTeam(Team teamA, Team teamB)
+        public static bool IsEnemyTeam(Team teamA, Team teamB)
         {
             return GetRelationType(teamA, teamB) == RelationType.Hostile;
         }
 
-        private RelationType GetRelationType(Team teamA, Team teamB)
+        public static RelationType GetRelationType(Team teamA, Team teamB)
         {
-            foreach (var relation in UnitsSettings.TeamRelations)
+            if (teamA == teamB) return RelationType.Friendly;
+            foreach (var relation in Singleton.UnitsSettings.TeamRelations)
             {
                 if ((relation.TeamA == teamA && relation.TeamB == teamB) || (relation.TeamA == teamB && relation.TeamB == teamA))
                 {
@@ -110,6 +120,7 @@ namespace Game.Controllers.Gameplay
         public class Settings
         {
             public List<TeamRelation> TeamRelations;
+            public List<HealthBarColor> HealthBarColors;
             
             [Serializable]
             public class TeamRelation
@@ -117,6 +128,14 @@ namespace Game.Controllers.Gameplay
                 public Team TeamA;
                 public Team TeamB;
                 public RelationType Relation;
+            }
+            
+            [Serializable]
+            public class HealthBarColor
+            {
+                public RelationType RelationType;
+                public Color HealthColor;
+                public Color BgColor;
             }
         }
     }

@@ -19,8 +19,11 @@ namespace Game.Entities
         protected AnimationEventHandler AnimationEventHandler;
         [SerializeField] 
         protected Weapon Weapon;
+        [SerializeField] 
+        private float _healthBarOffset = 2f;
 
         public AnimationEventHandler AnimationEvents => AnimationEventHandler;
+        public float HealthBarOffset => _healthBarOffset;
 
         #region Modifiers
         private List<Modifier> _modifiers = new();
@@ -45,13 +48,15 @@ namespace Game.Entities
         public float GetSpeedMultiplier()
         {
             var speedModifiers = Modifiers.Where(modifier => modifier.Functions.Contains(Modifier.Type.SpeedMultiplier));
-            return speedModifiers.Any() ? speedModifiers.Average(modifier => modifier.GetSpeedMultiplier()) : 1;
+            var enumerable = speedModifiers as Modifier[] ?? speedModifiers.ToArray();
+            return enumerable.Any() ? enumerable.Average(modifier => modifier.GetSpeedMultiplier()) : 1;
         }
 
         public float GetAttackDamage()
         {
             var damageModifiers = Modifiers.Where(modifier => modifier.Functions.Contains(Modifier.Type.AttackDamage));
-            return damageModifiers.Any() ? _attackDamage + damageModifiers.Sum(modifier => modifier.GetAttackDamage()) : _attackDamage;
+            var enumerable = damageModifiers as Modifier[] ?? damageModifiers.ToArray();
+            return enumerable.Any() ? _attackDamage + enumerable.Sum(modifier => modifier.GetAttackDamage()) : _attackDamage;
         }
 
         public float GetAttackAnimationTime()
@@ -147,14 +152,22 @@ namespace Game.Entities
             if (IsServer)
                 SetHealth(MaxHealth);
             if (IsClient)
+            {
                 Health.OnValueChanged += OnHealthChanged;
+
+                EntityRegistry.RegisterEntity(this);
+            }
         }
 
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
             if (IsClient)
+            {
                 Health.OnValueChanged -= OnHealthChanged;
+                
+                EntityRegistry.UnregisterEntity(this);
+            }
         }
 
         public void OnHealthChanged(float previous, float current)
@@ -164,17 +177,17 @@ namespace Game.Entities
 
         public bool IsFriendlyTeam(Team teamNumber)
         {
-            return NetworkInfoController.Singleton.IsFriendlyTeam(TeamNumber.Value, teamNumber);
+            return NetworkInfoController.IsFriendlyTeam(TeamNumber.Value, teamNumber);
         }
 
         public bool IsEnemyTeam(Team teamNumber)
         {
-            return NetworkInfoController.Singleton.IsEnemyTeam(TeamNumber.Value, teamNumber);
+            return NetworkInfoController.IsEnemyTeam(TeamNumber.Value, teamNumber);
         }
 
         public bool IsNeutralTeam(Team teamNumber)
         {
-            return NetworkInfoController.Singleton.IsNeutralTeam(TeamNumber.Value, teamNumber);
+            return NetworkInfoController.IsNeutralTeam(TeamNumber.Value, teamNumber);
         }
     }
 

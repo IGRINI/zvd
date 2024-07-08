@@ -2,6 +2,7 @@
 using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Installers;
+using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace Game.Editor
     using UnityEngine;
 
     [CustomEditor(typeof(SettingsInstaller))]
-    public class SettingsInstallerEditor : Editor
+    public class SettingsInstallerEditor : OdinEditor
     {
         private SettingsInstaller settingsInstaller;
         private NetworkInfoController.Settings networkSettings;

@@ -165,12 +165,18 @@ MonoBehaviour:
   Animator: {fileID: 1326610638441609461}
   AnimationEventHandler: {fileID: 1559605221147389563}
   Weapon: {fileID: 1840670960196140504}
+  _healthBarOffset: 2.5
   TeamNumber:
     m_InternalValue: 0
   _startTeam: 1
   _navMeshAgent: {fileID: 5056996308825926809}
+  _aggroTrigger: {fileID: 6029585041516458000}
   _rotationSpeed: 5
   _distanceToAttack: 2
+  _aggroRange: 6
+  _unAggroRange: 7
+  _maxHealth: 60
+  _attackDamage: 10
 --- !u!114 &2494850786740158738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,7 +249,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 8
+  m_Radius: 6
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1014808829915581958
 Rigidbody:

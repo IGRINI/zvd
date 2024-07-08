@@ -1,6 +1,8 @@
 ﻿using Cinemachine;
 using Game.Controllers.Gameplay;
+using Game.Entities;
 using Game.PrefabsActions;
+using Game.Utils.HealthBars;
 using Game.Utils.PlayerCharInfo;
 using Game.Views.Player;
 using UnityEngine;
@@ -15,6 +17,9 @@ namespace Game.Installers
         [SerializeField] private Camera _camera;
         [FormerlySerializedAs("_playerContainer")] [SerializeField] private PlayerStatsContainer playerStatsContainer;
         [SerializeField] private PlayerInventoryContainer _playerInventoryContainer;
+        [SerializeField] private HealthBar _healthBarPrefab;
+        [SerializeField] private RectTransform _healthBarRoot;
+        [SerializeField] private Canvas _canvas;
         
         public override void InstallBindings()
         {
@@ -30,15 +35,24 @@ namespace Game.Installers
             BindInstance(_camera);
             BindInstance(playerStatsContainer);
             BindInstance(_playerInventoryContainer);
+            BindInstance(_canvas);
+            BindInstance(_healthBarRoot);
             BindSingle<PlayerMoveController>();
             BindSingle<MouseLookController>();
             BindSingle<NetworkInfoController>();
+            BindSingle<HealthBarController>();
             // BindSingle<InteractionController>();
             // BindSingle<HandsController>();
             //
             // Container.Bind<PlayerCreator>().AsSingle().NonLazy();
             //
             // Container.BindInterfacesAndSelfTo<CannonController>().AsSingle().NonLazy();
+
+            Container.BindMemoryPool<HealthBar, HealthBar.Pool>()
+                .FromComponentInNewPrefab(_healthBarPrefab)
+                .UnderTransform(_healthBarRoot);
+
+            EntityRegistry.Init(_camera);
         }
         
         private IfNotBoundBinder BindSingle<T>()
