@@ -110,13 +110,13 @@ public class UnitView : BaseEntityModel
         while (IsServer && !IsDied && IsSpawned)
         {
             UpdateCurrentTarget();
-            await UniTask.Delay(1000);
+            await UniTask.Delay(100);
         }
     }
 
     private void Attack()
     {
-        if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackAnimationTime())
+        if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackCooldown())
         {
             Weapon.ClearAttackedUnits();
             _lastAttackTime = Time.timeSinceLevelLoad;

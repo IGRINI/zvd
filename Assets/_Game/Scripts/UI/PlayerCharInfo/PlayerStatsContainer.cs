@@ -8,14 +8,14 @@ namespace Game.Utils.PlayerCharInfo
     public class PlayerStatsContainer : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _healthText;
-        [SerializeField] private Slider _healthBar;
+        [SerializeField] private Image _healthBar;
 
         private PlayerView _player;
         
         public void SetHealth(float health)
         {
             var healthPct = health / _player.MaxHealth;
-            _healthBar.value = healthPct;
+            _healthBar.fillAmount = healthPct;
             _healthText.SetText($"{health} / {_player.MaxHealth}");
         }
 

@@ -8,6 +8,7 @@ using Game.Utils;
 using Game.Views.Player;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.VFX;
 
 namespace Game.Entities
 {
@@ -21,6 +22,14 @@ namespace Game.Entities
         protected Weapon Weapon;
         [SerializeField] 
         private float _healthBarOffset = 2f;
+        [SerializeField] 
+        private float _attackSpeed = 1f;
+        [SerializeField] 
+        private float _attackCooldown = .2f;
+        [SerializeField] 
+        private VisualEffect _attackEffect;
+        [SerializeField] 
+        private bool _invulnerable;
 
         public AnimationEventHandler AnimationEvents => AnimationEventHandler;
         public float HealthBarOffset => _healthBarOffset;
@@ -32,7 +41,22 @@ namespace Game.Entities
 
         protected virtual void Awake()
         {
-            SetAttackAnimationTime(Animator.GetAnimationClipLength("Attack"));
+            AnimationEventHandler.OnAnimationEvent += OnAnimationEvent;
+            
+            SetAttackAnimationTime(GetStartAttackSpeed());
+        }
+
+        private void OnAnimationEvent(string eventName)
+        {
+            switch (eventName)
+            {
+                case "AttackStarted":
+                    if (_attackEffect != null)
+                    {
+                        _attackEffect.Play();
+                    }
+                    break;
+            }
         }
 
         public void AddModifier(Modifier modifier)
@@ -64,6 +88,16 @@ namespace Game.Entities
             return _attackAnimationTime;
         }
 
+        public float GetStartAttackSpeed()
+        {
+            return _attackSpeed;
+        }
+
+        public float GetAttackCooldown()
+        {
+            return GetAttackAnimationTime() + _attackCooldown;
+        }
+
         public void SetAttackDamage(float damage)
         {
             _attackDamage = damage;
@@ -72,6 +106,17 @@ namespace Game.Entities
         public void SetAttackAnimationTime(float time)
         {
             _attackAnimationTime = time;
+            SetAttackAnimationSpeed();
+        }
+        
+        private void SetAttackAnimationSpeed()
+        {
+            float currentClipLength = Animator.GetAnimationClipLength("Attack");
+            if (currentClipLength > 0)
+            {
+                float requiredSpeed = currentClipLength / _attackAnimationTime;
+                Animator.SetFloat(AttackSpeedHash, requiredSpeed);
+            }
         }
         #endregion
 
@@ -88,6 +133,8 @@ namespace Game.Entities
         {
             if (!IsServer) return;
 
+            if(_invulnerable) return;
+            
             if (damage < 0)
                 return;
 
@@ -136,6 +183,7 @@ namespace Game.Entities
         #region Damage
         private float _attackDamage = 20f;
         private float _attackAnimationTime = 1f;
+        private static readonly int AttackSpeedHash = Animator.StringToHash("AttackSpeed");
 
         public void PerformAttack(BaseEntityModel target)
         {

@@ -19,15 +19,19 @@ namespace Game.Utils
         
         public static float GetAnimationClipLength(this Animator animator, string clipName)
         {
-            foreach (var clip in animator.runtimeAnimatorController.animationClips)
+            var runtimeAnimatorController = animator.runtimeAnimatorController;
+            if (runtimeAnimatorController == null) 
+                throw new System.NullReferenceException("Animator does not have a runtime animator controller");
+
+            var clips = runtimeAnimatorController.animationClips;
+            foreach (var clip in clips)
             {
                 if (clip.name == clipName)
                 {
                     return clip.length;
                 }
             }
-            Debug.LogWarning($"Animation clip '{clipName}' not found in the animator.");
-            return 0f;
+            throw new System.ArgumentException($"Clip '{clipName}' not found in AnimatorController");
         }
     }
 }

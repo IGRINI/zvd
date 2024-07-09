@@ -245,7 +245,7 @@ namespace Game.Views.Player
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable, RequireOwnership = true)]
         private void AttackRpc(bool isHeavyAttack)
         {
-            if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackAnimationTime())
+            if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackCooldown())
             {
                 RemoveModifiers<HeavyAttackModifier>();
                 if (isHeavyAttack)
@@ -260,7 +260,7 @@ namespace Game.Views.Player
 
         public void Attack(bool isHeavyAttack)
         {
-            if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackAnimationTime())
+            if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackCooldown())
             {
                 Weapon.ClearAttackedUnits();
                 Animator.DOLayerWeight(AttackLayerIndex, AttackStartWeight, AttackWeightTransitionTime);
@@ -295,6 +295,7 @@ namespace Game.Views.Player
             Transform.position = newPosition;
             died.gameObject.SetActive(true);
             NetworkInfoController.Singleton.RegisterPlayer(this, IsOwner);
+            SetAttackAnimationTime(GetStartAttackSpeed());
         }
     }
 }
