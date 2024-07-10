@@ -5,137 +5,127 @@ using Game.Entities;
 using Game.Utils;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Serialization;
 
 namespace Game.Views.Units
 {
-public class UnitView : BaseEntityModel
-{
-    [SerializeField] private Team _startTeam;
-    [SerializeField] private NavMeshAgent _navMeshAgent;
-    [SerializeField] private SphereCollider _aggroTrigger;
-    [SerializeField] private float _rotationSpeed = 5f;
-    [SerializeField] private float _distanceToAttack = 2f;
-    [SerializeField] private float _aggroRange = 2f;
-    [SerializeField] private float _unAggroRange = 2f;
-    [SerializeField] private float _maxHealth = 60f;
-    [SerializeField] private float _startAttackDamage = 10f;
-
-    private List<BaseEntityModel> _nearbyEnemies = new();
-    private BaseEntityModel _currentTarget;
-
-    protected override void Awake()
+    public class UnitView : BaseEntityModel
     {
-        base.Awake();
-        
-        MaxHealth = _maxHealth;
-        
-        SetAttackDamage(_startAttackDamage);
+        [SerializeField] private Team _startTeam;
+        [SerializeField] private NavMeshAgent _navMeshAgent;
+        [SerializeField] private SphereCollider _aggroTrigger;
+        [SerializeField] private float _rotationSpeed = 5f;
+        [SerializeField] private float _distanceToAttack = 2f;
+        [SerializeField] private float _aggroRange = 2f;
+        [SerializeField] private float _unAggroRange = 2f;
+        [SerializeField] private float _maxHealth = 60f;
+        [SerializeField] private float _startAttackDamage = 10f;
 
-        _navMeshAgent.stoppingDistance = _distanceToAttack;
-    }
+        private readonly List<BaseEntityModel> _nearbyEnemies = new();
+        private BaseEntityModel _currentTarget;
 
-    private void OnValidate()
-    {
-        _aggroTrigger.radius = _aggroRange;
-    }
+        protected override void Awake()
+        { 
+            base.Awake();
+            
+            MaxHealth = _maxHealth;
+            SetAttackDamage(_startAttackDamage);
 
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-        if(IsServer)
-        {
-            TeamNumber.Value = _startTeam;
-            AiTick();
+            _navMeshAgent.stoppingDistance = _distanceToAttack;
         }
-    }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (IsServer)
+        private void OnValidate() => _aggroTrigger.radius = _aggroRange;
+
+        public override void OnNetworkSpawn()
         {
-            var potentialTarget = other.GetComponentInParent<BaseEntityModel>();
-            if (potentialTarget != null && IsEnemyTeam(potentialTarget.TeamNumber.Value))
+            base.OnNetworkSpawn();
+            if (IsServer)
             {
-                _nearbyEnemies.Add(potentialTarget);
+                TeamNumber.Value = _startTeam;
+                AiTick();
             }
         }
-    }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (IsServer)
+        private void OnTriggerEnter(Collider other)
         {
-            var potentialTarget = other.GetComponentInParent<BaseEntityModel>();
-            if (potentialTarget != null && _nearbyEnemies.Contains(potentialTarget))
+            if (IsServer)
             {
-                _nearbyEnemies.Remove(potentialTarget);
-            }
-        }
-    }
-
-    private void UpdateCurrentTarget()
-    {
-        _currentTarget = _nearbyEnemies.Count > 0 ? _nearbyEnemies.OrderBy(x => (x.transform.position - transform.position).sqrMagnitude).FirstOrDefault(x => !x.IsDied) : null;
-    }
-
-    private void Update()
-    {
-        if (IsServer)
-        {
-            if (_currentTarget != null)
-            {
-                if (!transform.position.CheckDistanceTo(_currentTarget.transform.position, _unAggroRange))
+                var potentialTarget = other.GetComponentInParent<BaseEntityModel>();
+                if (potentialTarget != null && IsEnemyTeam(potentialTarget.TeamNumber.Value))
                 {
-                    _currentTarget = null;
+                    _nearbyEnemies.Add(potentialTarget);
                 }
-                else
-                {
-                    _navMeshAgent.SetDestination(_currentTarget.transform.position);
+            }
+        }
 
-                    if (transform.position.CheckDistanceTo(_currentTarget.transform.position, _distanceToAttack))
+        private void OnTriggerExit(Collider other)
+        {
+            if (IsServer)
+            {
+                var potentialTarget = other.GetComponentInParent<BaseEntityModel>();
+                if (potentialTarget != null && _nearbyEnemies.Contains(potentialTarget))
+                {
+                    _nearbyEnemies.Remove(potentialTarget);
+                }
+            }
+        }
+
+        private void UpdateCurrentTarget()
+        {
+            _currentTarget = _nearbyEnemies
+                .Where(enemy => !enemy.IsDied)
+                .OrderBy(enemy => (enemy.transform.position - transform.position).sqrMagnitude)
+                .FirstOrDefault();
+        }
+
+        private void Update()
+        {
+            if (IsServer)
+            {
+                if (_currentTarget != null)
+                {
+                    if (!transform.position.CheckDistanceTo(_currentTarget.transform.position, _unAggroRange))
                     {
-                        RotateTowardsTarget();
-                    
-                        Attack();
+                        _currentTarget = null;
+                    }
+                    else
+                    {
+                        _navMeshAgent.SetDestination(_currentTarget.transform.position);
+
+                        if (transform.position.CheckDistanceTo(_currentTarget.transform.position, _distanceToAttack))
+                        {
+                            RotateTowardsTarget();
+                            Attack();
+                        }
                     }
                 }
+                Animator.SetFloat(SpeedAnimation, _navMeshAgent.velocity.magnitude);
             }
-            Animator.SetFloat(SpeedAnimation, _navMeshAgent.velocity.magnitude);
         }
-    }
 
-    private async void AiTick()
-    {
-        while (IsServer && !IsDied && IsSpawned)
+        private async void AiTick()
         {
-            UpdateCurrentTarget();
-            await UniTask.Delay(100);
+            while (IsServer && !IsDied && IsSpawned)
+            {
+                UpdateCurrentTarget();
+                await UniTask.Delay(100);
+            }
         }
-    }
 
-    private void Attack()
-    {
-        if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackCooldown())
+        private void Attack()
         {
-            Weapon.ClearAttackedUnits();
-            _lastAttackTime = Time.timeSinceLevelLoad;
-            Animator.SetTrigger(AttackAnimation);
+            Attack(AttackAnimation);
         }
+
+        private void RotateTowardsTarget()
+        {
+            if (_currentTarget == null) return;
+
+            Vector3 direction = (_currentTarget.transform.position - transform.position).normalized;
+            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * _rotationSpeed);
+        }
+
+        private static readonly int AttackAnimation = Animator.StringToHash("Attack");
+        private static readonly int SpeedAnimation = Animator.StringToHash("Speed");
     }
-    
-    private void RotateTowardsTarget()
-    {
-        if (_currentTarget == null) return;
-
-        Vector3 direction = (_currentTarget.transform.position - transform.position).normalized;
-        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * _rotationSpeed);
-    }
-
-    private float _lastAttackTime;
-    private static readonly int AttackAnimation = Animator.StringToHash("Attack");
-    private static readonly int SpeedAnimation = Animator.StringToHash("Speed");
-}
-
 }

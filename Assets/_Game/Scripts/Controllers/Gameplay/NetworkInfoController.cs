@@ -116,11 +116,22 @@ namespace Game.Controllers.Gameplay
             return RelationType.Neutral;
         }
         
+        public int GetExperienceForLevel(int level)
+        {
+            if (level - 1 < UnitsSettings.ExperienceTable.Count)
+            {
+                return UnitsSettings.ExperienceTable[level - 1];
+            }
+            return UnitsSettings.ExperienceTable[^1];
+        }
+        
         [Serializable]
         public class Settings
         {
             public List<TeamRelation> TeamRelations;
             public List<HealthBarColor> HealthBarColors;
+            public float ExpirienceRadius;
+            public List<int> ExperienceTable;
             
             [Serializable]
             public class TeamRelation

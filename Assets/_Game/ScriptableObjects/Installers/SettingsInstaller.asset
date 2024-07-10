@@ -41,11 +41,13 @@ MonoBehaviour:
       Relation: 2
     HealthBarColors:
     - RelationType: 0
-      HealthColor: {r: 0.2901961, g: 1, b: 0, a: 1}
-      BgColor: {r: 0.027450982, g: 0.28235295, b: 0, a: 1}
+      HealthColor: {r: 0.2901961, g: 1, b: 0, a: 0.19607843}
+      BgColor: {r: 0.027450982, g: 0.28235295, b: 0, a: 0.39215687}
     - RelationType: 1
-      HealthColor: {r: 1, g: 0.97120583, b: 0, a: 1}
-      BgColor: {r: 0.2574738, g: 0.28235295, b: 0, a: 1}
+      HealthColor: {r: 1, g: 0.97120583, b: 0, a: 0.19607843}
+      BgColor: {r: 0.2574738, g: 0.28235295, b: 0, a: 0.39215687}
     - RelationType: 2
-      HealthColor: {r: 0.7075472, g: 0, b: 0.05990166, a: 1}
-      BgColor: {r: 0.28235295, g: 0, b: 0.017057622, a: 1}
+      HealthColor: {r: 0.7075472, g: 0, b: 0.05990166, a: 0.19607843}
+      BgColor: {r: 0.28235295, g: 0, b: 0.017057622, a: 0.39215687}
+    ExpirienceRadius: 6
+    ExperienceTable: 640000002c010000f4010000

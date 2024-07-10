@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Game.Utils;
 using UnityEngine;
 
 namespace Game.Entities
@@ -49,6 +50,21 @@ namespace Game.Entities
             }
 
             return visibleEntities;
+        }
+        
+        public static List<BaseEntityModel> GetEntitiesInRange(Vector3 position, float range)
+        {
+            List<BaseEntityModel> entitiesInRange = new();
+
+            foreach (var entity in _entities)
+            {
+                if (position.CheckDistanceTo(entity.transform.position, range))
+                {
+                    entitiesInRange.Add(entity);
+                }
+            }
+
+            return entitiesInRange;
         }
         
         private static bool IsEntityVisible(Collider entityCollider, Plane[] planes)

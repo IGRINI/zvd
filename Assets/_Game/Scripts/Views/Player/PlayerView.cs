@@ -18,18 +18,20 @@ namespace Game.Views.Player
 
         [SerializeField] [Sirenix.OdinInspector.ReadOnly]
         private float _currentHealth;
-
-        public Transform CameraTransform { get; private set; }
         public Transform Transform { get; private set; }
         public NetworkTransform NetworkTransform { get; private set; }
         public Transform Body => _body;
 
         public CharacterController CharacterController { get; private set; }
 
+        [SerializeField]
+        private Camera _faceCamera;
+
+        public Camera FaceCamera => _faceCamera;
+
         private Vector2 _previousMoveInput;
         private Vector2 _currentMoveInput;
         private Quaternion _targetRotation;
-        private float _lastAttackTime;
 
         [SerializeField] [Sirenix.OdinInspector.ReadOnly]
         private bool _isMoveOnServer;
@@ -50,6 +52,7 @@ namespace Game.Views.Player
         protected override void Awake()
         {
             base.Awake();
+            OnAttack += HandleAttack;
             Transform = transform;
             CharacterController = GetComponent<CharacterController>();
             NetworkTransform = GetComponent<NetworkTransform>();
@@ -63,11 +66,9 @@ namespace Game.Views.Player
 
         private void OnAnimationEnded(string name)
         {
-            switch (name)
+            if (name == "Attack")
             {
-                case "Attack":
-                    Animator.DOLayerWeight(AttackLayerIndex, AttackFinalWeight, AttackWeightTransitionTime);
-                    break;
+                Animator.DOLayerWeight(AttackLayerIndex, AttackFinalWeight, AttackWeightTransitionTime);
             }
         }
 
@@ -95,7 +96,7 @@ namespace Game.Views.Player
                 _currentMoveInput = inputs.normalized;
             }
 
-            if (_previousMoveInput.Equals(Vector2.zero) && inputs.Equals(Vector2.zero))
+            if (_previousMoveInput.Equals(inputs) && inputs.Equals(Vector2.zero))
             {
                 StopMoveRpc();
                 _isMoveOnServer = false;
@@ -197,7 +198,6 @@ namespace Game.Views.Player
             return new Vector3(relativeRight, 0, relativeForward);
         }
         
-        
         private bool IsGrounded()
         {
             var bounds = CharacterController.bounds;
@@ -242,37 +242,27 @@ namespace Game.Views.Player
             SetSprint(sprint);
         }
 
-        [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable, RequireOwnership = true)]
-        private void AttackRpc(bool isHeavyAttack)
+        private void HandleAttack(int attackAnimationHash)
         {
-            if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackCooldown())
+            if (IsOwner && !IsServer)
             {
-                RemoveModifiers<HeavyAttackModifier>();
-                if (isHeavyAttack)
-                    AddModifier(_heavyAttackModifier);
-                Weapon.ClearAttackedUnits();
-                Animator.DOLayerWeight(AttackLayerIndex, AttackStartWeight, AttackWeightTransitionTime);
-                Animator.SetTrigger(isHeavyAttack ? HeavyAttackAnimation : AttackAnimation);
-                _isHeavyAttack = isHeavyAttack;
-                _lastAttackTime = Time.timeSinceLevelLoad;
+                AttackRpc(attackAnimationHash);
             }
+        }
+        
+        [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable, RequireOwnership = true)]
+        private void AttackRpc(int attackAnimationHash)
+        {
+            Attack(attackAnimationHash == HeavyAttackAnimation);
         }
 
         public void Attack(bool isHeavyAttack)
         {
-            if (Time.timeSinceLevelLoad - _lastAttackTime >= GetAttackCooldown())
-            {
-                Weapon.ClearAttackedUnits();
-                Animator.DOLayerWeight(AttackLayerIndex, AttackStartWeight, AttackWeightTransitionTime);
-                Animator.SetTrigger(isHeavyAttack ? HeavyAttackAnimation : AttackAnimation);
-
-                if (IsOwner && !IsServer)
-                {
-                    AttackRpc(isHeavyAttack);
-                }
-
-                _lastAttackTime = Time.timeSinceLevelLoad;
-            }
+            var attackHash = isHeavyAttack ? HeavyAttackAnimation : AttackAnimation;
+            if (isHeavyAttack)
+                AddModifier(_heavyAttackModifier);
+            Animator.DOLayerWeight(AttackLayerIndex, AttackStartWeight, AttackWeightTransitionTime);
+            Attack(attackHash);
         }
 
         public async void StartRespawn()

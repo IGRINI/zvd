@@ -9,6 +9,7 @@ namespace Game.Utils.PlayerCharInfo
     {
         [SerializeField] private TextMeshProUGUI _healthText;
         [SerializeField] private Image _healthBar;
+        [SerializeField] private RawImage _faceCamera;
 
         private PlayerView _player;
         
@@ -25,6 +26,9 @@ namespace Game.Utils.PlayerCharInfo
 
             _player.HealthChanged += SetHealth;
             SetHealth(_player.CurrentHealth);
+
+            _player.FaceCamera.gameObject.SetActive(true);
+            _faceCamera.texture = _player.FaceCamera.targetTexture;
         }
 
         public void UnregisterPlayer(PlayerView playerView)
@@ -33,6 +37,10 @@ namespace Game.Utils.PlayerCharInfo
             {
                 SetHealth(0);
                 playerView.HealthChanged -= SetHealth;
+                
+                _player.FaceCamera.gameObject.SetActive(false);
+                _faceCamera.texture = null;
+                
                 _player = null;
             }
         }
