@@ -30,16 +30,18 @@ namespace Game.Entities
         private VisualEffect _attackEffect;
         [SerializeField] 
         private bool _invulnerable;
+        [SerializeField] 
+        private Attributes _startingAttributes;
+        [SerializeField] 
+        private Attributes _attributesPerLevel;
+        [SerializeField] 
+        private ExperienceSettings _experienceSettings;
+        [SerializeField] 
+        private bool _isHero;
+        [SerializeField] 
+        private int _startLevel = 1;
         
-        [SerializeField] private Attributes _startingAttributes;
-        [SerializeField] private Attributes _attributesPerLevel;
-        [SerializeField] private ExperienceSettings _experienceSettings;
-        [SerializeField] private bool _isHero;
-        [SerializeField] private int _startLevel = 1;
-        
-        [SerializeField]
         private NetworkVariable<int> _level = new();
-        [SerializeField]
         private NetworkVariable<int> _currentExperience = new();
         private NetworkVariable<Attributes> _currentAttributes = new();
         private int _experienceToNextLevel;
@@ -51,7 +53,11 @@ namespace Game.Entities
         public AnimationEventHandler AnimationEvents => AnimationEventHandler;
         public float HealthBarOffset => _healthBarOffset;
 
+        private static readonly int AttackSpeedHash = Animator.StringToHash("AttackSpeed");
+        private static readonly int AttackAnimationHash = Animator.StringToHash("Attack");
+
         #region Modifiers
+
         private readonly List<Modifier> _modifiers = new();
 
         public IEnumerable<Modifier> Modifiers => _modifiers;
@@ -107,9 +113,11 @@ namespace Game.Entities
                 Animator.SetFloat(AttackSpeedHash, requiredSpeed);
             }
         }
+
         #endregion
 
         #region Health
+
         public event Action<float> HealthChanged;
         public float MaxHealth { protected set; get; }
         public float CurrentHealth => Health.Value;
@@ -169,14 +177,15 @@ namespace Game.Entities
             var died = NetworkManager.SpawnManager.SpawnedObjects[objectId];
             died.gameObject.SetActive(false);
         }
+
         #endregion
 
         #region Damage
+
         private float _attackDamage = 20f;
         private float _attackAnimationTime = 1f;
         private float _lastAttackTime;
         public event Action<int> OnAttack;
-        private static readonly int AttackSpeedHash = Animator.StringToHash("AttackSpeed");
 
         public void PerformAttack(BaseEntityModel target)
         {
@@ -202,6 +211,7 @@ namespace Game.Entities
             if (!IsServer || _invulnerable || damage < 0) return;
             SetHealth(Health.Value - damage);
         }
+
         #endregion
 
         public override void OnNetworkSpawn()
@@ -232,9 +242,8 @@ namespace Game.Entities
         
         public void AddExperience(int amount)
         {
-            if (!IsHero) return;
-            if(!IsServer) return;
-            if(Level >= NetworkInfoController.Singleton.UnitsSettings.ExperienceTable.Count + 1)
+            if (!IsHero || !IsServer) return;
+            if (Level >= NetworkInfoController.Singleton.UnitsSettings.ExperienceTable.Count + 1)
             {
                 _currentExperience.Value = 0;
                 return;
@@ -245,7 +254,7 @@ namespace Game.Entities
             {
                 _currentExperience.Value -= _experienceToNextLevel;
                 LevelUp();
-                if(Level >= NetworkInfoController.Singleton.UnitsSettings.ExperienceTable.Count + 1)
+                if (Level >= NetworkInfoController.Singleton.UnitsSettings.ExperienceTable.Count + 1)
                 {
                     _currentExperience.Value = 0;
                     return;
@@ -255,7 +264,7 @@ namespace Game.Entities
         
         private void LevelUp()
         {
-            if(!IsServer) return;
+            if (!IsServer) return;
             
             _level.Value++;
             _experienceToNextLevel = NetworkInfoController.Singleton.GetExperienceForLevel(_level.Value);
@@ -288,7 +297,7 @@ namespace Game.Entities
         public bool IsFriendlyTeam(Team teamNumber) => NetworkInfoController.IsFriendlyTeam(TeamNumber.Value, teamNumber);
         public bool IsEnemyTeam(Team teamNumber) => NetworkInfoController.IsEnemyTeam(TeamNumber.Value, teamNumber);
         public bool IsNeutralTeam(Team teamNumber) => NetworkInfoController.IsNeutralTeam(TeamNumber.Value, teamNumber);
-        
+
         [Serializable]
         public class Attributes : INetworkSerializable
         {

@@ -15,26 +15,18 @@ namespace Game.Views.Player
         private SprintModifier _sprintModifier;
 
         [SerializeField] private Transform _body;
-
-        [SerializeField] [Sirenix.OdinInspector.ReadOnly]
-        private float _currentHealth;
+        [SerializeField] [Sirenix.OdinInspector.ReadOnly] private float _currentHealth;
         public Transform Transform { get; private set; }
         public NetworkTransform NetworkTransform { get; private set; }
         public Transform Body => _body;
-
         public CharacterController CharacterController { get; private set; }
-
-        [SerializeField]
-        private Camera _faceCamera;
-
+        [SerializeField] private Camera _faceCamera;
         public Camera FaceCamera => _faceCamera;
 
         private Vector2 _previousMoveInput;
         private Vector2 _currentMoveInput;
         private Quaternion _targetRotation;
-
-        [SerializeField] [Sirenix.OdinInspector.ReadOnly]
-        private bool _isMoveOnServer;
+        [SerializeField] [Sirenix.OdinInspector.ReadOnly] private bool _isMoveOnServer;
         private float _yForce;
         private static readonly int AttackAnimation = Animator.StringToHash("Attack");
         private static readonly int HeavyAttackAnimation = Animator.StringToHash("HeavyAttack");

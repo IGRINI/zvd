@@ -7,9 +7,8 @@ namespace Game.Entities
     public static class EntityRegistry
     {
         public static IReadOnlyList<BaseEntityModel> AllEntities => _entities;
-        
-        private static List<BaseEntityModel> _entities = new();
 
+        private static readonly List<BaseEntityModel> _entities = new();
         private static Camera _camera;
 
         public static void Init(Camera camera)
@@ -27,23 +26,17 @@ namespace Game.Entities
 
         public static void UnregisterEntity(BaseEntityModel entity)
         {
-            if (_entities.Contains(entity))
-            {
-                _entities.Remove(entity);
-            }
+            _entities.Remove(entity);
         }
-        
+
         public static List<BaseEntityModel> GetEntitiesOnScreen()
         {
             var visibleEntities = new List<BaseEntityModel>();
             var planes = GeometryUtility.CalculateFrustumPlanes(_camera);
 
-            var allEntities = AllEntities;
-
-            foreach (var entity in allEntities)
+            foreach (var entity in AllEntities)
             {
-                var entityCollider = entity.GetComponent<Collider>();
-                if (entityCollider != null && IsEntityVisible(entityCollider, planes))
+                if (IsEntityVisible(entity.GetComponent<Collider>(), planes))
                 {
                     visibleEntities.Add(entity);
                 }
@@ -51,10 +44,10 @@ namespace Game.Entities
 
             return visibleEntities;
         }
-        
+
         public static List<BaseEntityModel> GetEntitiesInRange(Vector3 position, float range)
         {
-            List<BaseEntityModel> entitiesInRange = new();
+            var entitiesInRange = new List<BaseEntityModel>();
 
             foreach (var entity in _entities)
             {
@@ -66,7 +59,7 @@ namespace Game.Entities
 
             return entitiesInRange;
         }
-        
+
         private static bool IsEntityVisible(Collider entityCollider, Plane[] planes)
         {
             return GeometryUtility.TestPlanesAABB(planes, entityCollider.bounds);
