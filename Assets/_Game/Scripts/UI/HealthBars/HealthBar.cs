@@ -24,7 +24,7 @@ namespace Game.Utils.HealthBars
             var fillAmount = currentHealth / maxHealth;
             
             _healthFillImage.fillAmount = fillAmount;
-            _healthText.SetText($"{currentHealth} / {maxHealth}");
+            _healthText.SetText($"{(int)currentHealth} / {(int)maxHealth}");
         }
 
         public void SetHealthBarColors(Color color, Color bgColor)

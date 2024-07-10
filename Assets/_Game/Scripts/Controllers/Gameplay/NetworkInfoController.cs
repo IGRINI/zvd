@@ -4,6 +4,7 @@ using Game.Entities;
 using Game.Utils.PlayerCharInfo;
 using Game.Views.Player;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Controllers.Gameplay
 {
@@ -103,6 +104,11 @@ namespace Game.Controllers.Gameplay
             return GetRelationType(teamA, teamB) == RelationType.Hostile;
         }
 
+        public static int GetMaxLevel()
+        {
+            return Singleton.UnitsSettings.ExperienceTable.Count + 1;
+        }
+
         public static RelationType GetRelationType(Team teamA, Team teamB)
         {
             if (teamA == teamB) return RelationType.Friendly;
@@ -132,6 +138,7 @@ namespace Game.Controllers.Gameplay
             public List<HealthBarColor> HealthBarColors;
             public float ExpirienceRadius;
             public List<int> ExperienceTable;
+            public float DamagePerStrength = .5f;
             
             [Serializable]
             public class TeamRelation

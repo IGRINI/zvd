@@ -40,17 +40,22 @@ namespace Game.Entities
         private bool _isHero;
         [SerializeField] 
         private int _startLevel = 1;
+
+        private int _currentLevel;
+        private int _currentExperience;
         
-        private NetworkVariable<int> _level = new();
-        private NetworkVariable<int> _currentExperience = new();
-        private NetworkVariable<Attributes> _currentAttributes = new();
+        private readonly NetworkVariable<int> _levelNetwork = new();
+        private readonly NetworkVariable<int> _currentExperienceNetwork = new();
+        private readonly NetworkVariable<Attributes> _currentAttributes = new();
         private int _experienceToNextLevel;
 
         public bool IsHero => _isHero;
-        public int Level => _level.Value;
-        public int CurrentExperience => _currentExperience.Value;
+        public NetworkVariable<int> Level => _levelNetwork;
+        public NetworkVariable<int> CurrentExperience => _currentExperienceNetwork;
+        public NetworkVariable<Attributes> CurrentAttributes => _currentAttributes;
 
         public AnimationEventHandler AnimationEvents => AnimationEventHandler;
+        public int ExperienceToNextLevel => _experienceToNextLevel;
         public float HealthBarOffset => _healthBarOffset;
 
         private static readonly int AttackSpeedHash = Animator.StringToHash("AttackSpeed");
@@ -89,7 +94,9 @@ namespace Game.Entities
         public float GetAttackDamage()
         {
             var damageModifiers = Modifiers.Where(modifier => modifier.Functions.Contains(Modifier.Type.AttackDamage));
-            return damageModifiers.Any() ? _attackDamage + damageModifiers.Sum(modifier => modifier.GetAttackDamage()) : _attackDamage;
+            var damage = _attackDamage + _currentAttributes.Value.Strength *
+                NetworkInfoController.Singleton.UnitsSettings.DamagePerStrength;
+            return damageModifiers.Any() ? damage + damageModifiers.Sum(modifier => modifier.GetAttackDamage()) : damage;
         }
 
         public float GetAttackAnimationTime() => _attackAnimationTime;
@@ -220,7 +227,7 @@ namespace Game.Entities
             if (IsServer)
             {
                 SetHealth(MaxHealth);
-                _level.Value = _startLevel;
+                _currentLevel = _levelNetwork.Value = _startLevel;
                 _experienceToNextLevel = NetworkInfoController.Singleton.GetExperienceForLevel(_startLevel);
             }
             if (IsClient)
@@ -243,43 +250,48 @@ namespace Game.Entities
         public void AddExperience(int amount)
         {
             if (!IsHero || !IsServer) return;
-            if (Level >= NetworkInfoController.Singleton.UnitsSettings.ExperienceTable.Count + 1)
+            if (Level.Value >= NetworkInfoController.GetMaxLevel())
             {
-                _currentExperience.Value = 0;
+                _currentExperience = 0;
+                _currentExperienceNetwork.Value = _currentExperience;
                 return;
             }
 
-            _currentExperience.Value += amount;
-            while (_currentExperience.Value >= _experienceToNextLevel)
+            _currentExperience += amount;
+            while (_currentExperience >= _experienceToNextLevel)
             {
-                _currentExperience.Value -= _experienceToNextLevel;
+                _currentExperience -= _experienceToNextLevel;
                 LevelUp();
-                if (Level >= NetworkInfoController.Singleton.UnitsSettings.ExperienceTable.Count + 1)
+                if (Level.Value >= NetworkInfoController.GetMaxLevel())
                 {
-                    _currentExperience.Value = 0;
-                    return;
+                    _currentExperience = 0;
+                    break;
                 }
             }
+            _currentExperienceNetwork.Value = _currentExperience;
         }
         
         private void LevelUp()
         {
             if (!IsServer) return;
             
-            _level.Value++;
-            _experienceToNextLevel = NetworkInfoController.Singleton.GetExperienceForLevel(_level.Value);
+            _currentLevel++;
+            _experienceToNextLevel = NetworkInfoController.Singleton.GetExperienceForLevel(_currentLevel);
 
             var updatedAttributes = _currentAttributes.Value;
+            _currentAttributes.Value = null;
             updatedAttributes.Strength += _attributesPerLevel.Strength;
             updatedAttributes.Agility += _attributesPerLevel.Agility;
             updatedAttributes.Intelligence += _attributesPerLevel.Intelligence;
             _currentAttributes.Value = updatedAttributes;
+
+            _levelNetwork.Value = _currentLevel;
         }
         
         public int GetExperienceReward()
         {
             if (!_isHero) return _experienceSettings.BaseExperienceReward;
-            return _experienceSettings.BaseExperienceReward + _experienceSettings.ExperiencePerLevel * _level.Value;
+            return _experienceSettings.BaseExperienceReward + _experienceSettings.ExperiencePerLevel * _currentLevel;
         }
 
         public override void OnNetworkDespawn()
@@ -305,6 +317,29 @@ namespace Game.Entities
             public int Agility;
             public int Intelligence;
 
+            public override bool Equals(object obj)
+            {
+                if (obj is Attributes other)
+                {
+                    return Strength == other.Strength &&
+                           Agility == other.Agility &&
+                           Intelligence == other.Intelligence;
+                }
+                return false;
+            }
+            
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    var hash = 17;
+                    hash = hash * 23 + Strength.GetHashCode();
+                    hash = hash * 23 + Agility.GetHashCode();
+                    hash = hash * 23 + Intelligence.GetHashCode();
+                    return hash;
+                }
+            }
+            
             public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
             {
                 serializer.SerializeValue(ref Strength);

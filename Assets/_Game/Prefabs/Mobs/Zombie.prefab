@@ -180,7 +180,7 @@ MonoBehaviour:
     Agility: 0
     Intelligence: 0
   _experienceSettings:
-    BaseExperienceReward: 500
+    BaseExperienceReward: 75
     ExperiencePerLevel: 0
   _isHero: 0
   _startLevel: 1
