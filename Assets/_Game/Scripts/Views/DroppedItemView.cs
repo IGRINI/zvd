@@ -1,7 +1,5 @@
-using System;
 using Game.Interactables;
 using Unity.Netcode;
-using UnityEngine;
 
 public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
 {

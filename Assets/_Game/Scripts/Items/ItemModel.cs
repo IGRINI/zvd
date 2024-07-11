@@ -1,19 +1,20 @@
+using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class ItemModel
+[Serializable]
+public class ItemModel : INetworkSerializable
 {
-    public string Name { get; private set; }
-    
-    public bool Droppable { get; private set; }
-    
-    public Sprite ItemSprite { get; private set; }
-    public GameObject ItemPrefab { get; private set; }
+    public string Name;
 
-    public ItemModel(string name, bool droppable, Sprite itemSprite, GameObject itemPrefab)
+    public bool Droppable;
+
+    public string ItemSpriteLink;
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
-        Name = name;
-        Droppable = droppable;
-        ItemSprite = itemSprite;
-        ItemPrefab = itemPrefab;
+        serializer.SerializeValue(ref Name);
+        serializer.SerializeValue(ref Droppable);
+        serializer.SerializeValue(ref ItemSpriteLink);
     }
 }

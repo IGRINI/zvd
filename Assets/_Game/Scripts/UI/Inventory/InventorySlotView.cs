@@ -11,7 +11,7 @@ public class InventorySlotView : ItemSlotView
     public override void SetItem(ItemModel itemModel)
     {
         ItemModel = itemModel;
-        _itemImage.sprite = itemModel.ItemSprite;
+        // _itemImage.sprite = itemModel.ItemSprite;
     }
 
     public override void RemoveItem()
