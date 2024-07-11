@@ -13,6 +13,7 @@ namespace Game.Installers
         [FormerlySerializedAs("_playerMoveSettings")] [SerializeField] public PlayerMoveController.Settings PlayerMoveSettings;
         [FormerlySerializedAs("_mouseLookSettings")] [SerializeField] public MouseLookController.Settings MouseLookSettings;
         [FormerlySerializedAs("_unitsSettings")] [SerializeField] public NetworkInfoController.Settings UnitsSettings;
+        [SerializeField] public MouseObjectDetectionController.Settings MouseObjectDetectionSettings;
         
         public override void InstallBindings()
         {
@@ -20,6 +21,7 @@ namespace Game.Installers
             Container.Bind<PlayerMoveController.Settings>().FromInstance(PlayerMoveSettings).AsSingle().CopyIntoAllSubContainers().NonLazy();
             Container.Bind<MouseLookController.Settings>().FromInstance(MouseLookSettings).AsSingle().CopyIntoAllSubContainers().NonLazy();
             Container.Bind<NetworkInfoController.Settings>().FromInstance(UnitsSettings).AsSingle().CopyIntoAllSubContainers().NonLazy();
+            Container.Bind<MouseObjectDetectionController.Settings>().FromInstance(MouseObjectDetectionSettings).AsSingle().CopyIntoAllSubContainers().NonLazy();
         }
     }
 }

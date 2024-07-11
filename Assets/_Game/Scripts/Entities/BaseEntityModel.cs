@@ -4,6 +4,7 @@ using System.Linq;
 using Game.Common;
 using Game.Controllers.Gameplay;
 using Game.Entities.Modifiers;
+using Game.Interactables;
 using Game.Utils;
 using Game.Views.Player;
 using Unity.Netcode;
@@ -12,7 +13,7 @@ using UnityEngine.VFX;
 
 namespace Game.Entities
 {
-    public abstract class BaseEntityModel : NetworkBehaviour
+    public abstract class BaseEntityModel : NetworkBehaviour, IHoverable
     {
         [SerializeField]
         protected Animator Animator;

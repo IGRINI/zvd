@@ -41,6 +41,7 @@ namespace Game.Installers
             BindSingle<MouseLookController>();
             BindSingle<NetworkInfoController>();
             BindSingle<HealthBarController>();
+            BindSingle<MouseObjectDetectionController>();
             // BindSingle<InteractionController>();
             // BindSingle<HandsController>();
             //

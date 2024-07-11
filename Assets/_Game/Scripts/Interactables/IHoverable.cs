@@ -2,6 +2,14 @@
 {
     public interface IHoverable
     {
+        public void OnHoverStart()
+        {
+            
+        }
         
+        public void OnHoverStop()
+        {
+            
+        }
     }
 }
