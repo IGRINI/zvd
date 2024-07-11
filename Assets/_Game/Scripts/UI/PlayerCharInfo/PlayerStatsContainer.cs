@@ -17,6 +17,7 @@ namespace Game.Utils.PlayerCharInfo
         [SerializeField] private Image _experienceImage;
         [SerializeField] private TextMeshProUGUI _levelText;
         [SerializeField] private TextMeshProUGUI _experienceText;
+        [SerializeField] private TextMeshProUGUI _attackDamage;
         [SerializeField] private TextMeshProUGUI _strength;
         [SerializeField] private TextMeshProUGUI _agility;
         [SerializeField] private TextMeshProUGUI _intelligence;
@@ -56,6 +57,8 @@ namespace Game.Utils.PlayerCharInfo
             _strength.SetText(attributes.Strength.ToString());
             _agility.SetText(attributes.Agility.ToString());
             _intelligence.SetText(attributes.Intelligence.ToString());
+            
+            _attackDamage.SetText($"{_player.GetAttackDamage():F0}");
         }
 
         private void OnExpirienceChanged(int previousExperience, int experience)

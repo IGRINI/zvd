@@ -99,7 +99,8 @@ namespace Game.Entities
         public float GetSpeedMultiplier()
         {
             var speedModifiers = Modifiers.Where(modifier => modifier.Functions.Contains(Modifier.Type.SpeedMultiplier));
-            return speedModifiers.Any() ? speedModifiers.Average(modifier => modifier.GetSpeedMultiplier()) : 1;
+            var enumerable = speedModifiers as Modifier[] ?? speedModifiers.ToArray();
+            return enumerable.Any() ? enumerable.Average(modifier => modifier.GetSpeedMultiplier()) : 1;
         }
 
         public float GetAttackDamage()
@@ -107,7 +108,8 @@ namespace Game.Entities
             var damageModifiers = Modifiers.Where(modifier => modifier.Functions.Contains(Modifier.Type.AttackDamage));
             var damage = _attackDamage + _currentAttributes.Value.Strength *
                 NetworkInfoController.Singleton.UnitsSettings.DamagePerStrength;
-            return damageModifiers.Any() ? damage + damageModifiers.Sum(modifier => modifier.GetAttackDamage()) : damage;
+            var enumerable = damageModifiers as Modifier[] ?? damageModifiers.ToArray();
+            return enumerable.Any() ? damage + enumerable.Sum(modifier => modifier.GetAttackDamage()) : damage;
         }
 
         public float GetAttackAnimationTime() => _attackAnimationTime;
