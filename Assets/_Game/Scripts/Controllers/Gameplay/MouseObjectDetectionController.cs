@@ -7,12 +7,12 @@ namespace Game.Controllers.Gameplay
 {
     public class MouseObjectDetectionController : IFixedTickable
     {
+        public IHoverable HoveredObject { get; private set; }
+        
         private readonly MouseController _mouseController;
         private readonly Camera _camera;
         private readonly Settings _settings;
 
-        private IHoverable _hoveredObject;
-        
         public MouseObjectDetectionController(MouseController mouseController,
             Camera camera,
             Settings settings)
@@ -34,19 +34,19 @@ namespace Game.Controllers.Gameplay
                 &&
                 hit.collider.TryGetComponent<IHoverable>(out var hoverable))
             {
-                _hoveredObject = hoverable;
-                _hoveredObject.OnHoverStart();
-                _hoveredObject.OutlineHandler.EnableOutline();
+                HoveredObject = hoverable;
+                HoveredObject.OnHoverStart();
+                HoveredObject.OutlineHandler.EnableOutline();
             }
             else
             {
-                if (_hoveredObject != null)
+                if (HoveredObject != null)
                 {
-                    _hoveredObject.OnHoverStop();
-                    _hoveredObject.OutlineHandler.DisableOutline();
+                    HoveredObject.OnHoverStop();
+                    HoveredObject.OutlineHandler.DisableOutline();
                 }
 
-                _hoveredObject = null;
+                HoveredObject = null;
             }
             
             

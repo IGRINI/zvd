@@ -11,7 +11,6 @@ namespace Game.Views.Player
         public event Action<int, ItemModel> SlotChanged;
 
         
-
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();

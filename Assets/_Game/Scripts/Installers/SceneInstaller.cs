@@ -42,7 +42,7 @@ namespace Game.Installers
             BindSingle<NetworkInfoController>();
             BindSingle<HealthBarController>();
             BindSingle<MouseObjectDetectionController>();
-            // BindSingle<InteractionController>();
+            BindSingle<InteractionController>();
             // BindSingle<HandsController>();
             //
             // Container.Bind<PlayerCreator>().AsSingle().NonLazy();

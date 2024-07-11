@@ -11,8 +11,7 @@ namespace Game.Controllers.Gameplay
 {
     public class InteractionController : IFixedTickable
     {
-        // private readonly Settings _settings;
-        private readonly PlayerView _player;
+        private readonly MouseObjectDetectionController _mouseObjectDetectionController;
         
         private bool _isInteractiveEnabled;
         private bool _interact;
@@ -20,18 +19,14 @@ namespace Game.Controllers.Gameplay
         private OutlineFx _currentOveredOutline;
 
         public InteractionController(
-            // Settings settings, 
-            PlayerView playerView, 
+            MouseObjectDetectionController mouseObjectDetectionController,
             KeyboardController keyboardController)
         {
-            // _settings = settings;
-            _player = playerView;
+            _mouseObjectDetectionController = mouseObjectDetectionController;
 
             _isInteractiveEnabled = true;
 
             keyboardController.KeyPerformed += OnKeyPerformed;
-
-            // _signalBus.Subscribe<KeyboardSignals.InteractPerformed>(Interact);
         }
 
         private void OnKeyPerformed(KeyAction key)
@@ -44,11 +39,6 @@ namespace Game.Controllers.Gameplay
             }
         }
 
-        private void OnPlayerInteractiveActive(GameSignals.PlayerInteractiveActive eventObject)
-        {
-            _isInteractiveEnabled = eventObject.IsActive;
-        }
-
         private void Interact()
         {
             if(!_isInteractiveEnabled) return;
@@ -58,39 +48,18 @@ namespace Game.Controllers.Gameplay
 
         public void FixedTick()
         {
-            // if(!_isInteractiveEnabled) return;
+            if(!_isInteractiveEnabled) return;
+
+            if(!_interact) return;
+
+            //TODO Range check
+            if (_mouseObjectDetectionController.HoveredObject != null &&
+                _mouseObjectDetectionController.HoveredObject is IInteractable interactable)
+            { 
+                interactable.Interact();
+            }
             
-            // if (Physics.SphereCast(_player.CameraTransform.position, _settings.Mouse.InteractiveRayRadius, _player.CameraTransform.forward, out var hit, _settings.Mouse.InteractiveRayDistance, _settings.Mouse.InteractiveSphereLayerMask)
-            //     &&
-            //     hit.collider.TryGetComponent<IInteractable>(out var interactable))
-            // {
-            //     if (interactable is MonoBehaviour behaviour)
-            //     {
-            //         var component = behaviour.GetComponent<OutlineFx>();
-            //         if (_currentOveredOutline == null || _currentOveredOutline != component)
-            //         {
-            //             if (_currentOveredOutline != null)
-            //             {
-            //                 _currentOveredOutline.Destroy();
-            //             }
-            //             _currentOveredOutline = behaviour.gameObject.AddComponent<OutlineFx>();
-            //         }
-            //     }
-            //     if (_interact)
-            //     {
-            //         DebugExtensions.DrawWireSphere(hit.point, _settings.Mouse.InteractiveRayRadius, Color.green, 5f);
-            //         interactable.Interact();
-            //     }
-            // }
-            // else
-            // {
-            //     if(_currentOveredOutline != null)
-            //     {
-            //         _currentOveredOutline.Destroy();
-            //         _currentOveredOutline = null;
-            //     }            
-            // }
-            // _interact = false;
+            _interact = false;
         }
 
         // [Serializable]

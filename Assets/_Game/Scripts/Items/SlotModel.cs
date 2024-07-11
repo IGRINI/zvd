@@ -1,9 +1,9 @@
 public class SlotModel
 {
-    public ItemModel Item { get; private set; }
+    public ItemModel ItemModel { get; private set; }
 
-    public void SetItem(ItemModel item)
+    public void SetItem(ItemModel itemModel)
     {
-        Item = item;
+        ItemModel = itemModel;
     }
 }

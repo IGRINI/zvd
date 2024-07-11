@@ -8,9 +8,9 @@ public class PlayerInventoryContainer : MonoBehaviour
         
     private InventoryView _playerInventory;
         
-    public void UpdateSlot(int slot, ItemModel item)
+    public void UpdateSlot(int slot, ItemModel itemModel)
     { 
-        _inventorySlots[slot].SetItem(item);
+        _inventorySlots[slot].SetItem(itemModel);
     }
         
     public void SetPlayerInventory(InventoryView playerInventory)

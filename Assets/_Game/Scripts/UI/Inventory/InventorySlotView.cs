@@ -2,16 +2,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventorySlotView : ItemSlot
+public class InventorySlotView : ItemSlotView
 {
-    public ItemModel Item { get; private set; }
+    public ItemModel ItemModel { get; private set; }
     
     [SerializeField] private Image _itemImage;
 
-    public override void SetItem(ItemModel item)
+    public override void SetItem(ItemModel itemModel)
     {
-        Item = item;
-        _itemImage.sprite = item.ItemSprite;
+        ItemModel = itemModel;
+        _itemImage.sprite = itemModel.ItemSprite;
     }
 
     public override void RemoveItem()
