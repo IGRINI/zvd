@@ -15,6 +15,12 @@ namespace Game.Entities
 {
     public abstract class BaseEntityModel : NetworkBehaviour, IHoverable
     {
+        OutlineHandler IHoverable.OutlineHandler
+        {
+            get => _outlineHandler;
+            set => _outlineHandler = value;
+        }
+
         [SerializeField]
         protected Animator Animator;
         [SerializeField] 
@@ -68,11 +74,15 @@ namespace Game.Entities
 
         public IEnumerable<Modifier> Modifiers => _modifiers;
 
+        private OutlineHandler _outlineHandler;
+        
         protected virtual void Awake()
         {
             InitializeAttributes();
             AnimationEventHandler.OnAnimationEvent += OnAnimationEvent;
             SetAttackAnimationTime(GetStartAttackSpeed());
+
+            _outlineHandler = GetComponent<OutlineHandler>();
         }
 
         private void OnAnimationEvent(string eventName)
@@ -193,6 +203,7 @@ namespace Game.Entities
         private float _attackDamage = 20f;
         private float _attackAnimationTime = 1f;
         private float _lastAttackTime;
+
         public event Action<int> OnAttack;
 
         public void PerformAttack(BaseEntityModel target)

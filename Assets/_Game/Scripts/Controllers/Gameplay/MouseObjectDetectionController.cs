@@ -30,25 +30,24 @@ namespace Game.Controllers.Gameplay
             // if (Physics.SphereCast(ray.origin, _settings.Mouse.InteractiveRayRadius, _camera.transform.forward, out var hit, float.PositiveInfinity, _settings.Mouse.InteractiveSphereLayerMask)
             //     &&
             //     hit.collider.TryGetComponent<IHoverable>(out var hoverable))
-            if (Physics.Raycast(ray, out var hit, float.PositiveInfinity, _settings.Mouse.InteractiveSphereLayerMask)
+            if (Physics.Raycast(ray, out var hit, float.PositiveInfinity, _settings.Mouse.InteractiveSphereLayerMask, QueryTriggerInteraction.Ignore)
                 &&
                 hit.collider.TryGetComponent<IHoverable>(out var hoverable))
             {
-                Debug.Log(hoverable);
-                
                 _hoveredObject = hoverable;
                 _hoveredObject.OnHoverStart();
+                _hoveredObject.OutlineHandler.EnableOutline();
             }
             else
             {
-                if(_hoveredObject != null)
+                if (_hoveredObject != null)
+                {
                     _hoveredObject.OnHoverStop();
+                    _hoveredObject.OutlineHandler.DisableOutline();
+                }
 
                 _hoveredObject = null;
             }
-            
-            
-                
             
             
         }

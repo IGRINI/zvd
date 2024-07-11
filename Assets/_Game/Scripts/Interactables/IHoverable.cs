@@ -2,6 +2,8 @@
 {
     public interface IHoverable
     {
+        public OutlineHandler OutlineHandler { get; protected set; }
+        
         public void OnHoverStart()
         {
             
