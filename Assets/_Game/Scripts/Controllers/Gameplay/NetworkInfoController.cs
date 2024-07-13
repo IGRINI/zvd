@@ -18,6 +18,7 @@ namespace Game.Controllers.Gameplay
         
         private readonly MouseLookController _mouseLookController;
         private readonly PlayerMoveController _playerMoveController;
+        private readonly InteractionController _interactionController;
         
         private readonly PlayerStatsContainer _playerStatsContainer;
         private readonly PlayerInventoryContainer _playerInventoryContainer;
@@ -28,6 +29,7 @@ namespace Game.Controllers.Gameplay
 
         private NetworkInfoController(MouseLookController mouseLookController,
             PlayerMoveController playerMoveController,
+            InteractionController interactionController,
             MouseLookController.Settings mouseLookSettings,
             PlayerMoveController.Settings moveSettings,
             Settings unitsSettings,
@@ -37,6 +39,7 @@ namespace Game.Controllers.Gameplay
             Singleton = this;
 
             _mouseLookController = mouseLookController;
+            _interactionController = interactionController;
             _playerMoveController = playerMoveController;
 
             MouseLookSettings = mouseLookSettings;
@@ -69,6 +72,7 @@ namespace Game.Controllers.Gameplay
             {
                 _mouseLookController.SetPlayerView(playerView);
                 _playerMoveController.SetPlayerView(playerView);
+                _interactionController.SetPlayerView(playerView);
 
                 _playerStatsContainer.SetPlayer(playerView);
 
