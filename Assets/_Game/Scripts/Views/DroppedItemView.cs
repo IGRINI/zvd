@@ -1,16 +1,9 @@
 using Game.Interactables;
 using Unity.Netcode;
+using UnityEngine;
 
 public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
 {
-    public NetworkVariable<ItemModel> Item => _item;
-    
-    private readonly NetworkVariable<ItemModel> _item = new();
-
-    
-    private OutlineHandler _outlineHandler;
-    private bool _isOutlineActive;
-
     OutlineHandler IHoverable.OutlineHandler
     {
         get => _outlineHandler;
@@ -22,6 +15,13 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
         get => _isOutlineActive;
         set => _isOutlineActive = value;
     }
+    
+    public NetworkVariable<ItemModel> Item => _item;
+    private readonly NetworkVariable<ItemModel> _item = new();
+
+    
+    private OutlineHandler _outlineHandler;
+    private bool _isOutlineActive;
 
     private void Awake()
     {
@@ -33,11 +33,22 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
         
     }
     
+    public void InitializeItem(ItemModel itemModel)
+    {
+        _item.Value = itemModel;
+    }
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
         
-       
+        //TODO Test
+        InitializeItem(new ItemModel()
+        {
+            Droppable =  true,
+            Name = "TEST ITEM",
+            ItemSpriteLink = "/"
+        });
         
         if (IsServer)
         {
@@ -52,9 +63,7 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-        
-        
-        
+
         if (IsServer)
         {
             
