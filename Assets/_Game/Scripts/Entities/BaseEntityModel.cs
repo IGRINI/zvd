@@ -21,6 +21,12 @@ namespace Game.Entities
             set => _outlineHandler = value;
         }
 
+        bool IHoverable.IsActive
+        {
+            get => _isOutlineActive;
+            set => _isOutlineActive = value;
+        }
+
         [SerializeField]
         protected Animator Animator;
         [SerializeField] 
@@ -205,6 +211,7 @@ namespace Game.Entities
         private float _attackDamage = 20f;
         private float _attackAnimationTime = 1f;
         private float _lastAttackTime;
+        private bool _isOutlineActive;
 
         public event Action<int> OnAttack;
 
@@ -246,6 +253,7 @@ namespace Game.Entities
             }
             if (IsClient)
             {
+                _isOutlineActive = true;
                 Health.OnValueChanged += OnHealthChanged;
                 EntityRegistry.RegisterEntity(this);
             }
@@ -313,6 +321,8 @@ namespace Game.Entities
             base.OnNetworkDespawn();
             if (IsClient)
             {
+                _isOutlineActive = false;
+                _outlineHandler.DisableOutline();
                 Health.OnValueChanged -= OnHealthChanged;
                 EntityRegistry.UnregisterEntity(this);
             }

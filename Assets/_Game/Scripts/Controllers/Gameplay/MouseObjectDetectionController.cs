@@ -32,24 +32,30 @@ namespace Game.Controllers.Gameplay
             //     hit.collider.TryGetComponent<IHoverable>(out var hoverable))
             if (Physics.Raycast(ray, out var hit, float.PositiveInfinity, _settings.Mouse.InteractiveSphereLayerMask, QueryTriggerInteraction.Ignore)
                 &&
-                hit.collider.TryGetComponent<IHoverable>(out var hoverable))
+                hit.collider.TryGetComponent<IHoverable>(out var hoverable) && hoverable.IsActive)
             {
+                DisableCurrentHoveredObject();
+                
                 HoveredObject = hoverable;
                 HoveredObject.OnHoverStart();
                 HoveredObject.OutlineHandler.EnableOutline();
             }
             else
             {
-                if (HoveredObject != null)
-                {
-                    HoveredObject.OnHoverStop();
-                    HoveredObject.OutlineHandler.DisableOutline();
-                }
-
-                HoveredObject = null;
+                DisableCurrentHoveredObject();
             }
             
             
+        }
+
+        private void DisableCurrentHoveredObject()
+        {
+            if (HoveredObject is { IsActive: true })
+            {
+                HoveredObject.OnHoverStop();
+                HoveredObject.OutlineHandler.DisableOutline();
+                HoveredObject = null;
+            }
         }
 
         [Serializable]

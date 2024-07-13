@@ -9,11 +9,18 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
 
     
     private OutlineHandler _outlineHandler;
+    private bool _isOutlineActive;
 
     OutlineHandler IHoverable.OutlineHandler
     {
         get => _outlineHandler;
         set => _outlineHandler = value;
+    }
+
+    bool IHoverable.IsActive
+    {
+        get => _isOutlineActive;
+        set => _isOutlineActive = value;
     }
 
     private void Awake()
@@ -29,19 +36,8 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        if (IsServer)
-        {
-            
-        }
-        if (IsClient)
-        {
-            
-        }
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        base.OnNetworkDespawn();
+        
+       
         
         if (IsServer)
         {
@@ -49,7 +45,24 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
         }
         if (IsClient)
         {
+            _isOutlineActive = true;
+        }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        
+        
+        
+        if (IsServer)
+        {
             
+        }
+        if (IsClient)
+        {
+            _isOutlineActive = false;
+            _outlineHandler.DisableOutline();
         }
         
     }
