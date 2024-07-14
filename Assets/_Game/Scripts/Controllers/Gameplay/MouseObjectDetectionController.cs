@@ -32,7 +32,7 @@ namespace Game.Controllers.Gameplay
             //     hit.collider.TryGetComponent<IHoverable>(out var hoverable))
             if (Physics.Raycast(ray, out var hit, float.PositiveInfinity, _settings.Mouse.InteractiveSphereLayerMask, QueryTriggerInteraction.Ignore)
                 &&
-                hit.collider.TryGetComponent<IHoverable>(out var hoverable) && hoverable.IsActive)
+                hit.collider.TryGetComponent<IHoverable>(out var hoverable) && hoverable.CanHover)
             {
                 DisableCurrentHoveredObject();
                 
@@ -50,7 +50,7 @@ namespace Game.Controllers.Gameplay
 
         private void DisableCurrentHoveredObject()
         {
-            if (HoveredObject is { IsActive: true })
+            if (HoveredObject is { CanHover: true })
             {
                 HoveredObject.OnHoverStop();
                 HoveredObject.OutlineHandler.DisableOutline();

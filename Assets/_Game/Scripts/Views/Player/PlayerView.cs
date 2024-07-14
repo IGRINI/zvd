@@ -41,6 +41,8 @@ namespace Game.Views.Player
 
         private bool _isHeavyAttack;
 
+        private InventoryView _inventory;
+        
         protected override void Awake()
         {
             base.Awake();
@@ -48,7 +50,8 @@ namespace Game.Views.Player
             Transform = transform;
             CharacterController = GetComponent<CharacterController>();
             NetworkTransform = GetComponent<NetworkTransform>();
-
+            _inventory = GetComponent<InventoryView>();
+            
             MaxHealth = 100f;
 
             _sprintModifier = new SprintModifier(NetworkInfoController.Singleton.MoveSettings.SprintMultuplier);
@@ -255,6 +258,26 @@ namespace Game.Views.Player
                 AddModifier(_heavyAttackModifier);
             Animator.DOLayerWeight(AttackLayerIndex, AttackStartWeight, AttackWeightTransitionTime);
             Attack(attackHash);
+        }
+
+        [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable, RequireOwnership = true)]
+        private void TryToTakeRpc(ulong droppedItemViewId)
+        {
+            var itemObj = NetworkManager.SpawnManager.SpawnedObjects[droppedItemViewId];
+
+            if (Transform.position.CheckDistanceTo(itemObj.transform.position,
+                    NetworkInfoController.Singleton.InteractionSettings.Interaction.InteractionDistance))
+            {
+                   //TODO Take
+            }
+        }
+        
+        public void TryToTake(DroppedItemView itemView)
+        {
+            if (IsOwner && !IsServer)
+            {
+                TryToTakeRpc(itemView.NetworkObjectId);
+            }
         }
 
         public async void StartRespawn()

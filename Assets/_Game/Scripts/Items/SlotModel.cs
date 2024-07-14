@@ -1,9 +1,12 @@
+using Unity.Netcode;
+
 public class SlotModel
 {
-    public ItemModel ItemModel { get; private set; }
+    public NetworkVariable<ItemModel> Item => _item;
+    private readonly NetworkVariable<ItemModel> _item = new();
 
     public void SetItem(ItemModel itemModel)
     {
-        ItemModel = itemModel;
+        _item.Value = itemModel;
     }
 }

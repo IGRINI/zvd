@@ -3,7 +3,6 @@ using Game.Interactables;
 using Game.Utils;
 using Game.Views.Player;
 using UnityEngine;
-using Utils.Outline;
 
 namespace Game.Controllers.Gameplay
 {
@@ -52,8 +51,20 @@ namespace Game.Controllers.Gameplay
             if (_mouseObjectDetectionController.HoveredObject != null &&
                 _mouseObjectDetectionController.HoveredObject is IInteractable interactable and MonoBehaviour monoBehaviour)
             {
-                if(_player.Transform.position.CheckDistanceTo(monoBehaviour.transform.position, _settings.Interaction.InteractionDistance))
-                    interactable.Interact();
+                if(!interactable.CanInteract) return;
+                
+                if (_player.Transform.position.CheckDistanceTo(monoBehaviour.transform.position,
+                        _settings.Interaction.InteractionDistance))
+                {
+                    interactable.OnBeforeNetworkInteract();
+                    
+                    if (interactable is DroppedItemView droppedItemView)
+                    {
+                        _player.TryToTake(droppedItemView);
+                    }
+                    
+                    // interactable.OnSuccessfulInteract();
+                }
             }
         }
         

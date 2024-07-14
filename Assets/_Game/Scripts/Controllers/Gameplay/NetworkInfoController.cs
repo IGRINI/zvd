@@ -14,6 +14,7 @@ namespace Game.Controllers.Gameplay
 
         public readonly MouseLookController.Settings MouseLookSettings;
         public readonly PlayerMoveController.Settings MoveSettings;
+        public readonly InteractionController.Settings InteractionSettings;
         public readonly Settings UnitsSettings;
         
         private readonly MouseLookController _mouseLookController;
@@ -32,6 +33,7 @@ namespace Game.Controllers.Gameplay
             InteractionController interactionController,
             MouseLookController.Settings mouseLookSettings,
             PlayerMoveController.Settings moveSettings,
+            InteractionController.Settings interactionSettings,
             Settings unitsSettings,
             PlayerStatsContainer playerStatsContainer,
             PlayerInventoryContainer playerInventoryContainer)
@@ -44,6 +46,7 @@ namespace Game.Controllers.Gameplay
 
             MouseLookSettings = mouseLookSettings;
             MoveSettings = moveSettings;
+            InteractionSettings = interactionSettings;
             UnitsSettings = unitsSettings;
 
             _playerStatsContainer = playerStatsContainer;

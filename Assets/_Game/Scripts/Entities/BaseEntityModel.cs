@@ -21,7 +21,7 @@ namespace Game.Entities
             set => _outlineHandler = value;
         }
 
-        bool IHoverable.IsActive
+        bool IHoverable.CanHover
         {
             get => _isOutlineActive;
             set => _isOutlineActive = value;
@@ -81,7 +81,7 @@ namespace Game.Entities
         public IEnumerable<Modifier> Modifiers => _modifiers;
 
         private OutlineHandler _outlineHandler;
-        
+
         protected virtual void Awake()
         {
             InitializeAttributes();

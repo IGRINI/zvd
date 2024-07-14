@@ -4,7 +4,7 @@
     {
         public OutlineHandler OutlineHandler { get; protected set; }
         
-        public bool IsActive { get; protected set; }
+        public bool CanHover { get; protected set; }
         
         public void OnHoverStart()
         {

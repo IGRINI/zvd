@@ -5,6 +5,9 @@ namespace Game.Interactables
 {
     public interface IInteractable
     {
-        void Interact();
+        public bool CanInteract { get; protected set; }
+        
+        void OnBeforeNetworkInteract();
+        void OnSuccessfulInteract();
     }
 }
