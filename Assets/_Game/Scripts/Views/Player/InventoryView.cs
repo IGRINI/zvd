@@ -41,16 +41,25 @@ namespace Game.Views.Player
 
         public bool TryToAddItem(ItemModel itemModel)
         {
-            var freeSlot = _slots.FirstOrDefault(x => x.Item.Value == null);
+            var freeSlot = _slots.FirstOrDefault(x => x.Item == null);
             if (freeSlot != null)
             {
                 freeSlot.SetItem(itemModel);
-                SlotChanged?.Invoke(_slots.IndexOf(freeSlot), itemModel);
+                var slotIndex = _slots.IndexOf(freeSlot);
+                SlotChanged?.Invoke(slotIndex, itemModel);
+                UpdateSlotRpc(slotIndex, itemModel, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
                 return true;
             }
 
             return false;
         }
+
+        [Rpc(SendTo.SpecifiedInParams, Delivery = RpcDelivery.Reliable)]
+        private void UpdateSlotRpc(int slot, ItemModel itemModel, RpcParams rpcParams)
+        {
+            SlotChanged?.Invoke(slot, itemModel);
+        }
+        
     }
     
 }

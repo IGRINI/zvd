@@ -5,11 +5,11 @@ using UnityEngine;
 [Serializable]
 public class SlotModel
 {
-    public NetworkVariable<ItemModel> Item => _item;
-    [SerializeField] readonly NetworkVariable<ItemModel> _item = new();
+    public ItemModel Item => _item;
+    [SerializeField] ItemModel _item;
 
     public void SetItem(ItemModel itemModel)
     {
-        _item.Value = itemModel;
+        _item = itemModel;
     }
 }

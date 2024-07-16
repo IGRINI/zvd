@@ -57,20 +57,18 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        
-        //TODO Test
-        InitializeItem(new ItemModel()
-        {
-            Droppable =  true,
-            Name = "TEST ITEM",
-            ItemSpriteLink = "/"
-        });
-        
+
         _canInteract.Value = true;
         
         if (IsServer)
         {
-            
+            //TODO Test
+            InitializeItem(new ItemModel()
+            {
+                Droppable =  true,
+                Name = "TEST ITEM",
+                ItemSpriteLink = "/"
+            });
         }
         if (IsClient)
         {
