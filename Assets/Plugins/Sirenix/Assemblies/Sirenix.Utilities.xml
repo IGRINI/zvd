@@ -1336,6 +1336,13 @@
             <param name="rect">The original Rect.</param>
             <param name="pos">The position to expand the rect towards.</param>
         </member>
+        <member name="M:Sirenix.Utilities.RectExtensions.IsPlaceholder(UnityEngine.Rect)">
+            <summary>
+            Determines if an <see cref="T:UnityEngine.Rect"/> is a placeholder; usually (0, 0, 1, 1) in Layout.
+            </summary>
+            <param name="rect">The original <see cref="T:UnityEngine.Rect"/>.</param>
+            <returns><c>true</c> if the <see cref="T:UnityEngine.Rect"/> is equal to (0, 0, 0, 0) or (0, 0, 1, 1); otherwise <c>false</c>.</returns>
+        </member>
         <member name="T:Sirenix.Utilities.StringExtensions">
             <summary>
             String method extensions.
@@ -1735,7 +1742,8 @@
         </member>
         <member name="M:Sirenix.Utilities.TypeExtensions.HasDefaultConstructor(System.Type)">
             <summary>
-            Determines if a given <see cref="T:System.Type"/> has a default constructor.
+            <para>Determines if a given <see cref="T:System.Type"/> has a default constructor.</para>
+            <para>A type is considered to have a default constructor if: It is a string, if it is an array, if it is a value type or if it has a public parameterless constructor.</para>
             </summary>
             <param name="self">The <see cref="T:System.Type"/> to investigate.</param>
             <returns><c>true</c> if a default constructor has been found; otherwise <c>false</c>.</returns>

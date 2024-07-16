@@ -1109,9 +1109,14 @@
             A draggable zone for both Unity and non-unity objects.
             </summary>
         </member>
+        <member name="M:Sirenix.Utilities.Editor.DragAndDropUtilities.DragAndDropZone(UnityEngine.Rect,System.Object,System.Type,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            A draggable zone for both Unity and non-unity objects.
+            </summary>
+        </member>
         <member name="M:Sirenix.Utilities.Editor.DragAndDropUtilities.DropZone(UnityEngine.Rect,System.Object,System.Type,System.Boolean,System.Int32)">
             <summary>
-            A drop zone area for bot Unity and non-unity objects.
+            A drop zone area for both Unity and non-unity objects.
             </summary>
         </member>
         <member name="M:Sirenix.Utilities.Editor.DragAndDropUtilities.DropZone(UnityEngine.Rect,System.Object,System.Type,System.Int32)">
@@ -1582,6 +1587,11 @@
         <member name="M:Sirenix.Utilities.Editor.GUIHelper.RequestRepaint">
             <summary>
             Requests a repaint.
+            </summary>
+        </member>
+        <member name="M:Sirenix.Utilities.Editor.GUIHelper.SafeHandleUtilityRepaint">
+            <summary>
+            Calls <see cref="M:UnityEditor.HandleUtility.Repaint"/>, if the <see cref="P:Sirenix.Utilities.Editor.GUIHelper.CurrentWindow"/> is not NULL.
             </summary>
         </member>
         <member name="M:Sirenix.Utilities.Editor.GUIHelper.RequestRepaint(System.Int32)">
@@ -2606,6 +2616,10 @@
             <summary>
             Ends the page.
             </summary>
+        </member>
+        <member name="T:Sirenix.Utilities.Editor.Internal.InternalOdinEditorWrapper">
+            <summary> Temporary. </summary>
+            <warning>This implementation <b>will</b> get refactored.</warning>
         </member>
         <member name="T:Sirenix.Utilities.Editor.ObjectFieldAlignment">
             <summary>
@@ -8075,7 +8089,7 @@
             </summary>
             <param name="text">Text to display on the button.</param>
             <param name="size">The size of the button.</param>
-            <returns><c>true</c> when the user presses the button; otherwise <c>false</c>.</returns>
+            <returns><c>true</c> when the button is pressed; otherwise <c>false</c>.</returns>
         </member>
         <member name="T:Sirenix.Utilities.Editor.SirenixGUIStyles">
             <summary>
