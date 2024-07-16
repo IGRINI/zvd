@@ -51,7 +51,7 @@ namespace Game.Controllers.Gameplay
             if (_mouseObjectDetectionController.HoveredObject != null &&
                 _mouseObjectDetectionController.HoveredObject is IInteractable interactable and MonoBehaviour monoBehaviour)
             {
-                if(!interactable.CanInteract) return;
+                if(!interactable.CanInteract.Value) return;
                 
                 if (_player.Transform.position.CheckDistanceTo(monoBehaviour.transform.position,
                         _settings.Interaction.InteractionDistance))
@@ -62,8 +62,6 @@ namespace Game.Controllers.Gameplay
                     {
                         _player.TryToTake(droppedItemView);
                     }
-                    
-                    // interactable.OnSuccessfulInteract();
                 }
             }
         }

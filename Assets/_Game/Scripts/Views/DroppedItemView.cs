@@ -16,11 +16,11 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
         set => _isOutlineActive = value;
     }
     
-    bool IInteractable.CanInteract
+    NetworkVariable<bool> IInteractable.CanInteract
     {
         get => _canInteract;
-        set => _canInteract = value;
     }
+    private readonly NetworkVariable<bool> _canInteract = new();
     
     public NetworkVariable<ItemModel> Item => _item;
     private readonly NetworkVariable<ItemModel> _item = new();
@@ -28,8 +28,8 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
     
     private OutlineHandler _outlineHandler;
     private bool _isOutlineActive;
-    private bool _canInteract;
-
+    
+    
     private void Awake()
     {
         _outlineHandler = GetComponent<OutlineHandler>();
@@ -37,13 +37,16 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
 
     public void OnBeforeNetworkInteract()
     {
-        _canInteract = false;
+        
     }
 
     public void OnSuccessfulInteract()
     {
-        NetworkObject.Despawn();
-        Destroy(gameObject);
+        if (IsServer)
+        {
+            NetworkObject.Despawn();
+            Destroy(gameObject);
+        }
     }
     
     public void InitializeItem(ItemModel itemModel)
@@ -62,6 +65,8 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
             Name = "TEST ITEM",
             ItemSpriteLink = "/"
         });
+        
+        _canInteract.Value = true;
         
         if (IsServer)
         {

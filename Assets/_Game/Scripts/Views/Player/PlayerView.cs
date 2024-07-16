@@ -265,19 +265,20 @@ namespace Game.Views.Player
         {
             var itemObj = NetworkManager.SpawnManager.SpawnedObjects[droppedItemViewId];
 
-            if (Transform.position.CheckDistanceTo(itemObj.transform.position,
-                    NetworkInfoController.Singleton.InteractionSettings.Interaction.InteractionDistance))
+            if (itemObj.TryGetComponent<DroppedItemView>(out var droppedItemView))
             {
-                   //TODO Take
+                if (Transform.position.CheckDistanceTo(itemObj.transform.position,
+                        NetworkInfoController.Singleton.InteractionSettings.Interaction.InteractionDistance))
+                {
+                    if(_inventory.TryToAddItem(droppedItemView.Item.Value))
+                        droppedItemView.OnSuccessfulInteract();
+                }
             }
         }
         
         public void TryToTake(DroppedItemView itemView)
         {
-            if (IsOwner && !IsServer)
-            {
-                TryToTakeRpc(itemView.NetworkObjectId);
-            }
+            TryToTakeRpc(itemView.NetworkObjectId);
         }
 
         public async void StartRespawn()

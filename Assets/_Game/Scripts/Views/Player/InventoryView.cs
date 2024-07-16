@@ -1,6 +1,9 @@
 using System;
+using System.Linq;
 using Game.Controllers.Gameplay;
+using ModestTree;
 using Unity.Netcode;
+using UnityEngine;
 
 
 namespace Game.Views.Player
@@ -9,7 +12,7 @@ namespace Game.Views.Player
     {
         public event Action<int, ItemModel> SlotChanged;
         
-        private SlotModel[] _slots;
+        [SerializeField] private SlotModel[] _slots;
         
         public override void OnNetworkSpawn()
         {
@@ -34,6 +37,19 @@ namespace Game.Views.Player
             base.OnNetworkDespawn();
         
             NetworkInfoController.Singleton.UnregisterInventory(this, IsOwner);
+        }
+
+        public bool TryToAddItem(ItemModel itemModel)
+        {
+            var freeSlot = _slots.FirstOrDefault(x => x.Item.Value == null);
+            if (freeSlot != null)
+            {
+                freeSlot.SetItem(itemModel);
+                SlotChanged?.Invoke(_slots.IndexOf(freeSlot), itemModel);
+                return true;
+            }
+
+            return false;
         }
     }
     
