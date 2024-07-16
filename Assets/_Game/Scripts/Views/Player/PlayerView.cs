@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using Cinemachine;
+using Cysharp.Threading.Tasks;
 using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Entities.Modifiers;
@@ -21,7 +22,9 @@ namespace Game.Views.Player
         public Transform Body => _body;
         public CharacterController CharacterController { get; private set; }
         [SerializeField] private Camera _faceCamera;
+        [SerializeField] private CinemachineVirtualCamera _virtualCamera;
         public Camera FaceCamera => _faceCamera;
+        public CinemachineVirtualCamera VirtualCamera => _virtualCamera;
 
         private Vector2 _previousMoveInput;
         private Vector2 _currentMoveInput;

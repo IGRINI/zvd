@@ -48,6 +48,7 @@ namespace Game.Utils.PlayerCharInfo
             OnAttributesChanged(_player.CurrentAttributes.Value, _player.CurrentAttributes.Value);
 
             _player.FaceCamera.gameObject.SetActive(true);
+            _player.VirtualCamera.gameObject.SetActive(true);
             _faceCamera.texture = _player.FaceCamera.targetTexture;
         }
 
@@ -95,6 +96,7 @@ namespace Game.Utils.PlayerCharInfo
                 _player.CurrentAttributes.OnValueChanged -= OnAttributesChanged;
                 
                 _player.FaceCamera.gameObject.SetActive(false);
+                _player.VirtualCamera.gameObject.SetActive(false);
                 _faceCamera.texture = null;
                 
                 _player = null;

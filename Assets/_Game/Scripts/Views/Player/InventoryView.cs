@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Game.Controllers.Gameplay;
+using Game.Entities;
 using ModestTree;
+using Steamworks.ServerList;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -61,6 +64,65 @@ namespace Game.Views.Player
         }
         
     }
-    
+
+
+    // class ItemDatabase
+    // {
+    //     public Dictionary<string, SpellExecuter> Items = new()
+    //     {
+    //         {"item_test", new SpellExecuter((item, caster) =>
+    //         {
+    //             
+    //         })}
+    //     };
+    // }
+    //
+    // class SpellExecuter
+    // {
+    //     public CastType CastType;
+    //     
+    //     private Action<SpellExecuter, BaseEntityModel> OnCast;
+    //     private Action<SpellExecuter, BaseEntityModel, Vector3> OnCastPosition;
+    //
+    //     public SpellExecuter(Action<SpellExecuter, BaseEntityModel> onCast)
+    //     {
+    //         OnCast = onCast;
+    //         CastType = CastType.Immediate;
+    //     }
+    //
+    //     public SpellExecuter(Action<SpellExecuter, BaseEntityModel, Vector3> onCastPosition)
+    //     {
+    //         OnCastPosition = onCastPosition;
+    //         CastType = CastType.Position;
+    //     }
+    //
+    //     public void Cast(BaseEntityModel caster)
+    //     {
+    //         OnCast?.Invoke(this, caster);
+    //     }
+    //
+    //     public void CastOnPosition(BaseEntityModel caster, Vector3 position)
+    //     {
+    //         OnCastPosition?.Invoke(this, caster, position);
+    //     }
+    // }
+    //
+    // class ItemUser
+    // {
+    //     public void TryUse(SpellExecuter item)
+    //     {
+    //         switch (item.CastType)
+    //         {
+    //             
+    //         }
+    //     }
+    // }
+    //
+    // public enum CastType
+    // {
+    //     Immediate,
+    //     Position,
+    //     Target
+    // }
 }
 
