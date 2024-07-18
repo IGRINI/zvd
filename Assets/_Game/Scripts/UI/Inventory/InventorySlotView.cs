@@ -41,6 +41,6 @@ public class InventorySlotView : ItemSlotView
     {
         _itemObject.SetActive(false);
         
-        _button.onClick.RemoveListener(OnItemClick);
+        _button.onClick.RemoveAllListeners();
     }
 }
