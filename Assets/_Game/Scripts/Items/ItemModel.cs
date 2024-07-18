@@ -1,20 +1,38 @@
-using System;
-using Unity.Netcode;
-using UnityEngine;
+﻿using System;
+using Game.Abilities;
+using Game.Abilities.Items;
 
-[Serializable]
-public class ItemModel : INetworkSerializable
+namespace Game.Items
 {
-    public string Name;
-
-    public bool Droppable;
-
-    public string ItemSpriteLink;
-
-    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    public class ItemModel
     {
-        serializer.SerializeValue(ref Name);
-        serializer.SerializeValue(ref Droppable);
-        serializer.SerializeValue(ref ItemSpriteLink);
+        public ItemNetworkData NetworkData { get; private set; }
+        public BaseAbility Ability { get; private set; }
+
+        public static ItemModel Create<T>(string name, bool droppable = true, string itemSpriteName = "") where T : BaseItemAbility, new()
+        {
+            var ability = new T();
+            var item = new ItemModel
+            {
+                NetworkData = new ItemNetworkData(name, droppable, itemSpriteName, ability.AbilityBehaviour),
+            };
+            ability.SetItem(item);
+            item.Ability = ability;
+            return item;
+        }
+
+        public ItemModel CloneFromReference()
+        {
+            var clonedItem = (ItemModel)MemberwiseClone();
+            clonedItem.NetworkData = new ItemNetworkData(NetworkData.Name, NetworkData.Droppable, NetworkData.ItemSpriteName, NetworkData.AbilityBehaviour);
+            
+            if (Ability != null)
+            {
+                var clonedAbility = (BaseAbility)Activator.CreateInstance(Ability.GetType(), clonedItem);
+                clonedItem.Ability = clonedAbility;
+            }
+
+            return clonedItem;
+        }
     }
 }

@@ -57,8 +57,6 @@ namespace Game.Views.Player
             
             MaxHealth = 100f;
 
-            _sprintModifier = new SprintModifier(NetworkInfoController.Singleton.MoveSettings.SprintMultuplier);
-
             AnimationEventHandler.OnAnimationEnded += OnAnimationEnded;
         }
 
@@ -211,11 +209,13 @@ namespace Game.Views.Player
         {
             if (sprint)
             {
-                AddModifier(_sprintModifier);
+                _sprintModifier = ModifiersManager.AddModifier(
+                    new SprintModifier(NetworkInfoController.Singleton.MoveSettings.SprintMultuplier), this);
             }
             else
             {
-                RemoveModifiers<SprintModifier>();
+                ModifiersManager.RemoveModifier(_sprintModifier);
+                _sprintModifier = null;
             }
 
             if (IsOwner && !IsServer)
@@ -257,23 +257,25 @@ namespace Game.Views.Player
         public void Attack(bool isHeavyAttack)
         {
             var attackHash = isHeavyAttack ? HeavyAttackAnimation : AttackAnimation;
-            if (isHeavyAttack)
-                AddModifier(_heavyAttackModifier);
             Animator.DOLayerWeight(AttackLayerIndex, AttackStartWeight, AttackWeightTransitionTime);
             Attack(attackHash);
         }
 
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable, RequireOwnership = true)]
-        private void TryToTakeRpc(ulong droppedItemViewId)
+        private void TryToTakeRpc(NetworkObjectReference droppedItem, RpcParams rpcParams = default)
         {
-            var itemObj = NetworkManager.SpawnManager.SpawnedObjects[droppedItemViewId];
+            if(!droppedItem.TryGet(out var itemObj))
+            {
+                Debug.LogError($"Client with id: {rpcParams.Receive.SenderClientId}; tried to take null item NetworkObject");
+                return;
+            }
 
             if (itemObj.TryGetComponent<DroppedItemView>(out var droppedItemView))
             {
                 if (Transform.position.CheckDistanceTo(itemObj.transform.position,
                         NetworkInfoController.Singleton.InteractionSettings.Interaction.InteractionDistance))
                 {
-                    if(_inventory.TryToAddItem(droppedItemView.Item.Value))
+                    if(_inventory.TryToAddItem(droppedItemView.Item))
                         droppedItemView.OnSuccessfulInteract();
                 }
             }
@@ -281,7 +283,7 @@ namespace Game.Views.Player
         
         public void TryToTake(DroppedItemView itemView)
         {
-            TryToTakeRpc(itemView.NetworkObjectId);
+            TryToTakeRpc(itemView.NetworkObject);
         }
 
         public async void StartRespawn()

@@ -100,6 +100,7 @@ namespace Game.Entities
         }
 
         public void AddModifier(Modifier modifier) => _modifiers.Add(modifier);
+        public void RemoveModifier(Modifier modifier) => _modifiers.Remove(modifier);
         public void RemoveModifiers<T>() where T : Modifier => _modifiers.RemoveAll(modifier => modifier is T);
 
         public float GetSpeedMultiplier()
@@ -238,6 +239,12 @@ namespace Game.Entities
         {
             if (!IsServer || _invulnerable || damage < 0) return;
             SetHealth(Health.Value - damage);
+        }
+        
+        public void Heal(float heal)
+        {
+            if (!IsServer || heal < 0) return;
+            SetHealth(Health.Value + heal);
         }
 
         #endregion

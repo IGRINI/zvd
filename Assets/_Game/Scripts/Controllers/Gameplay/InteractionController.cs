@@ -48,8 +48,7 @@ namespace Game.Controllers.Gameplay
             if(!_isInteractiveEnabled) return;
             
             //TODO Something better then MonoBehaviour check
-            if (_mouseObjectDetectionController.HoveredObject != null &&
-                _mouseObjectDetectionController.HoveredObject is IInteractable interactable and MonoBehaviour monoBehaviour)
+            if (_mouseObjectDetectionController.HoveredObject is IInteractable interactable and MonoBehaviour monoBehaviour)
             {
                 if(!interactable.CanInteract.Value) return;
                 

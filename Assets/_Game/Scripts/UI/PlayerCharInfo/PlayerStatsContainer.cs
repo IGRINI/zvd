@@ -4,7 +4,6 @@ using Game.Entities;
 using Game.Views.Player;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Game.Utils.PlayerCharInfo

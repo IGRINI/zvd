@@ -1,4 +1,5 @@
 
+using Game.Items;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,11 +11,11 @@ public class InventorySlotView : ItemSlotView
     [SerializeField] private Image _itemImage;
     [SerializeField] private TMP_Text _itemName;
     
-    public override void SetItem(ItemModel itemModel)
+    public override void SetItem(ItemNetworkData itemNetworkData)
     {
-        ItemModel = itemModel;
+        ItemNetworkData = itemNetworkData;
         // _itemImage.sprite = itemModel.ItemSprite;
-        _itemName.SetText(itemModel.Name);
+        _itemName.SetText(itemNetworkData.Name);
         _itemObject.SetActive(true);
     }
 

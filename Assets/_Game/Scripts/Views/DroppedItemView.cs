@@ -1,4 +1,5 @@
 using Game.Interactables;
+using Game.Items;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -15,16 +16,16 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
         get => _isOutlineActive;
         set => _isOutlineActive = value;
     }
+
+    NetworkVariable<bool> IInteractable.CanInteract => _canInteract;
     
-    NetworkVariable<bool> IInteractable.CanInteract
-    {
-        get => _canInteract;
-    }
     private readonly NetworkVariable<bool> _canInteract = new();
     
-    public NetworkVariable<ItemModel> Item => _item;
-    private readonly NetworkVariable<ItemModel> _item = new();
+    public NetworkVariable<ItemNetworkData> ItemNetworkData => _itemNetworkData;
+    private readonly NetworkVariable<ItemNetworkData> _itemNetworkData = new();
 
+    public ItemModel Item => _item;
+    private ItemModel _item;
     
     private OutlineHandler _outlineHandler;
     private bool _isOutlineActive;
@@ -49,9 +50,10 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
         }
     }
     
-    public void InitializeItem(ItemModel itemModel)
+    public void SetItem(ItemModel item)
     {
-        _item.Value = itemModel;
+        _item = item;
+        _itemNetworkData.Value = _item.NetworkData;
     }
 
     public override void OnNetworkSpawn()
@@ -63,12 +65,7 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
         if (IsServer)
         {
             //TODO Test
-            InitializeItem(new ItemModel()
-            {
-                Droppable =  true,
-                Name = "TEST ITEM",
-                ItemSpriteLink = "/"
-            });
+            SetItem(ItemDatabase.CreateItemInstance("Healing Potion"));
         }
         if (IsClient)
         {

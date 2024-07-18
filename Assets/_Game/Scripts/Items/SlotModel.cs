@@ -2,14 +2,17 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-[Serializable]
-public class SlotModel
+namespace Game.Items
 {
-    public ItemModel Item => _item;
-    [SerializeField] ItemModel _item;
-
-    public void SetItem(ItemModel itemModel)
+    [Serializable]
+    public class SlotModel
     {
-        _item = itemModel;
+        public ItemModel Item => _item;
+        private ItemModel _item;
+
+        public void SetItem(ItemModel itemModel)
+        {
+            _item = itemModel;
+        }
     }
 }

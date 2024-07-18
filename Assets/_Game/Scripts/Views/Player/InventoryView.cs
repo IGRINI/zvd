@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Controllers.Gameplay;
 using Game.Entities;
+using Game.Items;
 using ModestTree;
 using Steamworks.ServerList;
 using Unity.Netcode;
@@ -13,7 +14,7 @@ namespace Game.Views.Player
 {
     public class InventoryView : NetworkBehaviour
     {
-        public event Action<int, ItemModel> SlotChanged;
+        public event Action<int, ItemNetworkData> SlotChanged;
         
         [SerializeField] private SlotModel[] _slots;
         
@@ -42,15 +43,15 @@ namespace Game.Views.Player
             NetworkInfoController.Singleton.UnregisterInventory(this, IsOwner);
         }
 
-        public bool TryToAddItem(ItemModel itemModel)
+        public bool TryToAddItem(ItemModel item)
         {
             var freeSlot = _slots.FirstOrDefault(x => x.Item == null);
             if (freeSlot != null)
             {
-                freeSlot.SetItem(itemModel);
+                freeSlot.SetItem(item);
                 var slotIndex = _slots.IndexOf(freeSlot);
-                SlotChanged?.Invoke(slotIndex, itemModel);
-                UpdateSlotRpc(slotIndex, itemModel, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+                SlotChanged?.Invoke(slotIndex, item.NetworkData);
+                UpdateSlotRpc(slotIndex, item.NetworkData, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
                 return true;
             }
 
@@ -58,9 +59,9 @@ namespace Game.Views.Player
         }
 
         [Rpc(SendTo.SpecifiedInParams, Delivery = RpcDelivery.Reliable)]
-        private void UpdateSlotRpc(int slot, ItemModel itemModel, RpcParams rpcParams)
+        private void UpdateSlotRpc(int slot, ItemNetworkData itemNetworkData, RpcParams rpcParams)
         {
-            SlotChanged?.Invoke(slot, itemModel);
+            SlotChanged?.Invoke(slot, itemNetworkData);
         }
         
     }

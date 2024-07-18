@@ -1,6 +1,7 @@
 ﻿using Cinemachine;
 using Game.Controllers.Gameplay;
 using Game.Entities;
+using Game.Entities.Modifiers;
 using Game.PrefabsActions;
 using Game.Utils.HealthBars;
 using Game.Utils.PlayerCharInfo;
@@ -43,6 +44,7 @@ namespace Game.Installers
             BindSingle<HealthBarController>();
             BindSingle<MouseObjectDetectionController>();
             BindSingle<InteractionController>();
+            BindSingle<ModifiersManager>();
             // BindSingle<HandsController>();
             //
             // Container.Bind<PlayerCreator>().AsSingle().NonLazy();

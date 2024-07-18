@@ -39,7 +39,7 @@ namespace Game.Controllers.Gameplay
         private void AttackPerformed(bool isHeavyAttack)
         {
             if(!_isMouseLookEnabled) return;
-            _player.Attack(isHeavyAttack);
+            _player.Attack(false);
         }
 
         public void SetPlayerView(PlayerView playerView)

@@ -8,8 +8,8 @@ namespace Game.Interactables
     {
         public NetworkVariable<bool> CanInteract { get; }
         
-        void OnBeforeNetworkInteract();
+        public void OnBeforeNetworkInteract();
         
-        void OnSuccessfulInteract();
+        public void OnSuccessfulInteract();
     }
 }

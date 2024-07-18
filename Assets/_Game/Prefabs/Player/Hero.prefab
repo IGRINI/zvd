@@ -267,6 +267,7 @@ MonoBehaviour:
   _body: {fileID: 2954489515079636551}
   _currentHealth: 0
   _faceCamera: {fileID: 9104942972097055702}
+  _virtualCamera: {fileID: 7476549234789633918}
   _isMoveOnServer: 0
 --- !u!143 &6909182062709583981
 CharacterController:

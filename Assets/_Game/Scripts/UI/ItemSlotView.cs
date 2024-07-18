@@ -1,10 +1,11 @@
+using Game.Items;
 using UnityEngine;
 
 public abstract class ItemSlotView : MonoBehaviour
 {
-    public ItemModel ItemModel { get; protected set; }
+    public ItemNetworkData ItemNetworkData { get; protected set; }
     
-    public abstract void SetItem(ItemModel itemModel);
+    public abstract void SetItem(ItemNetworkData itemNetworkData);
     
     public abstract void RemoveItem();
 }

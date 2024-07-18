@@ -1,4 +1,5 @@
 
+using Game.Items;
 using Game.Views.Player;
 using UnityEngine;
 
@@ -8,9 +9,9 @@ public class PlayerInventoryContainer : MonoBehaviour
         
     private InventoryView _playerInventory;
         
-    public void UpdateSlot(int slot, ItemModel itemModel)
+    public void UpdateSlot(int slot, ItemNetworkData itemNetworkData)
     { 
-        _inventorySlots[slot].SetItem(itemModel);
+        _inventorySlots[slot].SetItem(itemNetworkData);
     }
         
     public void SetPlayerInventory(InventoryView playerInventory)
