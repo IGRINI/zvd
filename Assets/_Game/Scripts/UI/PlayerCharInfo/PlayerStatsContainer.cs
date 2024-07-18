@@ -74,7 +74,7 @@ namespace Game.Utils.PlayerCharInfo
             var tween = DOTween.Sequence()
                 .Join(_experienceText.DOTextValue(previousExperience, experience, _experienceAnimationTime,
                     $"{{0}}/{NetworkInfoController.Singleton.GetExperienceForLevel(_player.Level.Value)}"))
-                .Join(_experienceImage.DOFillAmount((float)experience / _player.ExperienceToNextLevel,
+                .Join(_experienceImage.DOFillAmount((float)experience / NetworkInfoController.Singleton.GetExperienceForLevel(_player.Level.Value),
                     _experienceAnimationTime));
             _experienceTween = tween;
         }

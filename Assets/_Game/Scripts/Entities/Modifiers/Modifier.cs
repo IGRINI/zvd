@@ -8,7 +8,6 @@ namespace Game.Entities.Modifiers
         {
             SpeedMultiplier,
             Speed,
-            JumpForce,
             AttackDamage,
             AttackSpeed
         }
