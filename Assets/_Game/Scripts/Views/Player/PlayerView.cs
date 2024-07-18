@@ -4,6 +4,7 @@ using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Entities.Modifiers;
 using Game.Utils;
+using ReadOnlyAttribute;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace Game.Views.Player
         private SprintModifier _sprintModifier;
 
         [SerializeField] private Transform _body;
-        [SerializeField] [Sirenix.OdinInspector.ReadOnly] private float _currentHealth;
+        [SerializeField] [ReadOnlyInspector] private float _currentHealth;
         public Transform Transform { get; private set; }
         public NetworkTransform NetworkTransform { get; private set; }
         public Transform Body => _body;
@@ -29,7 +30,7 @@ namespace Game.Views.Player
         private Vector2 _previousMoveInput;
         private Vector2 _currentMoveInput;
         private Quaternion _targetRotation;
-        [SerializeField] [Sirenix.OdinInspector.ReadOnly] private bool _isMoveOnServer;
+        [SerializeField] [ReadOnlyInspector] private bool _isMoveOnServer;
         private float _yForce;
         private static readonly int AttackAnimation = Animator.StringToHash("Attack");
         private static readonly int HeavyAttackAnimation = Animator.StringToHash("HeavyAttack");
@@ -44,7 +45,7 @@ namespace Game.Views.Player
 
         private bool _isHeavyAttack;
 
-        private InventoryView _inventory;
+        private EntityInventory _entityInventory;
         
         protected override void Awake()
         {
@@ -53,7 +54,7 @@ namespace Game.Views.Player
             Transform = transform;
             CharacterController = GetComponent<CharacterController>();
             NetworkTransform = GetComponent<NetworkTransform>();
-            _inventory = GetComponent<InventoryView>();
+            _entityInventory = GetComponent<EntityInventory>();
             
             MaxHealth = 100f;
 
@@ -275,7 +276,7 @@ namespace Game.Views.Player
                 if (Transform.position.CheckDistanceTo(itemObj.transform.position,
                         NetworkInfoController.Singleton.InteractionSettings.Interaction.InteractionDistance))
                 {
-                    if(_inventory.TryToAddItem(droppedItemView.Item))
+                    if(_entityInventory.TryToAddItem(droppedItemView.Item))
                         droppedItemView.OnSuccessfulInteract();
                 }
             }

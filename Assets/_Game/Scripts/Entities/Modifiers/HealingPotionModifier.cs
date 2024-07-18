@@ -1,4 +1,6 @@
-﻿namespace Game.Entities.Modifiers
+﻿using UnityEngine;
+
+namespace Game.Entities.Modifiers
 {
     public class HealingPotionModifier : Modifier
     {

@@ -1,38 +1,45 @@
-
+using Game.Entities;
 using Game.Items;
-using Game.Views.Player;
 using UnityEngine;
 
 public class PlayerInventoryContainer : MonoBehaviour
 {
     [SerializeField] private InventorySlotView[] _inventorySlots;
         
-    private InventoryView _playerInventory;
-        
+    private EntityInventory _playerEntityInventory;
+
+    private void Awake()
+    {
+        for (byte i = 0; i < _inventorySlots.Length; i++)
+        {
+            _inventorySlots[i].SetItemSlot(i);
+        }
+    }
+
     public void UpdateSlot(int slot, ItemNetworkData itemNetworkData)
     { 
         _inventorySlots[slot].SetItem(itemNetworkData);
     }
-        
-    public void SetPlayerInventory(InventoryView playerInventory)
+    
+    public void SetPlayerInventory(EntityInventory playerEntityInventory)
     {
-        _playerInventory = playerInventory;
-        _playerInventory.SlotChanged += UpdateSlot;
+        _playerEntityInventory = playerEntityInventory;
+        _playerEntityInventory.SlotChanged += UpdateSlot;
     }
 
-    public void UnregisterInventory(InventoryView playerInventory)
+    public void UnregisterInventory(EntityInventory playerEntityInventory)
     {
-        if(_playerInventory != null)
+        if(_playerEntityInventory != null)
         {
-            _playerInventory.SlotChanged -= UpdateSlot;
-            _playerInventory = null;
+            _playerEntityInventory.SlotChanged -= UpdateSlot;
+            _playerEntityInventory = null;
 
             foreach (var slot in _inventorySlots)
             {
                 slot.RemoveItem();   
             }
 
-            _playerInventory = null;
+            _playerEntityInventory = null;
         }
     }
 }

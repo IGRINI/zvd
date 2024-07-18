@@ -27,9 +27,6 @@ namespace Game.Controllers.Gameplay
         {
             var ray = _camera.ScreenPointToRay(_mouseController.MousePosition);
 
-            // if (Physics.SphereCast(ray.origin, _settings.Mouse.InteractiveRayRadius, _camera.transform.forward, out var hit, float.PositiveInfinity, _settings.Mouse.InteractiveSphereLayerMask)
-            //     &&
-            //     hit.collider.TryGetComponent<IHoverable>(out var hoverable))
             if (Physics.Raycast(ray, out var hit, float.PositiveInfinity, _settings.Mouse.InteractiveSphereLayerMask, QueryTriggerInteraction.Ignore)
                 &&
                 hit.collider.TryGetComponent<IHoverable>(out var hoverable) && hoverable.CanHover)

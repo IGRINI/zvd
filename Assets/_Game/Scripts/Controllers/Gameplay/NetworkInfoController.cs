@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Game.Entities;
 using Game.Utils.PlayerCharInfo;
 using Game.Views.Player;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -27,6 +28,8 @@ namespace Game.Controllers.Gameplay
         private PlayerView _playerView;
 
         public PlayerView PlayerView => _playerView;
+
+        private Dictionary<ulong, PlayerView> _players = new();
 
         private NetworkInfoController(MouseLookController mouseLookController,
             PlayerMoveController playerMoveController,
@@ -53,19 +56,24 @@ namespace Game.Controllers.Gameplay
             _playerInventoryContainer = playerInventoryContainer;
         }
 
-        public void RegisterInventory(InventoryView inventoryView, bool isOwner)
+        public PlayerView GetPlayerById(ulong playerId)
+        {
+            return _players[playerId];
+        }
+
+        public void RegisterInventory(EntityInventory entityInventory, bool isOwner)
         {
             if (isOwner)
             {
-                _playerInventoryContainer.SetPlayerInventory(inventoryView);
+                _playerInventoryContainer.SetPlayerInventory(entityInventory);
             }
         }
 
-        public void UnregisterInventory(InventoryView inventoryView, bool isOwner)
+        public void UnregisterInventory(EntityInventory entityInventory, bool isOwner)
         {
             if (isOwner)
             {
-                _playerInventoryContainer.UnregisterInventory(inventoryView);
+                _playerInventoryContainer.UnregisterInventory(entityInventory);
             }
         }
 
@@ -81,6 +89,11 @@ namespace Game.Controllers.Gameplay
 
                 _playerView = playerView;
             }
+
+            if (NetworkManager.Singleton.IsServer)
+            {
+                _players.Add(playerView.OwnerClientId, _playerView);
+            }
         }
 
         public void UnregisterPlayer(PlayerView playerView, bool isOwner)
@@ -93,6 +106,11 @@ namespace Game.Controllers.Gameplay
                 _playerStatsContainer.UnregisterPlayer(playerView);
 
                 _playerView = null;
+            }
+
+            if (NetworkManager.Singleton.IsServer)
+            {
+                _players.Remove(playerView.OwnerClientId);
             }
         }
         
