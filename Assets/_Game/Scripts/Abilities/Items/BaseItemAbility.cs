@@ -6,7 +6,7 @@ namespace Game.Abilities.Items
     {
         protected ItemModel Item;
 
-        public BaseItemAbility()
+        protected BaseItemAbility()
         {
             AbilityBehaviour |= EAbilityBehaviour.Item;
         }

@@ -28,8 +28,9 @@ namespace Game.Items
             
             if (Ability != null)
             {
-                var clonedAbility = (BaseAbility)Activator.CreateInstance(Ability.GetType(), clonedItem);
+                var clonedAbility = (BaseItemAbility)Activator.CreateInstance(Ability.GetType());
                 clonedItem.Ability = clonedAbility;
+                clonedAbility.SetItem(clonedItem);
             }
 
             return clonedItem;

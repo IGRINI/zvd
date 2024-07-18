@@ -7,8 +7,6 @@ namespace Game.Abilities.Items
     {
         public override EAbilityBehaviour AbilityBehaviour { get; protected set; } = EAbilityBehaviour.NoTarget;
         
-        public HealingPotionItem(){}
-        
         protected override void OnSpellStart()
         {
             ModifiersManager.AddModifier(new HealingPotionModifier(5), GetCaster(), duration: 5f);

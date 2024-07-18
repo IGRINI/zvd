@@ -13,11 +13,6 @@ namespace Game.Abilities
         private Vector3? _point;
         private BaseEntityModel _target;
 
-        public BaseAbility()
-        {
-            
-        }
-
         public void SetOwner(BaseEntityModel owner)
         {
             _owner = owner;
