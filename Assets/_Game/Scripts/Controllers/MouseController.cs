@@ -3,12 +3,13 @@ using Game.Common;
 using Game.Player;
 using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using Zenject;
 
 namespace Game.Controllers
 {
-    public class MouseController : IDisposable
+    public class MouseController : ITickable, IDisposable
     {
         private readonly InputActionAsset _inputAsset;
         
@@ -21,6 +22,8 @@ namespace Game.Controllers
         public Action<Vector2> MouseDeltaChanged;
         public Action<bool> AttackPerformed;
         public Vector2 MousePosition => _mousePosition.ReadValue<Vector2>();
+        
+        private bool _isPointerOverUI;
 
         public MouseController(InputActionAsset inputAsset)
         {
@@ -41,12 +44,18 @@ namespace Game.Controllers
 
         private void OnAttackPerformed(InputAction.CallbackContext context)
         {
-            AttackPerformed?.Invoke(false);
+            if (!_isPointerOverUI)
+            {
+                AttackPerformed?.Invoke(false);
+            }
         }
 
         private void OnHeavyAttackPerformed(InputAction.CallbackContext context)
         {
-            AttackPerformed?.Invoke(true);
+            if (!_isPointerOverUI)
+            {
+                AttackPerformed?.Invoke(true);
+            }
         }
 
         private void OnMouseDeltaPerformed(InputAction.CallbackContext context)
@@ -58,6 +67,11 @@ namespace Game.Controllers
         {
             _mouseDelta.performed -= OnMouseDeltaPerformed;
             _attack.performed -= OnAttackPerformed;
+        }
+
+        public void Tick()
+        {
+            _isPointerOverUI = EventSystem.current.IsPointerOverGameObject();
         }
     }
 }

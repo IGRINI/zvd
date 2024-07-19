@@ -10,7 +10,8 @@ public class InventorySlotView : ItemSlotView
     //TODO TEMP
     [SerializeField] private GameObject _itemObject;
     [SerializeField] private Image _itemImage;
-    [SerializeField] private TMP_Text _itemName;
+    [SerializeField] private TextMeshProUGUI _itemName;
+    [SerializeField] private TextMeshProUGUI _charges;
     [SerializeField] private Button _button;
 
     private byte _slotNum;
@@ -22,12 +23,26 @@ public class InventorySlotView : ItemSlotView
     
     public override void SetItem(ItemNetworkData itemNetworkData)
     {
+        _button.onClick.RemoveAllListeners();
+        if (itemNetworkData == null)
+        {
+            _itemName.SetText("");
+            _itemObject.SetActive(false);
+            return;
+        }
+        
         ItemNetworkData = itemNetworkData;
         // _itemImage.sprite = itemModel.ItemSprite;
         _itemName.SetText(itemNetworkData.Name);
-        _itemObject.SetActive(true);
+        if(ItemNetworkData.HasCharges)
+        {
+            _charges.gameObject.SetActive(true);
+            _charges.SetText($"{ItemNetworkData.Charges}");
+        }
+        else
+            _charges.gameObject.SetActive(false);
         
-        _button.onClick.RemoveAllListeners();
+        _itemObject.SetActive(true);
         
         _button.onClick.AddListener(OnItemClick);
     }

@@ -1,4 +1,5 @@
-﻿using Game.Entities;
+﻿using System;
+using Game.Entities;
 using Game.Items;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ namespace Game.Abilities
 
         private Vector3? _point;
         private BaseEntityModel _target;
+
+        public event Action OnSpellFinished;
 
         public void SetOwner(BaseEntityModel owner)
         {
@@ -32,8 +35,14 @@ namespace Game.Abilities
             _target = target;
             
             OnSpellStart();
+            OnSpellFinished?.Invoke();
         }
 
         protected abstract void OnSpellStart();
+
+        protected void ClearEvents()
+        {
+            OnSpellFinished = null;
+        }
     }
 }

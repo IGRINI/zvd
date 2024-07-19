@@ -3,18 +3,45 @@ using Game.Abilities.Items;
 using Game.Entities;
 using Unity.Netcode;
 using UnityEngine;
+using Zenject;
 
 namespace Game.Controllers.Gameplay
 {
     public class AbilitiesController : NetworkBehaviour
     {
+        [Inject] private readonly KeyboardController _keyboardController;
+        
         public static AbilitiesController Singleton { get; private set; }
 
+        private void Awake()
+        {
+            Singleton = this;
+        }
+        
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
             
-            Singleton = this;
+            _keyboardController.KeyPerformed += OnKeyPerformed;
+        }
+        
+        private void OnKeyPerformed(KeyAction keyAction)
+        {
+            byte slot = keyAction switch
+            {
+                KeyAction.ItemSlot0 => 0,
+                KeyAction.ItemSlot1 => 1,
+                KeyAction.ItemSlot2 => 2,
+                KeyAction.ItemSlot3 => 3,
+                KeyAction.ItemSlot4 => 4,
+                KeyAction.ItemSlot5 => 5,
+                _ => 255
+            };
+
+            if (slot != 255)
+            {
+                UseItemRpc(slot);
+            }
         }
         
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable)]

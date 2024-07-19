@@ -57,8 +57,8 @@ namespace Game.Entities
             if (freeSlot != null)
             {
                 freeSlot.SetItem(item);
-                var slotIndex = _slots.IndexOf(freeSlot);
-                item.Ability?.SetOwner(Owner);
+                var slotIndex = GetSlotIndex(freeSlot);
+                item.SetOwner(Owner);
                 SlotChanged?.Invoke(slotIndex, item.NetworkData);
                 UpdateSlotRpc(slotIndex, item.NetworkData, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
                 return true;
@@ -72,11 +72,59 @@ namespace Game.Entities
             return _slots[slot].Item;
         }
 
+        public byte GetSlotIndex(SlotModel slot)
+        {
+            return (byte)_slots.IndexOf(slot);
+        }
+
+        public byte? GetItemSlotIndex(ItemModel item)
+        {
+            for (byte i = 0; i < _slots.Length; i++)
+            {
+                if (_slots[i].Item == item)
+                {
+                    return i;
+                }
+            }
+            return null;
+        }
+
+        public void RemoveItemFromSlot(byte slot)
+        {
+            var item = _slots[slot].Item;
+            if (item != null)
+            {
+                _slots[slot].SetItem(null);
+                SlotChanged?.Invoke(slot, null);
+                UpdateSlotRpc(slot, null, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+            }
+        }
+
+        public void UpdateCharges(byte slot, int charges)
+        {
+            if (_slots[slot].Item != null)
+            {
+                _slots[slot].Item.NetworkData.UpdateCharges(charges);
+                SlotChanged?.Invoke(slot, _slots[slot].Item.NetworkData);
+                UpdateSlotChargesRpc(slot, charges, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+            }
+        }
+
         [Rpc(SendTo.SpecifiedInParams, Delivery = RpcDelivery.Reliable)]
-        private void UpdateSlotRpc(int slot, ItemNetworkData itemNetworkData, RpcParams rpcParams)
+        private void UpdateSlotRpc(byte slot, ItemNetworkData itemNetworkData, RpcParams rpcParams)
         {
             if(IsClient)
                 SlotChanged?.Invoke(slot, itemNetworkData);
+        }
+
+        [Rpc(SendTo.SpecifiedInParams, Delivery = RpcDelivery.Reliable)]
+        private void UpdateSlotChargesRpc(byte slot, int charges, RpcParams rpcParams)
+        {
+            if(IsClient && _slots[slot].Item != null)
+            {
+                _slots[slot].Item.NetworkData.UpdateCharges(charges);
+                SlotChanged?.Invoke(slot, _slots[slot].Item.NetworkData);
+            }
         }
     }
 }

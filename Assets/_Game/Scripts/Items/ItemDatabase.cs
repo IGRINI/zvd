@@ -9,7 +9,7 @@ namespace Game.Items
 
         static ItemDatabase()
         {
-            var healingPotion = ItemModel.Create<HealingPotionItem>("Healing Potion");
+            var healingPotion = ItemModel.Create<HealingPotionItem>("Healing Potion", isConsumable: true, hasCharges: true, charges: 3);
             _itemReferences.Add(healingPotion.NetworkData.Name, healingPotion);
         }
 
