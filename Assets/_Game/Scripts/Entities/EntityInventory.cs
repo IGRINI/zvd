@@ -106,7 +106,7 @@ namespace Game.Entities
             {
                 _slots[slot].Item.NetworkData.UpdateCharges(charges);
                 SlotChanged?.Invoke(slot, _slots[slot].Item.NetworkData);
-                UpdateSlotChargesRpc(slot, charges, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+                UpdateSlotRpc(slot, _slots[slot].Item.NetworkData, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
             }
         }
 
@@ -115,16 +115,6 @@ namespace Game.Entities
         {
             if(IsClient)
                 SlotChanged?.Invoke(slot, itemNetworkData);
-        }
-
-        [Rpc(SendTo.SpecifiedInParams, Delivery = RpcDelivery.Reliable)]
-        private void UpdateSlotChargesRpc(byte slot, int charges, RpcParams rpcParams)
-        {
-            if(IsClient && _slots[slot].Item != null)
-            {
-                _slots[slot].Item.NetworkData.UpdateCharges(charges);
-                SlotChanged?.Invoke(slot, _slots[slot].Item.NetworkData);
-            }
         }
     }
 }

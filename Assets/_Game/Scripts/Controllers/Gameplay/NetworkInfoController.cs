@@ -6,6 +6,7 @@ using Game.Views.Player;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace Game.Controllers.Gameplay
 {
@@ -24,6 +25,8 @@ namespace Game.Controllers.Gameplay
         
         private readonly PlayerStatsContainer _playerStatsContainer;
         private readonly PlayerInventoryContainer _playerInventoryContainer;
+        
+        private readonly DiContainer Container;
 
         private PlayerView _playerView;
 
@@ -39,7 +42,8 @@ namespace Game.Controllers.Gameplay
             InteractionController.Settings interactionSettings,
             Settings unitsSettings,
             PlayerStatsContainer playerStatsContainer,
-            PlayerInventoryContainer playerInventoryContainer)
+            PlayerInventoryContainer playerInventoryContainer,
+            DiContainer container)
         {
             Singleton = this;
 
@@ -54,6 +58,13 @@ namespace Game.Controllers.Gameplay
 
             _playerStatsContainer = playerStatsContainer;
             _playerInventoryContainer = playerInventoryContainer;
+
+            Container = container;
+        }
+
+        public T Resolve<T>()
+        {
+            return Container.Resolve<T>();
         }
 
         public PlayerView GetPlayerById(ulong playerId)
@@ -92,7 +103,7 @@ namespace Game.Controllers.Gameplay
 
             if (NetworkManager.Singleton.IsServer)
             {
-                _players.Add(playerView.OwnerClientId, _playerView);
+                _players.Add(playerView.OwnerClientId, playerView);
             }
         }
 

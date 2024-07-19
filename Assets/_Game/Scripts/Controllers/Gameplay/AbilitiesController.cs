@@ -9,7 +9,7 @@ namespace Game.Controllers.Gameplay
 {
     public class AbilitiesController : NetworkBehaviour
     {
-        [Inject] private readonly KeyboardController _keyboardController;
+        private KeyboardController _keyboardController;
         
         public static AbilitiesController Singleton { get; private set; }
 
@@ -21,10 +21,18 @@ namespace Game.Controllers.Gameplay
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            
+
+            _keyboardController = NetworkInfoController.Singleton.Resolve<KeyboardController>();
             _keyboardController.KeyPerformed += OnKeyPerformed;
         }
-        
+
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
+            
+            _keyboardController.KeyPerformed -= OnKeyPerformed;
+        }
+
         private void OnKeyPerformed(KeyAction keyAction)
         {
             byte slot = keyAction switch
