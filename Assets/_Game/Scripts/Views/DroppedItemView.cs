@@ -87,7 +87,7 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
     {
         protected override void Reinitialize(Transform parent, Vector3 position, ItemModel data, DroppedItemView item)
         {
-            item.transform.SetParent(parent);
+            // item.transform.SetParent(parent);
             item.transform.position = position;
             item.SetItem(data);
         }

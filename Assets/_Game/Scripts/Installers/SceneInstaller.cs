@@ -57,10 +57,10 @@ namespace Game.Installers
             Container.BindMemoryPool<HealthBar, HealthBar.Pool>()
                 .FromComponentInNewPrefab(_healthBarPrefab)
                 .UnderTransform(_healthBarRoot);
-            
+
             Container.BindMemoryPool<DroppedItemView, DroppedItemView.Pool>()
-                .FromComponentInNewPrefab(_droppedItemViewPrefab)
-                .UnderTransform(_deactivatedDroppedItems);
+                .FromComponentInNewPrefab(_droppedItemViewPrefab);
+                // .UnderTransform(_deactivatedDroppedItems);
 
             EntityRegistry.Init(_camera);
         }
