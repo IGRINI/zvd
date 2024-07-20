@@ -15,23 +15,23 @@ namespace Game.Abilities.Items
         {
             Item = itemModel;
             if(Item.IsConsumable)
-                EnableCharges();
+                EnableConsumableCharges();
         }
 
-        protected void EnableCharges()
+        private void EnableConsumableCharges()
         {
             ClearEvents();
             OnSpellFinished += OnOnSpellFinished;
         }
 
-        protected void SpendCharge()
+        protected EItemChargeResult SpendCharge()
         {
-            Item.SpendCharge();
+            return Item.SpendCharge();
         }
 
         private void OnOnSpellFinished()
         {
-            Item.SpendCharge();
+            SpendCharge();
         }
     }
 }

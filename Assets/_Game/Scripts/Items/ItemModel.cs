@@ -18,16 +18,16 @@ namespace Game.Items
         public bool IsStackable => NetworkData.IsStackable;
 
 
-        public ItemChargeResult SpendCharge()
+        public EItemChargeResult SpendCharge()
         {
             var result = NetworkData.SpendCharge();
-            if (result == ItemChargeResult.ItemBroken)
+            if (result == EItemChargeResult.ItemBroken)
             {
                 var slot = GetSlotIndex();
                 if(slot != null)
                     Owner?.Inventory.RemoveItemFromSlot(slot.Value);
             }
-            else if (result == ItemChargeResult.ChargeUsed)
+            else if (result == EItemChargeResult.ChargeUsed)
             {
                 var slot = GetSlotIndex();
                 if(slot != null)

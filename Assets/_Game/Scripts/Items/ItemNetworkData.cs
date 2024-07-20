@@ -30,26 +30,26 @@ namespace Game.Items
         
         public EAbilityBehaviour AbilityBehaviour => _abilityBehaviour;
 
-        public ItemChargeResult SpendCharge()
+        public EItemChargeResult SpendCharge()
         {
             if (_isConsumable && !HasCharges)
             {
-                return ItemChargeResult.ItemBroken;
+                return EItemChargeResult.ItemBroken;
             }
 
             if (!HasCharges || _charges <= 0)
             {
-                return ItemChargeResult.NoChargesLeft;
+                return EItemChargeResult.NoChargesLeft;
             }
 
             _charges--;
 
             if (_charges == 0 && _isConsumable)
             {
-                return ItemChargeResult.ItemBroken;
+                return EItemChargeResult.ItemBroken;
             }
 
-            return ItemChargeResult.ChargeUsed;
+            return EItemChargeResult.ChargeUsed;
         }
 
         

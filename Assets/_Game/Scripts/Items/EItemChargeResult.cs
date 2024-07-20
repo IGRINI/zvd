@@ -1,6 +1,6 @@
 ﻿namespace Game.Items
 {
-    public enum ItemChargeResult
+    public enum EItemChargeResult
     {
         ChargeUsed,
         NoChargesLeft,
