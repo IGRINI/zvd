@@ -77,7 +77,7 @@ namespace Game.Views.Player
             Network.Singleton.RegisterPlayer(this, IsOwner);
             
             //TODO Test spawn potion for player
-            Network.Singleton.SpawnDroppedItem(null, transform.position, ItemDatabase.CreateItemInstance("Healing Potion"));
+            Network.Singleton.SpawnDroppedItem(transform.position, ItemDatabase.CreateItemInstance("Healing Potion"));
         }
 
         public override void OnNetworkDespawn()

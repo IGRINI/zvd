@@ -108,7 +108,7 @@ namespace Game.Entities
                 floorPosition = floorHit.point;
             }
             
-            Network.Singleton.SpawnDroppedItem(null, floorPosition, itemModel);
+            Network.Singleton.SpawnDroppedItem(floorPosition, itemModel);
             RemoveItemFromSlot(slotToDrop);
         }
            

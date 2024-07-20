@@ -8,6 +8,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Zenject;
+using Object = UnityEngine.Object;
 
 namespace Game.Controllers.Gameplay
 {
@@ -27,7 +28,7 @@ namespace Game.Controllers.Gameplay
         private readonly PlayerStatsContainer _playerStatsContainer;
         private readonly PlayerInventoryContainer _playerInventoryContainer;
 
-        private readonly DroppedItemView.Pool _droppedItemViewPool;
+        private readonly DroppedItemView _droppedItemPrefab;
         
         private readonly DiContainer Container;
 
@@ -46,7 +47,7 @@ namespace Game.Controllers.Gameplay
             Settings unitsSettings,
             PlayerStatsContainer playerStatsContainer,
             PlayerInventoryContainer playerInventoryContainer,
-            DroppedItemView.Pool droppedItemViewPool,
+            DroppedItemView droppedItemPrefab,
             DiContainer container)
         {
             Singleton = this;
@@ -63,7 +64,7 @@ namespace Game.Controllers.Gameplay
             _playerStatsContainer = playerStatsContainer;
             _playerInventoryContainer = playerInventoryContainer;
 
-            _droppedItemViewPool = droppedItemViewPool;
+            _droppedItemPrefab = droppedItemPrefab;
             
             Container = container;
         }
@@ -75,12 +76,14 @@ namespace Game.Controllers.Gameplay
         
         public void DespawnDroppedItem(DroppedItemView droppedItemView)
         {
-            _droppedItemViewPool.Despawn(droppedItemView);   
+            droppedItemView.NetworkObject.Despawn();   
         }
 
-        public void SpawnDroppedItem(Transform parent, Vector3 position, ItemModel itemModel)
+        public void SpawnDroppedItem(Vector3 position, ItemModel itemModel)
         {
-            _droppedItemViewPool.Spawn(parent, position, itemModel);
+            var item = Object.Instantiate(_droppedItemPrefab, position, Quaternion.identity);
+            item.SetItem(itemModel);
+            item.NetworkObject.Spawn();
         }
 
         public PlayerView GetPlayerById(ulong playerId)

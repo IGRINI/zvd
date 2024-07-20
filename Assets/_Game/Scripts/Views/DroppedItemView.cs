@@ -82,26 +82,4 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
         }
         
     }
-    
-    public class Pool : MonoMemoryPool<Transform, Vector3, ItemModel, DroppedItemView>
-    {
-        protected override void Reinitialize(Transform parent, Vector3 position, ItemModel data, DroppedItemView item)
-        {
-            // item.transform.SetParent(parent);
-            item.transform.position = position;
-            item.SetItem(data);
-        }
-
-        protected override void OnSpawned(DroppedItemView item)
-        {
-            base.OnSpawned(item);
-            item.NetworkObject.Spawn();
-        }
-
-        protected override void OnDespawned(DroppedItemView item)
-        {
-            base.OnDespawned(item);
-            item.NetworkObject.Despawn(false);
-        }
-    }
 }

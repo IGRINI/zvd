@@ -41,6 +41,7 @@ namespace Game.Installers
             BindInstance(_playerInventoryContainer);
             BindInstance(_canvas);
             BindInstance(_healthBarRoot);
+            BindInstance(_droppedItemViewPrefab);
             BindSingle<PlayerMoveController>();
             BindSingle<MouseLookController>();
             BindSingle<Network>();
@@ -57,10 +58,6 @@ namespace Game.Installers
             Container.BindMemoryPool<HealthBar, HealthBar.Pool>()
                 .FromComponentInNewPrefab(_healthBarPrefab)
                 .UnderTransform(_healthBarRoot);
-
-            Container.BindMemoryPool<DroppedItemView, DroppedItemView.Pool>()
-                .FromComponentInNewPrefab(_droppedItemViewPrefab);
-                // .UnderTransform(_deactivatedDroppedItems);
 
             EntityRegistry.Init(_camera);
         }
