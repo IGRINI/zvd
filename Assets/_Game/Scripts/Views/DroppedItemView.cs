@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Zenject;
 
-public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable, IPoolable
+public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
 {
     OutlineHandler IHoverable.OutlineHandler
     {
@@ -82,16 +82,6 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable, IPoo
         }
         
     }
-
-    public void OnDespawned()
-    {
-        NetworkObject.Despawn();   
-    }
-
-    public void OnSpawned()
-    {
-        NetworkObject.Spawn();
-    }
     
     public class Pool : MonoMemoryPool<Transform, Vector3, ItemModel, DroppedItemView>
     {
@@ -100,6 +90,18 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable, IPoo
             item.transform.SetParent(parent);
             item.transform.position = position;
             item.SetItem(data);
+        }
+
+        protected override void OnSpawned(DroppedItemView item)
+        {
+            base.OnSpawned(item);
+            item.NetworkObject.Spawn();
+        }
+
+        protected override void OnDespawned(DroppedItemView item)
+        {
+            base.OnDespawned(item);
+            item.NetworkObject.Despawn(false);
         }
     }
 }
