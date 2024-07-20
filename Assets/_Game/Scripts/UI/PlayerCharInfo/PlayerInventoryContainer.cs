@@ -12,6 +12,7 @@ using Zenject;
 public class PlayerInventoryContainer : MonoBehaviour
 {
     private MouseController _mouseController;
+    private KeyboardController _keyboardController;
     
     [SerializeField] private InventorySlotView[] _inventorySlots;
     [SerializeField] private RectTransform _draggableParent;
@@ -33,9 +34,15 @@ public class PlayerInventoryContainer : MonoBehaviour
     }
 
     [Inject]
-    public void Construct(MouseController mouseController)
+    public void Construct(MouseController mouseController, KeyboardController keyboardController)
     {
         _mouseController = mouseController;
+        _keyboardController = keyboardController;
+
+        foreach (var slotKeyPair in keyboardController.SlotKeys)
+        {
+            _inventorySlots[slotKeyPair.Key].SetKeyName(slotKeyPair.Value);
+        }
     }
     
     private void StartDrag(byte slotNum)

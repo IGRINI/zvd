@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using Game.Controllers;
 using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Views.Player;
@@ -10,6 +11,8 @@ namespace Game.Utils.PlayerCharInfo
 {
     public class PlayerStatsContainer : MonoBehaviour
     {
+        private KeyboardController _keyboardController;
+    
         [SerializeField] private TextMeshProUGUI _healthText;
         [SerializeField] private Image _healthBar;
         [SerializeField] private RawImage _faceCamera;
@@ -21,7 +24,8 @@ namespace Game.Utils.PlayerCharInfo
         [SerializeField] private TextMeshProUGUI _agility;
         [SerializeField] private TextMeshProUGUI _intelligence;
         [SerializeField] private float _experienceAnimationTime = .5f;
-
+        
+        
         private PlayerView _player;
 
         private Tween _experienceTween;

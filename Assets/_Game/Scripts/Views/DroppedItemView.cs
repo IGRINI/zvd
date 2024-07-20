@@ -74,10 +74,7 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable, IPoo
     {
         base.OnNetworkDespawn();
 
-        if (IsServer)
-        {
-            
-        }
+        
         if (IsClient)
         {
             _isOutlineActive = false;

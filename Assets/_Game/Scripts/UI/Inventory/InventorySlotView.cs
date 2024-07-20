@@ -1,5 +1,6 @@
 
 using System;
+using Game.Abilities;
 using Game.Controllers.Gameplay;
 using Game.Items;
 using TMPro;
@@ -20,6 +21,8 @@ public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandle
     [SerializeField] private TextMeshProUGUI _itemName;
     [SerializeField] private TextMeshProUGUI _charges;
     [SerializeField] private Button _button;
+    [SerializeField] private RectTransform _keyNameTransform;
+    [SerializeField] private TMP_Text _keyNameText;
 
     private byte _slotNum;
 
@@ -36,7 +39,7 @@ public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandle
             _itemName.SetText("");
             _itemObjectTransform.gameObject.SetActive(false);
             ItemCleared?.Invoke(_slotNum);
-            
+            _keyNameTransform.gameObject.SetActive(false);
             return;
         }
         
@@ -52,8 +55,15 @@ public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandle
             _charges.gameObject.SetActive(false);
         
         _itemObjectTransform.gameObject.SetActive(true);
+        _keyNameTransform.gameObject.SetActive(ItemNetworkData.AbilityBehaviour != EAbilityBehaviour.Passive);
         
         _button.onClick.AddListener(OnItemClick);
+    }
+
+    public void SetKeyName(string keyName)
+    {
+        _keyNameText.SetText(keyName);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_keyNameTransform);
     }
 
     private void OnItemClick()
@@ -64,6 +74,7 @@ public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandle
     public override void RemoveItem()
     {
         _itemObjectTransform.gameObject.SetActive(false);
+        _keyNameTransform.gameObject.SetActive(false);
         
         _button.onClick.RemoveAllListeners();
     }
@@ -89,6 +100,7 @@ public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandle
     public void ResetItemPosition()
     {
         _itemObjectTransform.SetParent(transform);
+        _itemObjectTransform.SetAsFirstSibling();
         _itemObjectTransform.anchoredPosition = Vector2.zero;
     }
 }

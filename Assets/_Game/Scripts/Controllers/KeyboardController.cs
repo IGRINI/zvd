@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Game.Common;
 using Game.Player;
 using UniRx;
@@ -26,7 +28,9 @@ namespace Game.Controllers
     public class KeyboardController : IDisposable
     {
         private readonly InputActionAsset _inputAsset;
-        
+
+        public IReadOnlyDictionary<int, string> SlotKeys;
+
         private readonly InputActionMap _keyboardMap;
         private readonly InputAction _moveVector;
         private readonly InputAction _jump;
@@ -60,6 +64,7 @@ namespace Game.Controllers
             _interact = _keyboardMap.FindAction("Interact");
             _drop = _keyboardMap.FindAction("Drop");
             
+            
             _itemSlot0 = _keyboardMap.FindAction("ItemSlot0");
             _itemSlot1 = _keyboardMap.FindAction("ItemSlot1");
             _itemSlot2 = _keyboardMap.FindAction("ItemSlot2");
@@ -82,7 +87,29 @@ namespace Game.Controllers
             _itemSlot3.performed += OnItemSlot3Performed;
             _itemSlot4.performed += OnItemSlot4Performed;
             _itemSlot5.performed += OnItemSlot5Performed;
+
+            SlotKeys = new Dictionary<int, string>()
+            {
+                { 0, GetKeyboardBinding(_itemSlot0) },
+                { 1, GetKeyboardBinding(_itemSlot1) },
+                { 2, GetKeyboardBinding(_itemSlot2) },
+                { 3, GetKeyboardBinding(_itemSlot3) },
+                { 4, GetKeyboardBinding(_itemSlot4) },
+                { 5, GetKeyboardBinding(_itemSlot5) }
+            };
         }
+
+        private string GetKeyboardBinding(InputAction inputAction)
+        {
+            
+            var binding = inputAction.bindings
+                .FirstOrDefault(binding => !binding.isComposite);
+            
+            return binding == default
+                ? "-"
+                : InputControlPath.ToHumanReadableString(binding.effectivePath, InputControlPath.HumanReadableStringOptions.OmitDevice);
+        }
+            
 
         private void OnMovePerformed(InputAction.CallbackContext context)
         {
