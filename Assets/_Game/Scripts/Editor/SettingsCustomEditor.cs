@@ -15,7 +15,7 @@ namespace Game.Editor
     public class SettingsInstallerEditor : OdinEditor
     {
         private SettingsInstaller settingsInstaller;
-        private NetworkInfoController.Settings networkSettings;
+        private Network.Settings networkSettings;
         private string[] teamNames;
         private int teamCount;
 
@@ -107,7 +107,7 @@ namespace Game.Editor
                 }
             }
 
-            networkSettings.TeamRelations.Add(new NetworkInfoController.Settings.TeamRelation
+            networkSettings.TeamRelations.Add(new Network.Settings.TeamRelation
             {
                 TeamA = teamA,
                 TeamB = teamB,

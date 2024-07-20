@@ -22,7 +22,7 @@ namespace Game.Controllers.Gameplay
         {
             base.OnNetworkSpawn();
 
-            _keyboardController = NetworkInfoController.Singleton.Resolve<KeyboardController>();
+            _keyboardController = Network.Singleton.Resolve<KeyboardController>();
             _keyboardController.KeyPerformed += OnKeyPerformed;
         }
 
@@ -63,7 +63,7 @@ namespace Game.Controllers.Gameplay
                 target = networkObject.GetComponent<BaseEntityModel>();
             }
 
-            var player = NetworkInfoController.Singleton.GetPlayerById(playerId);
+            var player = Network.Singleton.GetPlayerById(playerId);
             var inventory = player.Inventory;
             var item = inventory.GetItemInSlot(slot);
             item?.Ability.StartSpell(point, target);

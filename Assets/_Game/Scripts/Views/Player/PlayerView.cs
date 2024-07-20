@@ -74,16 +74,16 @@ namespace Game.Views.Player
         {
             base.OnNetworkSpawn();
             gameObject.name = $"Player #{OwnerClientId}";
-            NetworkInfoController.Singleton.RegisterPlayer(this, IsOwner);
+            Network.Singleton.RegisterPlayer(this, IsOwner);
             
             //TODO Test spawn potion for player
-            NetworkInfoController.Singleton.SpawnDroppedItem(null, transform.position, ItemDatabase.CreateItemInstance("Healing Potion"));
+            Network.Singleton.SpawnDroppedItem(null, transform.position, ItemDatabase.CreateItemInstance("Healing Potion"));
         }
 
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
-            NetworkInfoController.Singleton.UnregisterPlayer(this, IsOwner);
+            Network.Singleton.UnregisterPlayer(this, IsOwner);
         }
 
         public void Move(Vector2 inputs)
@@ -144,15 +144,15 @@ namespace Game.Views.Player
         {
             _currentHealth = CurrentHealth;
 
-            Body.rotation = Quaternion.Slerp(Body.rotation, _targetRotation, NetworkInfoController.Singleton.MouseLookSettings.RotationSpeed * Time.deltaTime);
-
+            Body.rotation = Quaternion.Slerp(Body.rotation, _targetRotation, Network.Singleton.MouseLookSettings.RotationSpeed * Time.deltaTime);
+            
             if (!IsGrounded())
                 _yForce += Physics.gravity.y * 1.5f * Time.deltaTime;
             else if (_yForce < 0f)
                 _yForce = 0f;
             var force = _yForce * 1.5f * Time.deltaTime;
 
-            var speedMultiplier = Time.deltaTime * NetworkInfoController.Singleton.MoveSettings.Speed;
+            var speedMultiplier = Time.deltaTime * Network.Singleton.MoveSettings.Speed;
 
             var movedVector = new Vector3(0f, force);
 
@@ -204,10 +204,10 @@ namespace Game.Views.Player
             var bounds = CharacterController.bounds;
             return Physics.CheckSphere(
                 new Vector3(bounds.center.x,
-                    bounds.min.y + NetworkInfoController.Singleton.MoveSettings.GroundCheck.SphereDownOffset,
+                    bounds.min.y + Network.Singleton.MoveSettings.GroundCheck.SphereDownOffset,
                     bounds.center.z),
-                NetworkInfoController.Singleton.MoveSettings.GroundCheck.SphereRadius,
-                NetworkInfoController.Singleton.MoveSettings.GroundCheck.GroundLayerMask);
+                Network.Singleton.MoveSettings.GroundCheck.SphereRadius,
+                Network.Singleton.MoveSettings.GroundCheck.GroundLayerMask);
         }
 
         public void SetSprint(bool sprint)
@@ -215,7 +215,7 @@ namespace Game.Views.Player
             if (sprint)
             {
                 _sprintModifier = ModifiersManager.AddModifier(
-                    new SprintModifier(NetworkInfoController.Singleton.MoveSettings.SprintMultuplier), this);
+                    new SprintModifier(Network.Singleton.MoveSettings.SprintMultuplier), this);
             }
             else
             {
@@ -278,7 +278,7 @@ namespace Game.Views.Player
             if (itemObj.TryGetComponent<DroppedItemView>(out var droppedItemView))
             {
                 if (Transform.position.CheckDistanceTo(itemObj.transform.position,
-                        NetworkInfoController.Singleton.InteractionSettings.Interaction.InteractionDistance))
+                        Network.Singleton.InteractionSettings.Interaction.InteractionDistance))
                 {
                     if(_entityInventory.TryToAddItem(droppedItemView.Item))
                         droppedItemView.OnSuccessfulInteract();
@@ -311,7 +311,7 @@ namespace Game.Views.Player
             var died = NetworkManager.SpawnManager.SpawnedObjects[objectId];
             Transform.position = newPosition;
             died.gameObject.SetActive(true);
-            NetworkInfoController.Singleton.RegisterPlayer(this, IsOwner);
+            Network.Singleton.RegisterPlayer(this, IsOwner);
             SetAttackAnimationTime(GetStartAttackSpeed());
         }
     }

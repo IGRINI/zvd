@@ -52,9 +52,9 @@ namespace Game.Utils.HealthBars
                 item._entity.HealthChanged += item.OnHealthChanged;
                 item.SetHealth(entity.CurrentHealth, entity.MaxHealth);
                 
-                var colors = NetworkInfoController.Singleton.UnitsSettings.HealthBarColors.First(x =>
-                    x.RelationType == NetworkInfoController.GetRelationType(
-                        NetworkInfoController.Singleton.PlayerView.TeamNumber.Value, entity.TeamNumber.Value));
+                var colors = Network.Singleton.UnitsSettings.HealthBarColors.First(x =>
+                    x.RelationType == Network.GetRelationType(
+                        Network.Singleton.PlayerView.TeamNumber.Value, entity.TeamNumber.Value));
 
                 item.SetHealthBarColors(colors.HealthColor, colors.BgColor);
             }

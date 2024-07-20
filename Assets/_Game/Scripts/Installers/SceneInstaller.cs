@@ -43,7 +43,7 @@ namespace Game.Installers
             BindInstance(_healthBarRoot);
             BindSingle<PlayerMoveController>();
             BindSingle<MouseLookController>();
-            BindSingle<NetworkInfoController>();
+            BindSingle<Network>();
             BindSingle<HealthBarController>();
             BindSingle<MouseObjectDetectionController>();
             BindSingle<InteractionController>();

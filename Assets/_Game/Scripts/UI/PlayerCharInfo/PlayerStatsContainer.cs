@@ -68,7 +68,7 @@ namespace Game.Utils.PlayerCharInfo
         private void OnExpirienceChanged(int previousExperience, int experience)
         {
             _experienceTween?.Kill();
-            if (NetworkInfoController.GetMaxLevel() <= _player.Level.Value)
+            if (Network.GetMaxLevel() <= _player.Level.Value)
             {
                 _experienceText.SetText("Max level");
                 _experienceImage.fillAmount = 1f;
@@ -77,8 +77,8 @@ namespace Game.Utils.PlayerCharInfo
 
             var tween = DOTween.Sequence()
                 .Join(_experienceText.DOTextValue(previousExperience, experience, _experienceAnimationTime,
-                    $"{{0}}/{NetworkInfoController.Singleton.GetExperienceForLevel(_player.Level.Value)}"))
-                .Join(_experienceImage.DOFillAmount((float)experience / NetworkInfoController.Singleton.GetExperienceForLevel(_player.Level.Value),
+                    $"{{0}}/{Network.Singleton.GetExperienceForLevel(_player.Level.Value)}"))
+                .Join(_experienceImage.DOFillAmount((float)experience / Network.Singleton.GetExperienceForLevel(_player.Level.Value),
                     _experienceAnimationTime));
             _experienceTween = tween;
         }

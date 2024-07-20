@@ -40,7 +40,7 @@ namespace Game.Utils
             if(SynchronizePosition)
             {
                 if (Vector3.Distance(transform.position, _lastSentPosition) >
-                    NetworkInfoController.Singleton.MoveSettings.MoveSyncThreshold)
+                    Network.Singleton.MoveSettings.MoveSyncThreshold)
                 {
                     SendPositionToClientRpc(transform.position);
                 }
@@ -49,7 +49,7 @@ namespace Game.Utils
             if (SynchronizeRotation)
             {
                 if (Quaternion.Angle(transform.rotation, _lastSentRotation) >
-                    NetworkInfoController.Singleton.MoveSettings.RotateSyncThreshold)
+                    Network.Singleton.MoveSettings.RotateSyncThreshold)
                 {
                     SendRotationToClientRpc(transform.rotation);
                 }
@@ -60,7 +60,7 @@ namespace Game.Utils
         {
             if(SynchronizePosition)
             {
-                if (Vector3.Distance(transform.position, _lastSentPosition) > NetworkInfoController.Singleton.MoveSettings.MoveSyncThreshold)
+                if (Vector3.Distance(transform.position, _lastSentPosition) > Network.Singleton.MoveSettings.MoveSyncThreshold)
                 {
                     SubmitPositionRequestServerRpc(transform.position);
                     _lastSentPosition = transform.position;
@@ -69,7 +69,7 @@ namespace Game.Utils
 
             if (SynchronizeRotation)
             {
-                if (Quaternion.Angle(transform.rotation, _lastSentRotation) > NetworkInfoController.Singleton.MoveSettings.RotateSyncThreshold)
+                if (Quaternion.Angle(transform.rotation, _lastSentRotation) > Network.Singleton.MoveSettings.RotateSyncThreshold)
                 {
                     SubmitRotationRequestServerRpc(transform.rotation);
                     _lastSentRotation = transform.rotation;

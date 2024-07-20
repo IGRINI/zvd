@@ -29,7 +29,7 @@ namespace Game.Entities
             base.OnNetworkSpawn();
             
             if(Owner is PlayerView)
-                NetworkInfoController.Singleton.RegisterInventory(this, IsOwner);
+                Network.Singleton.RegisterInventory(this, IsOwner);
             
             _slots = new []
             {
@@ -47,7 +47,7 @@ namespace Game.Entities
             base.OnNetworkDespawn();
         
             if(Owner is PlayerView)
-                NetworkInfoController.Singleton.UnregisterInventory(this, IsOwner);
+                Network.Singleton.UnregisterInventory(this, IsOwner);
         }
 
         public bool TryToAddItem(ItemModel item)
@@ -108,7 +108,7 @@ namespace Game.Entities
                 floorPosition = floorHit.point;
             }
             
-            NetworkInfoController.Singleton.SpawnDroppedItem(null, floorPosition, itemModel);
+            Network.Singleton.SpawnDroppedItem(null, floorPosition, itemModel);
             RemoveItemFromSlot(slotToDrop);
         }
            

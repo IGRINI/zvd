@@ -11,9 +11,9 @@ using Zenject;
 
 namespace Game.Controllers.Gameplay
 {
-    public class NetworkInfoController
+    public class Network
     {
-        public static NetworkInfoController Singleton { get; private set; }
+        public static Network Singleton { get; private set; }
 
         public readonly MouseLookController.Settings MouseLookSettings;
         public readonly PlayerMoveController.Settings MoveSettings;
@@ -37,7 +37,7 @@ namespace Game.Controllers.Gameplay
 
         private Dictionary<ulong, PlayerView> _players = new();
 
-        private NetworkInfoController(MouseLookController mouseLookController,
+        private Network(MouseLookController mouseLookController,
             PlayerMoveController playerMoveController,
             InteractionController interactionController,
             MouseLookController.Settings mouseLookSettings,
@@ -72,9 +72,7 @@ namespace Game.Controllers.Gameplay
         {
             return Container.Resolve<T>();
         }
-
         
-        //TODO Move this temp spawn/despawn methods
         public void DespawnDroppedItem(DroppedItemView droppedItemView)
         {
             _droppedItemViewPool.Despawn(droppedItemView);   

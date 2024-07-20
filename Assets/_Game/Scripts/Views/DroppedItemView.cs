@@ -48,7 +48,7 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable, IPoo
     {
         if (IsServer)
         {
-            NetworkInfoController.Singleton.DespawnDroppedItem(this);
+            Network.Singleton.DespawnDroppedItem(this);
         }
     }
     

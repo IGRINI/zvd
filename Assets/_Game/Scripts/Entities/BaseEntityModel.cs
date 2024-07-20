@@ -118,7 +118,7 @@ namespace Game.Entities
         {
             var damageModifiers = Modifiers.Where(modifier => modifier.Functions.Contains(Modifier.Type.AttackDamage));
             var damage = _attackDamage + _currentAttributes.Value.Strength *
-                NetworkInfoController.Singleton.UnitsSettings.DamagePerStrength;
+                Network.Singleton.UnitsSettings.DamagePerStrength;
             var enumerable = damageModifiers as Modifier[] ?? damageModifiers.ToArray();
             return enumerable.Any() ? damage + enumerable.Sum(modifier => modifier.GetAttackDamage()) : damage;
         }
@@ -191,7 +191,7 @@ namespace Game.Entities
         
         private void DistributeExperienceToNearbyHeroes()
         {
-            var nearbyHeroes = EntityRegistry.GetEntitiesInRange(transform.position, NetworkInfoController.Singleton.UnitsSettings.ExpirienceRadius)
+            var nearbyHeroes = EntityRegistry.GetEntitiesInRange(transform.position, Network.Singleton.UnitsSettings.ExpirienceRadius)
                 .Where(e => e.IsHero && e != this);
 
             int experienceReward = GetExperienceReward();
@@ -260,7 +260,7 @@ namespace Game.Entities
             {
                 SetHealth(MaxHealth);
                 _currentLevel = _levelNetwork.Value = _startLevel;
-                _experienceToNextLevel = NetworkInfoController.Singleton.GetExperienceForLevel(_startLevel);
+                _experienceToNextLevel = Network.Singleton.GetExperienceForLevel(_startLevel);
             }
             if (IsClient)
             {
@@ -283,7 +283,7 @@ namespace Game.Entities
         public void AddExperience(int amount)
         {
             if (!IsHero || !IsServer) return;
-            if (Level.Value >= NetworkInfoController.GetMaxLevel())
+            if (Level.Value >= Network.GetMaxLevel())
             {
                 _currentExperience = 0;
                 _currentExperienceNetwork.Value = _currentExperience;
@@ -295,7 +295,7 @@ namespace Game.Entities
             {
                 _currentExperience -= _experienceToNextLevel;
                 LevelUp();
-                if (Level.Value >= NetworkInfoController.GetMaxLevel())
+                if (Level.Value >= Network.GetMaxLevel())
                 {
                     _currentExperience = 0;
                     break;
@@ -309,7 +309,7 @@ namespace Game.Entities
             if (!IsServer) return;
             
             _currentLevel++;
-            _experienceToNextLevel = NetworkInfoController.Singleton.GetExperienceForLevel(_currentLevel);
+            _experienceToNextLevel = Network.Singleton.GetExperienceForLevel(_currentLevel);
 
             var updatedAttributes = _currentAttributes.Value;
             _currentAttributes.Value = null;
@@ -341,9 +341,9 @@ namespace Game.Entities
 
         public void OnHealthChanged(float previous, float current) => SetHealth(current);
 
-        public bool IsFriendlyTeam(Team teamNumber) => NetworkInfoController.IsFriendlyTeam(TeamNumber.Value, teamNumber);
-        public bool IsEnemyTeam(Team teamNumber) => NetworkInfoController.IsEnemyTeam(TeamNumber.Value, teamNumber);
-        public bool IsNeutralTeam(Team teamNumber) => NetworkInfoController.IsNeutralTeam(TeamNumber.Value, teamNumber);
+        public bool IsFriendlyTeam(Team teamNumber) => Network.IsFriendlyTeam(TeamNumber.Value, teamNumber);
+        public bool IsEnemyTeam(Team teamNumber) => Network.IsEnemyTeam(TeamNumber.Value, teamNumber);
+        public bool IsNeutralTeam(Team teamNumber) => Network.IsNeutralTeam(TeamNumber.Value, teamNumber);
 
         [Serializable]
         public class Attributes : INetworkSerializable
