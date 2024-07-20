@@ -20,7 +20,10 @@ namespace Game.Installers
         [SerializeField] private PlayerInventoryContainer _playerInventoryContainer;
         [SerializeField] private HealthBar _healthBarPrefab;
         [SerializeField] private RectTransform _healthBarRoot;
+        [SerializeField] private DroppedItemView _droppedItemViewPrefab;
+        [SerializeField] private Transform _deactivatedDroppedItems;
         [SerializeField] private Canvas _canvas;
+        
         
         public override void InstallBindings()
         {
@@ -54,6 +57,10 @@ namespace Game.Installers
             Container.BindMemoryPool<HealthBar, HealthBar.Pool>()
                 .FromComponentInNewPrefab(_healthBarPrefab)
                 .UnderTransform(_healthBarRoot);
+            
+            Container.BindMemoryPool<DroppedItemView, DroppedItemView.Pool>()
+                .FromComponentInNewPrefab(_droppedItemViewPrefab)
+                .UnderTransform(_deactivatedDroppedItems);
 
             EntityRegistry.Init(_camera);
         }

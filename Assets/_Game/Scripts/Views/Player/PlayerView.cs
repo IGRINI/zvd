@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Entities.Modifiers;
+using Game.Items;
 using Game.Utils;
 using ReadOnlyAttribute;
 using Unity.Netcode;
@@ -74,6 +75,9 @@ namespace Game.Views.Player
             base.OnNetworkSpawn();
             gameObject.name = $"Player #{OwnerClientId}";
             NetworkInfoController.Singleton.RegisterPlayer(this, IsOwner);
+            
+            //TODO Test spawn potion for player
+            NetworkInfoController.Singleton.SpawnDroppedItem(null, transform.position, ItemDatabase.CreateItemInstance("Healing Potion"));
         }
 
         public override void OnNetworkDespawn()
@@ -281,6 +285,7 @@ namespace Game.Views.Player
                 }
             }
         }
+        
 
         public void TryToTake(DroppedItemView itemView)
         {

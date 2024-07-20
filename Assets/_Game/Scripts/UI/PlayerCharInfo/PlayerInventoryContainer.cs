@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using System.Linq;
 using Game.Controllers;
 using Game.Entities;
 using Game.Items;
 using ModestTree;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Zenject;
 
 public class PlayerInventoryContainer : MonoBehaviour
@@ -56,7 +59,11 @@ public class PlayerInventoryContainer : MonoBehaviour
         {
             _playerEntityInventory.TryToSwapItemsRpc(slotNum, (byte)_inventorySlots.IndexOf(slot));
         }
-        
+        else if (!EventSystem.current.IsPointerOverGameObject())
+        {
+            _playerEntityInventory.TryToDropItemRpc(slotNum);
+        }
+
         ResetDraggableSlotItem(slotNum);
     }
 

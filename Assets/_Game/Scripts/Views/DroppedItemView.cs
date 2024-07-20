@@ -1,9 +1,12 @@
+using Game.Controllers.Gameplay;
 using Game.Interactables;
 using Game.Items;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
+using Zenject;
 
-public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
+public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable, IPoolable
 {
     OutlineHandler IHoverable.OutlineHandler
     {
@@ -45,8 +48,7 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
     {
         if (IsServer)
         {
-            NetworkObject.Despawn();
-            Destroy(gameObject);
+            NetworkInfoController.Singleton.DespawnDroppedItem(this);
         }
     }
     
@@ -62,11 +64,6 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
 
         _canInteract.Value = true;
         
-        if (IsServer)
-        {
-            //TODO Test
-            SetItem(ItemDatabase.CreateItemInstance("Healing Potion"));
-        }
         if (IsClient)
         {
             _isOutlineActive = true;
@@ -87,5 +84,25 @@ public class DroppedItemView : NetworkBehaviour, IHoverable, IInteractable
             _outlineHandler.DisableOutline();
         }
         
+    }
+
+    public void OnDespawned()
+    {
+        NetworkObject.Despawn();   
+    }
+
+    public void OnSpawned()
+    {
+        NetworkObject.Spawn();
+    }
+    
+    public class Pool : MonoMemoryPool<Transform, Vector3, ItemModel, DroppedItemView>
+    {
+        protected override void Reinitialize(Transform parent, Vector3 position, ItemModel data, DroppedItemView item)
+        {
+            item.transform.SetParent(parent);
+            item.transform.position = position;
+            item.SetItem(data);
+        }
     }
 }

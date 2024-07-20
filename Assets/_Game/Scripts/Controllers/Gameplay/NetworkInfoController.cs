@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Game.Entities;
+using Game.Items;
 using Game.Utils.PlayerCharInfo;
 using Game.Views.Player;
 using Unity.Netcode;
@@ -25,6 +26,8 @@ namespace Game.Controllers.Gameplay
         
         private readonly PlayerStatsContainer _playerStatsContainer;
         private readonly PlayerInventoryContainer _playerInventoryContainer;
+
+        private readonly DroppedItemView.Pool _droppedItemViewPool;
         
         private readonly DiContainer Container;
 
@@ -43,6 +46,7 @@ namespace Game.Controllers.Gameplay
             Settings unitsSettings,
             PlayerStatsContainer playerStatsContainer,
             PlayerInventoryContainer playerInventoryContainer,
+            DroppedItemView.Pool droppedItemViewPool,
             DiContainer container)
         {
             Singleton = this;
@@ -59,12 +63,26 @@ namespace Game.Controllers.Gameplay
             _playerStatsContainer = playerStatsContainer;
             _playerInventoryContainer = playerInventoryContainer;
 
+            _droppedItemViewPool = droppedItemViewPool;
+            
             Container = container;
         }
 
         public T Resolve<T>()
         {
             return Container.Resolve<T>();
+        }
+
+        
+        //TODO Move this temp spawn/despawn methods
+        public void DespawnDroppedItem(DroppedItemView droppedItemView)
+        {
+            _droppedItemViewPool.Despawn(droppedItemView);   
+        }
+
+        public void SpawnDroppedItem(Transform parent, Vector3 position, ItemModel itemModel)
+        {
+            _droppedItemViewPool.Spawn(parent, position, itemModel);
         }
 
         public PlayerView GetPlayerById(ulong playerId)

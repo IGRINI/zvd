@@ -81,6 +81,37 @@ namespace Game.Entities
             UpdateSlotRpc(firstSlot, _slots[firstSlot].Item?.NetworkData, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
             UpdateSlotRpc(secondSlot, _slots[secondSlot].Item?.NetworkData, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
         }
+        
+        [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable, RequireOwnership = true)]
+        public void TryToDropItemRpc(byte slotToDrop, RpcParams rpcParams = default)
+        {
+            var itemModel = _slots[slotToDrop].Item;
+
+            var ownerTransform = Owner.transform;
+            if (Owner is PlayerView playerView)
+            {
+                ownerTransform = playerView.Body;
+            }
+
+            var distance = 1.5f;
+            var startPosition = ownerTransform.position + Vector3.up * 0.5f;
+             
+            var targetPosition = startPosition + ownerTransform.forward * distance;
+            if (Physics.Raycast(startPosition, ownerTransform.forward, out var hitInfo, distance))
+            {
+                targetPosition = hitInfo.point;
+            }
+            
+            var floorPosition = targetPosition;
+            if (Physics.Raycast(targetPosition, Vector3.down, out var floorHit, Mathf.Infinity))
+            {
+                floorPosition = floorHit.point;
+            }
+            
+            NetworkInfoController.Singleton.SpawnDroppedItem(null, floorPosition, itemModel);
+            RemoveItemFromSlot(slotToDrop);
+        }
+           
 
         public ItemModel GetItemInSlot(byte slot)
         {
