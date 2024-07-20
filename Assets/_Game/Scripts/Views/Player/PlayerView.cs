@@ -70,14 +70,18 @@ namespace Game.Views.Player
             }
         }
 
-        public override void OnNetworkSpawn()
+        public override async void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
             gameObject.name = $"Player #{OwnerClientId}";
             Network.Singleton.RegisterPlayer(this, IsOwner);
             
             if(IsServer)
-                Network.Singleton.SpawnDroppedItem(transform.position, ItemDatabase.CreateItemInstance("Healing Potion"));
+            {
+                await UniTask.Delay(100);
+                Network.Singleton.SpawnDroppedItem(transform.position,
+                    ItemDatabase.CreateItemInstance("Healing Potion"));
+            }
         }
 
         public override void OnNetworkDespawn()
