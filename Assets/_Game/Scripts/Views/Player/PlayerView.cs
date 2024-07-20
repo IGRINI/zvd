@@ -281,7 +281,7 @@ namespace Game.Views.Player
                 }
             }
         }
-        
+
         public void TryToTake(DroppedItemView itemView)
         {
             TryToTakeRpc(itemView.NetworkObject);

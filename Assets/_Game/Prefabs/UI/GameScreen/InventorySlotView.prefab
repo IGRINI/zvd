@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1334f978b86822644a60fb76d542ec8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _itemObject: {fileID: 3431793589403800458}
+  _itemObjectTransform: {fileID: 640818935373385181}
   _itemImage: {fileID: 9217304875820442487}
   _itemName: {fileID: 5177544955582526946}
   _charges: {fileID: 8008099977396546917}

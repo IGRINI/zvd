@@ -66,6 +66,21 @@ namespace Game.Entities
             
             return false;
         }
+        
+        [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable, RequireOwnership = true)]
+        public void TryToSwapItemsRpc(byte fromSlot, byte toSlot, RpcParams rpcParams = default)
+        {
+            SwapSlots(fromSlot, toSlot);
+        }
+
+        private void SwapSlots(byte firstSlot, byte secondSlot)
+        {
+            (_slots[firstSlot], _slots[secondSlot]) = (_slots[secondSlot], _slots[firstSlot]);
+            SlotChanged?.Invoke(firstSlot, _slots[firstSlot].Item?.NetworkData);
+            SlotChanged?.Invoke(secondSlot, _slots[secondSlot].Item?.NetworkData);
+            UpdateSlotRpc(firstSlot, _slots[firstSlot].Item?.NetworkData, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+            UpdateSlotRpc(secondSlot, _slots[secondSlot].Item?.NetworkData, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+        }
 
         public ItemModel GetItemInSlot(byte slot)
         {

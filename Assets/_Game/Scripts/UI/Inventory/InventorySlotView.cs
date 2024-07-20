@@ -1,14 +1,21 @@
 
+using System;
 using Game.Controllers.Gameplay;
 using Game.Items;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventorySlotView : ItemSlotView
+public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
-    //TODO TEMP
-    [SerializeField] private GameObject _itemObject;
+    public event Action<byte> DragStart;
+    public event Action<byte> DragEnd;
+
+    public event Action<byte> ItemCleared;
+    
+    public Image ItemImage => _itemImage;
+    
     [SerializeField] private Image _itemImage;
     [SerializeField] private TextMeshProUGUI _itemName;
     [SerializeField] private TextMeshProUGUI _charges;
@@ -27,7 +34,9 @@ public class InventorySlotView : ItemSlotView
         if (itemNetworkData == null)
         {
             _itemName.SetText("");
-            _itemObject.SetActive(false);
+            _itemObjectTransform.gameObject.SetActive(false);
+            ItemCleared?.Invoke(_slotNum);
+            
             return;
         }
         
@@ -42,7 +51,7 @@ public class InventorySlotView : ItemSlotView
         else
             _charges.gameObject.SetActive(false);
         
-        _itemObject.SetActive(true);
+        _itemObjectTransform.gameObject.SetActive(true);
         
         _button.onClick.AddListener(OnItemClick);
     }
@@ -54,8 +63,32 @@ public class InventorySlotView : ItemSlotView
 
     public override void RemoveItem()
     {
-        _itemObject.SetActive(false);
+        _itemObjectTransform.gameObject.SetActive(false);
         
         _button.onClick.RemoveAllListeners();
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if(!_itemObjectTransform.gameObject.activeSelf) return;
+        
+        DragStart?.Invoke(_slotNum);
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        DragEnd?.Invoke(_slotNum);
+    }
+
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        
+    }
+
+    public void ResetItemPosition()
+    {
+        _itemObjectTransform.SetParent(transform);
+        _itemObjectTransform.anchoredPosition = Vector2.zero;
     }
 }
