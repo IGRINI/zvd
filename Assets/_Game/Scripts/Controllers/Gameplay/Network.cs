@@ -76,14 +76,18 @@ namespace Game.Controllers.Gameplay
         
         public void DespawnDroppedItem(DroppedItemView droppedItemView)
         {
-            droppedItemView.NetworkObject.Despawn();   
+            if(NetworkManager.Singleton.IsServer)
+                droppedItemView.NetworkObject.Despawn();   
         }
 
         public void SpawnDroppedItem(Vector3 position, ItemModel itemModel)
         {
-            var item = Object.Instantiate(_droppedItemPrefab, position, Quaternion.identity);
-            item.SetItem(itemModel);
-            item.NetworkObject.Spawn();
+            if (NetworkManager.Singleton.IsServer)
+            {
+                var item = Object.Instantiate(_droppedItemPrefab, position, Quaternion.identity);
+                item.SetItem(itemModel);
+                item.NetworkObject.Spawn();
+            }
         }
 
         public PlayerView GetPlayerById(ulong playerId)
