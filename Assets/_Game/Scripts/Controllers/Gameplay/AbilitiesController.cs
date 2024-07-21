@@ -17,6 +17,8 @@ namespace Game.Controllers.Gameplay
         
         public static AbilitiesController Singleton { get; private set; }
 
+        public event Action<byte> ActiveSlotChanged;
+        
         private byte _slotUsing;
 
         private PlayerView _playerView;
@@ -79,9 +81,13 @@ namespace Game.Controllers.Gameplay
             {
                 _slotUsing = slot;
                 _playerView.SetPlayerState(PlayerState.Aiming);
+                ActiveSlotChanged?.Invoke(_slotUsing);
             }
             else
+            {
                 UseItemRpc(slot);
+                ResetSlotUsing();
+            }
         }
         
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable)]
@@ -139,6 +145,7 @@ namespace Game.Controllers.Gameplay
         {
             _slotUsing = 255;
             _playerView.SetPlayerState(PlayerState.Default);
+            ActiveSlotChanged?.Invoke(_slotUsing);
         }
     }
 }

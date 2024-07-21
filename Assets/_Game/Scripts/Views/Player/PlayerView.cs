@@ -55,8 +55,6 @@ namespace Game.Views.Player
 
         private bool _isHeavyAttack;
         private EntityInventory _entityInventory;
-        
-        public event Action<PlayerState> PlayerStateChanged;
 
         protected override void Awake()
         {
@@ -83,10 +81,6 @@ namespace Game.Views.Player
         public void SetPlayerState(PlayerState playerState)
         {
             PlayerState = playerState;
-            if (IsOwner)
-            {
-                PlayerStateChanged?.Invoke(PlayerState);
-            }
         }
 
         public override async void OnNetworkSpawn()

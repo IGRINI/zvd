@@ -103,7 +103,7 @@ public class PlayerInventoryContainer : MonoBehaviour
     {
         _playerEntityInventory = playerEntityInventory;
         _playerEntityInventory.SlotChanged += UpdateSlot;
-        Network.Singleton.PlayerView.PlayerStateChanged += ChangeSlotActivity;
+        AbilitiesController.Singleton.ActiveSlotChanged += ChangeSlotActivity;
     }
 
     public void UnregisterInventory(EntityInventory playerEntityInventory)
@@ -111,7 +111,6 @@ public class PlayerInventoryContainer : MonoBehaviour
         if(_playerEntityInventory != null)
         {
             _playerEntityInventory.SlotChanged -= UpdateSlot;
-            Network.Singleton.PlayerView.PlayerStateChanged -= ChangeSlotActivity;
             _playerEntityInventory = null;
 
             foreach (var slot in _inventorySlots)
@@ -121,16 +120,17 @@ public class PlayerInventoryContainer : MonoBehaviour
 
             _playerEntityInventory = null;
         }
+        AbilitiesController.Singleton.ActiveSlotChanged -= ChangeSlotActivity;
     }
 
-    private void ChangeSlotActivity(PlayerState playerState)
+    private void ChangeSlotActivity(byte slot)
     {
-        foreach (var slot in _inventorySlots)
+        foreach (var invSlot in _inventorySlots)
         {
-            slot.SetActivity(false);
+            invSlot.SetActivity(false);
         }
         
-        if(AbilitiesController.Singleton.SlotUsing == 255) return;
+        if(slot == 255) return;
         
         _inventorySlots[AbilitiesController.Singleton.SlotUsing].SetActivity(true);
     }
