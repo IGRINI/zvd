@@ -14,6 +14,7 @@ using UnityEngine.VFX;
 namespace Game.Entities
 {
     [RequireComponent(typeof(EntityInventory))]
+    [RequireComponent(typeof(EntityEquipment))]
     public abstract class BaseEntityModel : NetworkBehaviour, IHoverable
     {
         OutlineHandler IHoverable.OutlineHandler
@@ -84,6 +85,7 @@ namespace Game.Entities
         private OutlineHandler _outlineHandler;
         
         public EntityInventory Inventory { get; private set; } 
+        public EntityEquipment Equipment { get; private set; } 
 
         protected virtual void Awake()
         {
@@ -92,6 +94,7 @@ namespace Game.Entities
             SetAttackAnimationTime(GetStartAttackSpeed());
 
             Inventory = GetComponent<EntityInventory>();
+            Equipment = GetComponent<EntityEquipment>();
             _outlineHandler = GetComponent<OutlineHandler>();
         }
 
