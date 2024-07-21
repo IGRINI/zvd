@@ -8,6 +8,7 @@ namespace Game.Controllers.Gameplay
     public class MouseObjectDetectionController : IFixedTickable
     {
         public IHoverable HoveredObject { get; private set; }
+        public Vector3 PointerPosition { get; private set; }
         
         private readonly MouseController _mouseController;
         private readonly Camera _camera;
@@ -36,23 +37,29 @@ namespace Game.Controllers.Gameplay
                 HoveredObject = hoverable;
                 HoveredObject.OnHoverStart();
                 HoveredObject.OutlineHandler.EnableOutline();
+                PointerPosition = hit.point;
             }
             else
             {
                 DisableCurrentHoveredObject();
+
+                Physics.Raycast(ray, out var pointerHit, float.PositiveInfinity,
+                    _settings.Mouse.NonInteractionLayerMask, QueryTriggerInteraction.Ignore);
+
+                PointerPosition = pointerHit.point;
             }
             
             
         }
 
-        private void DisableCurrentHoveredObject()
+        public void DisableCurrentHoveredObject()
         {
             if (HoveredObject is { CanHover: true })
             {
                 HoveredObject.OnHoverStop();
                 HoveredObject.OutlineHandler.DisableOutline();
-                HoveredObject = null;
             }
+            HoveredObject = null;
         }
 
         [Serializable]
@@ -65,6 +72,7 @@ namespace Game.Controllers.Gameplay
             {
                 public float InteractiveRayRadius;
                 public LayerMask InteractiveSphereLayerMask;
+                public LayerMask NonInteractionLayerMask;
             }
         }
     }

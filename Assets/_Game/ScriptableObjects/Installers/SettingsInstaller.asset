@@ -58,6 +58,9 @@ MonoBehaviour:
       InteractiveSphereLayerMask:
         serializedVersion: 2
         m_Bits: 1288
+      NonInteractionLayerMask:
+        serializedVersion: 2
+        m_Bits: 65
   InteractionSettings:
     Interaction:
       InteractionDistance: 5

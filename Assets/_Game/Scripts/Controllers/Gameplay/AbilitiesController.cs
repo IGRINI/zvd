@@ -10,9 +10,11 @@ namespace Game.Controllers.Gameplay
     public class AbilitiesController : NetworkBehaviour
     {
         private KeyboardController _keyboardController;
+        private MouseObjectDetectionController _mouseObjectDetectionController;
         
         public static AbilitiesController Singleton { get; private set; }
 
+        
         private void Awake()
         {
             Singleton = this;
@@ -24,6 +26,8 @@ namespace Game.Controllers.Gameplay
 
             _keyboardController = Network.Singleton.Resolve<KeyboardController>();
             _keyboardController.KeyPerformed += OnKeyPerformed;
+
+            _mouseObjectDetectionController = Network.Singleton.Resolve<MouseObjectDetectionController>();
         }
 
         public override void OnNetworkDespawn()
@@ -45,10 +49,19 @@ namespace Game.Controllers.Gameplay
                 KeyAction.ItemSlot5 => 5,
                 _ => 255
             };
-
+            
             if (slot != 255)
             {
-                UseItemRpc(slot);
+                NetworkObjectReference target = default;
+               
+                if (_mouseObjectDetectionController.HoveredObject is NetworkBehaviour networkBehaviour)
+                {
+                    target = networkBehaviour.NetworkObject;
+                }
+                var point = _mouseObjectDetectionController.PointerPosition;
+                
+                
+                UseItemRpc(slot, point, target);
             }
         }
         
@@ -68,5 +81,6 @@ namespace Game.Controllers.Gameplay
             var item = inventory.GetItemInSlot(slot);
             item?.Ability.StartSpell(point, target);
         }
+        
     }
 }

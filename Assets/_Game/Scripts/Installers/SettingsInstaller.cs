@@ -15,7 +15,7 @@ namespace Game.Installers
         [FormerlySerializedAs("_unitsSettings")] [SerializeField] public Network.Settings UnitsSettings;
         [SerializeField] public MouseObjectDetectionController.Settings MouseObjectDetectionSettings;
         [SerializeField] public InteractionController.Settings InteractionSettings;
-        
+
         public override void InstallBindings()
         {
             Container.Bind<GameBootstrapper.Settings>().FromInstance(BootstrapSettings).AsSingle().CopyIntoAllSubContainers().NonLazy();
