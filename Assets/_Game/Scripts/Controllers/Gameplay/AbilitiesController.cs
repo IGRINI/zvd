@@ -9,6 +9,8 @@ namespace Game.Controllers.Gameplay
 {
     public class AbilitiesController : NetworkBehaviour
     {
+        public byte SlotUsing => _slotUsing;
+        
         private KeyboardController _keyboardController;
         private MouseController _mouseController;
         private MouseObjectDetectionController _mouseObjectDetectionController;
@@ -59,28 +61,31 @@ namespace Game.Controllers.Gameplay
                 _ => 255
             };
             
-            if (slot != 255)
-            {
-                var itemToUse = _playerView.Inventory.GetItemInSlot(slot);
+            UseItemAbilityInSlot(slot);
+            
+        }
 
-                if(itemToUse == null) 
-                    return;
+        public void UseItemAbilityInSlot(byte slot)
+        {
+            if(slot == 255) return;
+            
+            var itemToUse = _playerView.Inventory.GetItemInSlot(slot);
+
+            if(itemToUse == null) 
+                return;
                 
-                if (itemToUse.Ability.AbilityBehaviour.HasFlagFast(EAbilityBehaviour.PointTarget) ||
-                    itemToUse.Ability.AbilityBehaviour.HasFlagFast(EAbilityBehaviour.UnitTarget))
-                {
-                    _slotUsing = slot;
-                    _playerView.SetPlayerState(PlayerState.Aiming);
-                }
-                else
-                    UseItemRpc(slot);
-                
-                // UseItemRpc(slot, point, target);
+            if (itemToUse.Ability.AbilityBehaviour.HasFlagFast(EAbilityBehaviour.PointTarget) ||
+                itemToUse.Ability.AbilityBehaviour.HasFlagFast(EAbilityBehaviour.UnitTarget))
+            {
+                _slotUsing = slot;
+                _playerView.SetPlayerState(PlayerState.Aiming);
             }
+            else
+                UseItemRpc(slot);
         }
         
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable)]
-        public void UseItemRpc( byte slot, Vector3? point = null, NetworkObjectReference targetNetworkObject = default, RpcParams rpcParams = default)
+        private void UseItemRpc( byte slot, Vector3? point = null, NetworkObjectReference targetNetworkObject = default, RpcParams rpcParams = default)
         {
             var playerId = rpcParams.Receive.SenderClientId;
 
@@ -121,13 +126,19 @@ namespace Game.Controllers.Gameplay
 
                     UseItemRpc(_slotUsing, point, target);
                 
-                    _playerView.SetPlayerState(PlayerState.Default);
+                    ResetSlotUsing();
                 }
             }
             else
             {
-                _playerView.SetPlayerState(PlayerState.Default);
+                ResetSlotUsing();
             }
+        }
+
+        private void ResetSlotUsing()
+        {
+            _slotUsing = 255;
+            _playerView.SetPlayerState(PlayerState.Default);
         }
     }
 }

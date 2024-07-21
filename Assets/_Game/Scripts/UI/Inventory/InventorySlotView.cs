@@ -23,7 +23,8 @@ public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandle
     [SerializeField] private Button _button;
     [SerializeField] private RectTransform _keyNameTransform;
     [SerializeField] private TMP_Text _keyNameText;
-
+    [SerializeField] private GameObject _activityBorder;
+    
     private byte _slotNum;
 
     public void SetItemSlot(byte slot)
@@ -34,6 +35,9 @@ public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandle
     public override void SetItem(ItemNetworkData itemNetworkData)
     {
         _button.onClick.RemoveAllListeners();
+        
+        SetActivity(false);
+        
         if (itemNetworkData == null)
         {
             _itemName.SetText("");
@@ -66,9 +70,14 @@ public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandle
         LayoutRebuilder.ForceRebuildLayoutImmediate(_keyNameTransform);
     }
 
+    public void SetActivity(bool isActive)
+    {
+        _activityBorder.SetActive(isActive);
+    }
+
     private void OnItemClick()
     {
-        AbilitiesController.Singleton.UseItemRpc(_slotNum);
+        AbilitiesController.Singleton.UseItemAbilityInSlot(_slotNum);
     }
 
     public override void RemoveItem()

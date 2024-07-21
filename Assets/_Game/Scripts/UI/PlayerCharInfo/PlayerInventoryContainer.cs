@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Controllers;
+using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Items;
+using Game.Views.Player;
 using ModestTree;
 using Unity.Netcode;
 using UnityEngine;
@@ -52,6 +54,8 @@ public class PlayerInventoryContainer : MonoBehaviour
         _isDragging = true;
         _draggableSlot = _inventorySlots[slotNum];
         _draggableSlot.ItemObjectTransform.SetParent(_draggableParent);
+        AbilitiesController.Singleton.UseItemAbilityInSlot(255);
+        Network.Singleton.PlayerView.SetPlayerState(default);
     }
 
     private void EndDrag(byte slotNum)
@@ -99,6 +103,7 @@ public class PlayerInventoryContainer : MonoBehaviour
     {
         _playerEntityInventory = playerEntityInventory;
         _playerEntityInventory.SlotChanged += UpdateSlot;
+        Network.Singleton.PlayerView.PlayerStateChanged += ChangeSlotActivity;
     }
 
     public void UnregisterInventory(EntityInventory playerEntityInventory)
@@ -106,6 +111,7 @@ public class PlayerInventoryContainer : MonoBehaviour
         if(_playerEntityInventory != null)
         {
             _playerEntityInventory.SlotChanged -= UpdateSlot;
+            Network.Singleton.PlayerView.PlayerStateChanged -= ChangeSlotActivity;
             _playerEntityInventory = null;
 
             foreach (var slot in _inventorySlots)
@@ -115,6 +121,18 @@ public class PlayerInventoryContainer : MonoBehaviour
 
             _playerEntityInventory = null;
         }
+    }
+
+    private void ChangeSlotActivity(PlayerState playerState)
+    {
+        foreach (var slot in _inventorySlots)
+        {
+            slot.SetActivity(false);
+        }
+        
+        if(AbilitiesController.Singleton.SlotUsing == 255) return;
+        
+        _inventorySlots[AbilitiesController.Singleton.SlotUsing].SetActivity(true);
     }
     
     private void OnDestroy()
