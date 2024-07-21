@@ -24,7 +24,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "HeavyAttack",
+                    "name": "RightClick",
                     "type": "Button",
                     "id": "6006dcd1-b9cf-42a9-af3b-58aeb054df8b",
                     "expectedControlType": "Button",
@@ -33,7 +33,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Attack",
+                    "name": "LeftClick",
                     "type": "Button",
                     "id": "b878262a-312d-411a-8d29-0eaccd042b6a",
                     "expectedControlType": "Button",
@@ -72,7 +72,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Attack",
+                    "action": "LeftClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -83,7 +83,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "HeavyAttack",
+                    "action": "RightClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

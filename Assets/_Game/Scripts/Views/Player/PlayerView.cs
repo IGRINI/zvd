@@ -12,6 +12,12 @@ using UnityEngine;
 
 namespace Game.Views.Player
 {
+    public enum PlayerState
+    {
+        Default,
+        Aiming,
+    }
+    
     public class PlayerView : BaseEntityModel
     {
         private readonly HeavyAttackModifier _heavyAttackModifier = new();
@@ -25,9 +31,11 @@ namespace Game.Views.Player
         public CharacterController CharacterController { get; private set; }
         [SerializeField] private Camera _faceCamera;
         [SerializeField] private CinemachineVirtualCamera _virtualCamera;
+        
         public Camera FaceCamera => _faceCamera;
         public CinemachineVirtualCamera VirtualCamera => _virtualCamera;
-
+        public PlayerState PlayerState { get;  private set; }
+        
         private Vector2 _previousMoveInput;
         private Vector2 _currentMoveInput;
         private Quaternion _targetRotation;
@@ -47,7 +55,7 @@ namespace Game.Views.Player
         private bool _isHeavyAttack;
 
         private EntityInventory _entityInventory;
-        
+
         protected override void Awake()
         {
             base.Awake();
@@ -70,17 +78,24 @@ namespace Game.Views.Player
             }
         }
 
+        public void SetPlayerState(PlayerState playerState)
+        {
+            PlayerState = playerState;
+        }
+
         public override async void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
             gameObject.name = $"Player #{OwnerClientId}";
             Network.Singleton.RegisterPlayer(this, IsOwner);
+            PlayerState = PlayerState.Default;
             
             if(IsServer)
             {
                 await UniTask.Delay(100);
                 Network.Singleton.SpawnDroppedItem(transform.position,
                     ItemDatabase.CreateItemInstance("Healing Potion"));
+                Network.Singleton.SpawnDroppedItem(new Vector3(transform.position.x + .5f, transform.position.y, transform.position.z), ItemDatabase.CreateItemInstance("Grenade"));
             }
         }
 
@@ -179,6 +194,7 @@ namespace Game.Views.Player
             movedVector.y = force;
 
             CharacterController.Move(movedVector);
+            
         }
 
         private void ChangeMoveAnimations(float speed, float directionX, float directionY)
@@ -265,6 +281,8 @@ namespace Game.Views.Player
 
         public void Attack(bool isHeavyAttack)
         {
+            if(PlayerState == PlayerState.Aiming) return;
+
             var attackHash = isHeavyAttack ? HeavyAttackAnimation : AttackAnimation;
             Animator.DOLayerWeight(AttackLayerIndex, AttackStartWeight, AttackWeightTransitionTime);
             Attack(attackHash);

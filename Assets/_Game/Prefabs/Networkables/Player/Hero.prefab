@@ -185,6 +185,7 @@ GameObject:
   - component: {fileID: 5292253064753554077}
   - component: {fileID: 124905232229661279}
   - component: {fileID: 1777243025212096546}
+  - component: {fileID: 6334530373626457419}
   m_Layer: 3
   m_Name: Hero
   m_TagString: Untagged
@@ -220,7 +221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2007017961
+  GlobalObjectIdHash: 2676635034
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -268,6 +269,7 @@ MonoBehaviour:
   _currentHealth: 0
   _faceCamera: {fileID: 9104942972097055702}
   _virtualCamera: {fileID: 7476549234789633918}
+  _aimingPlane: {fileID: 0}
   _isMoveOnServer: 0
 --- !u!143 &6909182062709583981
 CharacterController:
@@ -350,7 +352,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f754bd038709a1c48ab14665601ceded, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slots: []
+--- !u!114 &6334530373626457419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3621480760394298066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 360f5ab6001f4073a376b7523ce22a5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6697783627482829025
 GameObject:
   m_ObjectHideFlags: 0

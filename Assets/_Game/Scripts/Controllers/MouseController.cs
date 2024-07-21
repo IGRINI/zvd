@@ -16,11 +16,11 @@ namespace Game.Controllers
         private readonly InputActionMap _mouseMap;
         private readonly InputAction _mousePosition;
         private readonly InputAction _mouseDelta;
-        private readonly InputAction _attack;
-        private readonly InputAction _heavyAttack;
+        private readonly InputAction _leftClick;
+        private readonly InputAction _rightClick;
 
         public Action<Vector2> MouseDeltaChanged;
-        public Action<bool> AttackPerformed;
+        public Action<bool> MouseClickPerformed;
         public Vector2 MousePosition => _mousePosition.ReadValue<Vector2>();
         
         private bool _isPointerOverUI;
@@ -32,29 +32,29 @@ namespace Game.Controllers
             _mouseMap = _inputAsset.FindActionMap("Mouse");
             _mousePosition = _mouseMap.FindAction("Position");
             _mouseDelta = _mouseMap.FindAction("Delta");
-            _attack = _mouseMap.FindAction("Attack");
-            _heavyAttack = _mouseMap.FindAction("HeavyAttack");
+            _leftClick = _mouseMap.FindAction("LeftClick");
+            _rightClick = _mouseMap.FindAction("RightClick");
             
             _mouseDelta.performed += OnMouseDeltaPerformed;
-            _attack.performed += OnAttackPerformed;
-            _heavyAttack.performed += OnHeavyAttackPerformed;
+            _leftClick.performed += OnLeftClickPerformed;
+            _rightClick.performed += OnRightClickPerformed;
             
             // Cursor.lockState = CursorLockMode.Locked;
         }
 
-        private void OnAttackPerformed(InputAction.CallbackContext context)
+        private void OnLeftClickPerformed(InputAction.CallbackContext context)
         {
             if (!_isPointerOverUI)
             {
-                AttackPerformed?.Invoke(false);
+                MouseClickPerformed?.Invoke(false);
             }
         }
 
-        private void OnHeavyAttackPerformed(InputAction.CallbackContext context)
+        private void OnRightClickPerformed(InputAction.CallbackContext context)
         {
             if (!_isPointerOverUI)
             {
-                AttackPerformed?.Invoke(true);
+                MouseClickPerformed?.Invoke(true);
             }
         }
 
@@ -66,7 +66,7 @@ namespace Game.Controllers
         public void Dispose()
         {
             _mouseDelta.performed -= OnMouseDeltaPerformed;
-            _attack.performed -= OnAttackPerformed;
+            _leftClick.performed -= OnLeftClickPerformed;
         }
 
         public void Tick()

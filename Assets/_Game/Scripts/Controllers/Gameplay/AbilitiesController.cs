@@ -1,20 +1,24 @@
 ﻿using System;
-using Game.Abilities.Items;
+using Game.Abilities;
 using Game.Entities;
+using Game.Views.Player;
 using Unity.Netcode;
 using UnityEngine;
-using Zenject;
 
 namespace Game.Controllers.Gameplay
 {
     public class AbilitiesController : NetworkBehaviour
     {
         private KeyboardController _keyboardController;
+        private MouseController _mouseController;
         private MouseObjectDetectionController _mouseObjectDetectionController;
         
         public static AbilitiesController Singleton { get; private set; }
 
-        
+        private byte _slotUsing;
+
+        private PlayerView _playerView;
+
         private void Awake()
         {
             Singleton = this;
@@ -27,7 +31,11 @@ namespace Game.Controllers.Gameplay
             _keyboardController = Network.Singleton.Resolve<KeyboardController>();
             _keyboardController.KeyPerformed += OnKeyPerformed;
 
+            _mouseController = Network.Singleton.Resolve<MouseController>();
+            _mouseController.MouseClickPerformed += UseItemPerformed;
+
             _mouseObjectDetectionController = Network.Singleton.Resolve<MouseObjectDetectionController>();
+            _playerView = Network.Singleton.PlayerView;
         }
 
         public override void OnNetworkDespawn()
@@ -35,6 +43,7 @@ namespace Game.Controllers.Gameplay
             base.OnNetworkDespawn();
             
             _keyboardController.KeyPerformed -= OnKeyPerformed;
+            _mouseController.MouseClickPerformed -= UseItemPerformed;
         }
 
         private void OnKeyPerformed(KeyAction keyAction)
@@ -52,16 +61,21 @@ namespace Game.Controllers.Gameplay
             
             if (slot != 255)
             {
-                NetworkObjectReference target = default;
-               
-                if (_mouseObjectDetectionController.HoveredObject is NetworkBehaviour networkBehaviour)
+                var itemToUse = _playerView.Inventory.GetItemInSlot(slot);
+
+                if(itemToUse == null) 
+                    return;
+                
+                if (itemToUse.Ability.AbilityBehaviour.HasFlagFast(EAbilityBehaviour.PointTarget) ||
+                    itemToUse.Ability.AbilityBehaviour.HasFlagFast(EAbilityBehaviour.UnitTarget))
                 {
-                    target = networkBehaviour.NetworkObject;
+                    _slotUsing = slot;
+                    _playerView.SetPlayerState(PlayerState.Aiming);
                 }
-                var point = _mouseObjectDetectionController.PointerPosition;
+                else
+                    UseItemRpc(slot);
                 
-                
-                UseItemRpc(slot, point, target);
+                // UseItemRpc(slot, point, target);
             }
         }
         
@@ -81,6 +95,39 @@ namespace Game.Controllers.Gameplay
             var item = inventory.GetItemInSlot(slot);
             item?.Ability.StartSpell(point, target);
         }
-        
+
+        private void UseItemPerformed(bool rightClick)
+        {
+            if (!rightClick)
+            {
+                if (_playerView.PlayerState == PlayerState.Aiming)
+                {
+                    var itemToUse = _playerView.Inventory.GetItemInSlot(_slotUsing);
+
+                    NetworkObjectReference target = default;
+                    Vector3? point = null;
+                
+                    if(itemToUse.Ability.AbilityBehaviour.HasFlagFast(EAbilityBehaviour.PointTarget))
+                        point = _mouseObjectDetectionController.PointerPosition;
+
+                    if (itemToUse.Ability.AbilityBehaviour.HasFlagFast(EAbilityBehaviour.UnitTarget))
+                    {
+                        if (_mouseObjectDetectionController.HoveredObject is NetworkBehaviour networkBehaviour)
+                        {
+                            target = networkBehaviour.NetworkObject;
+                            point = networkBehaviour.transform.position;
+                        }
+                    }
+
+                    UseItemRpc(_slotUsing, point, target);
+                
+                    _playerView.SetPlayerState(PlayerState.Default);
+                }
+            }
+            else
+            {
+                _playerView.SetPlayerState(PlayerState.Default);
+            }
+        }
     }
 }

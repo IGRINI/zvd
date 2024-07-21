@@ -33,7 +33,7 @@ namespace Game.Controllers.Gameplay
             _cinemachineVirtualCamera = cinemachineVirtualCamera;
             _camera = camera;
             
-            _mouseController.AttackPerformed += AttackPerformed;
+            _mouseController.MouseClickPerformed += AttackPerformed;
         }
 
         private void AttackPerformed(bool isHeavyAttack)

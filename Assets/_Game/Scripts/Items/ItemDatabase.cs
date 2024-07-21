@@ -11,6 +11,9 @@ namespace Game.Items
         {
             var healingPotion = ItemModel.Create<HealingPotionItem>("Healing Potion", isConsumable: true, hasCharges: true, charges: 3);
             _itemReferences.Add(healingPotion.NetworkData.Name, healingPotion);
+
+            var grenade = ItemModel.Create<GrenadeItem>("Grenade", isConsumable: true, hasCharges: true, charges: 5);
+            _itemReferences.Add(grenade.NetworkData.Name, grenade);
         }
 
         private static ItemModel GetItemReference(string itemName)
