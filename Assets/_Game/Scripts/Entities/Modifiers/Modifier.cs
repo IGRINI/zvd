@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using Unity.Netcode;
+using UnityEngine;
 
 namespace Game.Entities.Modifiers
 {
@@ -9,7 +11,8 @@ namespace Game.Entities.Modifiers
             SpeedMultiplier,
             Speed,
             AttackDamage,
-            AttackSpeed
+            AttackSpeed,
+            MaxHealth
         }
 
         public void Init(BaseEntityModel caster, BaseEntityModel owner, float endTime)
@@ -38,6 +41,7 @@ namespace Game.Entities.Modifiers
         public virtual float GetSpeedMultiplier() => 0;
         public virtual float GetSpeed() => 0;
         public virtual float GetJumpForce() => 0;
+        public virtual float GetMaxHealth() => 0;
 
         public virtual void OnAdded() { }
         public virtual void OnRemoved() { }
@@ -62,6 +66,16 @@ namespace Game.Entities.Modifiers
         public void UpdateTickTime()
         {
             _lastTickTime = Time.timeSinceLevelLoad;
+        }
+
+        public virtual void SerializeParameters(BinaryWriter writer)
+        {
+            
+        }
+
+        public virtual void LoadParameters(BinaryReader reader)
+        {
+            
         }
     }
 }

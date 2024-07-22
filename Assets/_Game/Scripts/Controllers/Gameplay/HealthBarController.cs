@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Game.Entities;
-using Game.Utils.HealthBars;
+using Game.UI.HealthBars;
 using UnityEngine;
 using Zenject;
 

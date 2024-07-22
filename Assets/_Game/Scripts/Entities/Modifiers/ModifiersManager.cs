@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using Unity.Netcode;
 using UnityEngine;
 using Zenject;
 
@@ -38,6 +40,20 @@ namespace Game.Entities.Modifiers
 
             modifier.OnAdded();
 
+            if (NetworkManager.Singleton.IsServer)
+            {
+                using var memoryStream = new MemoryStream();
+                {
+                    using (var writer = new BinaryWriter(memoryStream))
+                    {
+                        modifier.SerializeParameters(writer);
+                        target.AddModifierRpc(modifier.GetType().AssemblyQualifiedName, duration, caster.NetworkObject, memoryStream.ToArray());
+                    }
+                }
+                if(NetworkManager.Singleton.IsHost)
+                    target.UpdateStats();
+            }
+
             return modifier;
         }
 
@@ -46,6 +62,13 @@ namespace Game.Entities.Modifiers
             modifier.GetOwner().RemoveModifier(modifier);
             _modifiers.Remove(modifier);
             modifier.OnRemoved();
+            
+            if (NetworkManager.Singleton.IsServer)
+            {
+                modifier.GetOwner().RemoveModifierRpc(modifier.GetType().AssemblyQualifiedName);
+                if(NetworkManager.Singleton.IsHost)
+                    modifier.GetOwner().UpdateStats();
+            }
         }
     }
 }

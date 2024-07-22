@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Cinemachine;
 using Cysharp.Threading.Tasks;
 using Game.Controllers.Gameplay;
@@ -96,6 +96,8 @@ namespace Game.Views.Player
                 Network.Singleton.SpawnDroppedItem(transform.position,
                     ItemDatabase.CreateItemInstance("Healing Potion"));
                 Network.Singleton.SpawnDroppedItem(new Vector3(transform.position.x + .5f, transform.position.y, transform.position.z), ItemDatabase.CreateItemInstance("Grenade"));
+                Network.Singleton.SpawnDroppedItem(transform.position,
+                    ItemDatabase.CreateItemInstance("Helmet"));
             }
         }
 
@@ -320,7 +322,7 @@ namespace Game.Views.Player
             await UniTask.Delay(5000);
             NetworkTransform.Teleport(Vector3.zero, Quaternion.identity, Vector3.one);
             IsDied = false;
-            SetHealth(MaxHealth);
+            SetHealth(GetMaxHealth());
             gameObject.SetActive(true);
             await UniTask.NextFrame();
 

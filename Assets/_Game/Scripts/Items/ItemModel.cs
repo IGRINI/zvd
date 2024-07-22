@@ -2,13 +2,14 @@
 using Game.Abilities;
 using Game.Abilities.Items;
 using Game.Entities;
+using Game.Items.Equipment;
 
 namespace Game.Items
 {
     public class ItemModel
     {
-        public ItemNetworkData NetworkData { get; private set; }
-        public BaseItemAbility Ability { get; private set; }
+        public ItemNetworkData NetworkData { get; internal set; }
+        public BaseItemAbility Ability { get; internal set; }
         public BaseEntityModel Owner { get; private set; }
         
         public int Charges => NetworkData.Charges;
@@ -80,7 +81,14 @@ namespace Game.Items
                 clonedAbility.SetItem(clonedItem);
             }
 
+            OnCloned(clonedItem);
+
             return clonedItem;
+        }
+
+        protected virtual void OnCloned(ItemModel clonedItem)
+        {
+            
         }
         #endregion
     }

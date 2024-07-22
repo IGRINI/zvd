@@ -10,7 +10,7 @@ namespace Game.Entities
     [RequireComponent(typeof(BaseEntityModel))]
     public class EntityEquipment : NetworkBehaviour
     {
-        public event Action<EquipmentSlotType, EquipmentItem> EquipmentChanged;
+        public event Action<EquipmentSlotType, ItemNetworkData> EquipmentChanged;
 
         private Dictionary<EquipmentSlotType, EquipmentSlotModel> _equipmentSlots;
 
@@ -33,7 +33,9 @@ namespace Game.Entities
                 { EquipmentSlotType.Gloves, new EquipmentSlotModel() },
                 { EquipmentSlotType.Ring1, new EquipmentSlotModel() },
                 { EquipmentSlotType.Ring2, new EquipmentSlotModel() },
-                { EquipmentSlotType.Necklace, new EquipmentSlotModel() }
+                { EquipmentSlotType.Necklace, new EquipmentSlotModel() },
+                { EquipmentSlotType.LeftHand, new EquipmentSlotModel() },
+                { EquipmentSlotType.RightHand, new EquipmentSlotModel() }
             };
         }
 
@@ -42,8 +44,8 @@ namespace Game.Entities
             if (_equipmentSlots.TryGetValue(item.SlotType, out var slot))
             {
                 slot.SetItem(item);
-                EquipmentChanged?.Invoke(item.SlotType, item);
-                SyncEquipmentToNetwork();
+                EquipmentChanged?.Invoke(item.SlotType, item.NetworkData);
+                UpdateSlotRpc(item.SlotType, slot.Item.NetworkData, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
                 return true;
             }
             return false;
@@ -53,16 +55,26 @@ namespace Game.Entities
         {
             if (_equipmentSlots.TryGetValue(slotType, out var slot))
             {
-                var item = slot.Item;
-                slot.ClearItem();
-                EquipmentChanged?.Invoke(slotType, null);
-                SyncEquipmentToNetwork();
+                if (Owner.Inventory.TryToAddItem(slot.Item))
+                {
+                    slot.ClearItem();
+                    EquipmentChanged?.Invoke(slotType, null);
+                    UpdateSlotRpc(slotType, null, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+                }
             }
         }
 
-        private void SyncEquipmentToNetwork()
+        [Rpc(SendTo.SpecifiedInParams, Delivery = RpcDelivery.Reliable)]
+        private void UpdateSlotRpc(EquipmentSlotType slot, ItemNetworkData itemNetworkData, RpcParams rpcParams)
         {
-            // Network synchronization logic here
+            if(IsClient)
+                EquipmentChanged?.Invoke(slot, itemNetworkData);
+        }
+
+        [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable, RequireOwnership = true)]
+        public void UnequipRequestRpc(EquipmentSlotType slot)
+        {
+            UnequipItem(slot);
         }
     }
 }

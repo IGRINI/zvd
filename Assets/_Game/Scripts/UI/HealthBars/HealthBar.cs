@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace Game.Utils.HealthBars
+namespace Game.UI.HealthBars
 {
     public class HealthBar : MonoBehaviour
     {
@@ -36,12 +36,20 @@ namespace Game.Utils.HealthBars
         private void OnDisable()
         {
             if(_entity != null)
+            {
                 _entity.HealthChanged -= OnHealthChanged;
+                _entity.StatsUpdated -= OnStatsUpdated;
+            }
         }
 
-        private void OnHealthChanged(float obj)
+        private void OnStatsUpdated()
         {
-            SetHealth(obj, _entity.MaxHealth);
+            OnHealthChanged(_entity.CurrentHealth);
+        }
+
+        private void OnHealthChanged(float health)
+        {
+            SetHealth(health, _entity.GetMaxHealth());
         }
 
         public class Pool : MonoMemoryPool<BaseEntityModel, HealthBar>
@@ -50,7 +58,8 @@ namespace Game.Utils.HealthBars
             {
                 item._entity = entity;
                 item._entity.HealthChanged += item.OnHealthChanged;
-                item.SetHealth(entity.CurrentHealth, entity.MaxHealth);
+                item._entity.StatsUpdated += item.OnStatsUpdated;
+                item.SetHealth(entity.CurrentHealth, entity.GetMaxHealth());
                 
                 var colors = Network.Singleton.UnitsSettings.HealthBarColors.First(x =>
                     x.RelationType == Network.GetRelationType(

@@ -21,8 +21,6 @@ namespace Game.Controllers.Gameplay
         
         private byte _slotUsing;
 
-        private PlayerView _playerView;
-
         private void Awake()
         {
             Singleton = this;
@@ -39,7 +37,6 @@ namespace Game.Controllers.Gameplay
             _mouseController.MouseClickPerformed += UseItemPerformed;
 
             _mouseObjectDetectionController = Network.Singleton.Resolve<MouseObjectDetectionController>();
-            _playerView = Network.Singleton.PlayerView;
         }
 
         public override void OnNetworkDespawn()
@@ -71,7 +68,7 @@ namespace Game.Controllers.Gameplay
         {
             if(slot == 255) return;
             
-            var itemToUse = _playerView.Inventory.GetItemInSlot(slot);
+            var itemToUse = Network.Singleton.PlayerView.Inventory.GetItemInSlot(slot);
 
             if(itemToUse == null) 
                 return;
@@ -80,7 +77,7 @@ namespace Game.Controllers.Gameplay
                 itemToUse.Ability.AbilityBehaviour.HasFlagFast(EAbilityBehaviour.UnitTarget))
             {
                 _slotUsing = slot;
-                _playerView.SetPlayerState(PlayerState.Aiming);
+                Network.Singleton.PlayerView.SetPlayerState(PlayerState.Aiming);
                 ActiveSlotChanged?.Invoke(_slotUsing);
             }
             else
@@ -111,9 +108,9 @@ namespace Game.Controllers.Gameplay
         {
             if (!rightClick)
             {
-                if (_playerView.PlayerState == PlayerState.Aiming)
+                if (Network.Singleton.PlayerView.PlayerState == PlayerState.Aiming)
                 {
-                    var itemToUse = _playerView.Inventory.GetItemInSlot(_slotUsing);
+                    var itemToUse = Network.Singleton.PlayerView.Inventory.GetItemInSlot(_slotUsing);
 
                     NetworkObjectReference target = default;
                     Vector3? point = null;
@@ -144,8 +141,8 @@ namespace Game.Controllers.Gameplay
         private void ResetSlotUsing()
         {
             _slotUsing = 255;
-            _playerView.SetPlayerState(PlayerState.Default);
-            ActiveSlotChanged?.Invoke(_slotUsing);
+            Network.Singleton.PlayerView.SetPlayerState(PlayerState.Default);
+            ActiveSlotChanged?.Invoke(_slotUsing); 
         }
     }
 }

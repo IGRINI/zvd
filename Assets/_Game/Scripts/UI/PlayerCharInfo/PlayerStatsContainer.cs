@@ -32,9 +32,9 @@ namespace Game.Utils.PlayerCharInfo
         
         public void SetHealth(float health)
         {
-            var healthPct = health / _player.MaxHealth;
+            var healthPct = health / _player.GetMaxHealth();
             _healthBar.fillAmount = healthPct;
-            _healthText.SetText($"{health} / {_player.MaxHealth}");
+            _healthText.SetText($"{health} / {_player.GetMaxHealth()}");
         }
 
         public void SetPlayer(PlayerView playerView)
@@ -45,6 +45,7 @@ namespace Game.Utils.PlayerCharInfo
             _player.Level.OnValueChanged += OnLevelChanged;
             _player.CurrentExperience.OnValueChanged += OnExpirienceChanged;
             _player.CurrentAttributes.OnValueChanged += OnAttributesChanged;
+            _player.StatsUpdated += StatsUpdated;
             SetHealth(_player.CurrentHealth);
             OnExpirienceChanged(_player.CurrentExperience.Value, _player.CurrentExperience.Value);
             OnLevelChanged(_player.Level.Value, _player.Level.Value);
@@ -53,6 +54,14 @@ namespace Game.Utils.PlayerCharInfo
             _player.FaceCamera.gameObject.SetActive(true);
             _player.VirtualCamera.gameObject.SetActive(true);
             _faceCamera.texture = _player.FaceCamera.targetTexture;
+        }
+
+        private void StatsUpdated()
+        {
+            SetHealth(_player.CurrentHealth);
+            OnExpirienceChanged(_player.CurrentExperience.Value, _player.CurrentExperience.Value);
+            OnLevelChanged(_player.Level.Value, _player.Level.Value);
+            OnAttributesChanged(_player.CurrentAttributes.Value, _player.CurrentAttributes.Value);
         }
 
         private void OnAttributesChanged(BaseEntityModel.Attributes previousvalue, BaseEntityModel.Attributes attributes)

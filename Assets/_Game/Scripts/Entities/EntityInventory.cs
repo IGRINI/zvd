@@ -28,9 +28,6 @@ namespace Game.Entities
         {
             base.OnNetworkSpawn();
             
-            if(Owner is PlayerView)
-                Network.Singleton.RegisterInventory(this, IsOwner);
-            
             _slots = new []
             {
                 new SlotModel(),
@@ -40,14 +37,6 @@ namespace Game.Entities
                 new SlotModel(),
                 new SlotModel(),
             };
-        }
-
-        public override void OnNetworkDespawn()
-        {
-            base.OnNetworkDespawn();
-        
-            if(Owner is PlayerView)
-                Network.Singleton.UnregisterInventory(this, IsOwner);
         }
 
         public bool TryToAddItem(ItemModel item)
@@ -160,7 +149,14 @@ namespace Game.Entities
         private void UpdateSlotRpc(byte slot, ItemNetworkData itemNetworkData, RpcParams rpcParams)
         {
             if(IsClient)
+            {
+                if(!IsServer)
+                {
+                    if (itemNetworkData != null)
+                        _slots[slot].SetItem(ItemDatabase.CreateItemInstance(itemNetworkData.Name));
+                }
                 SlotChanged?.Invoke(slot, itemNetworkData);
+            }
         }
     }
 }

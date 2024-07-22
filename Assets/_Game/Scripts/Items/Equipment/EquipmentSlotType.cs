@@ -9,6 +9,8 @@
         Gloves,
         Ring1,
         Ring2,
-        Necklace
+        Necklace,
+        LeftHand,
+        RightHand
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Game.Entities;
 using Game.Items;
+using Game.UI.Equipment;
 using Game.Utils.PlayerCharInfo;
 using Game.Views.Player;
 using Unity.Netcode;
@@ -27,6 +28,7 @@ namespace Game.Controllers.Gameplay
         
         private readonly PlayerStatsContainer _playerStatsContainer;
         private readonly PlayerInventoryContainer _playerInventoryContainer;
+        private readonly EquipmentUiView _equipmentUiView;
 
         private readonly DroppedItemView _droppedItemPrefab;
         
@@ -48,6 +50,7 @@ namespace Game.Controllers.Gameplay
             PlayerStatsContainer playerStatsContainer,
             PlayerInventoryContainer playerInventoryContainer,
             DroppedItemView droppedItemPrefab,
+            EquipmentUiView equipmentUiView,
             DiContainer container)
         {
             Singleton = this;
@@ -63,7 +66,8 @@ namespace Game.Controllers.Gameplay
 
             _playerStatsContainer = playerStatsContainer;
             _playerInventoryContainer = playerInventoryContainer;
-
+            _equipmentUiView = equipmentUiView;
+            
             _droppedItemPrefab = droppedItemPrefab;
             
             Container = container;
@@ -95,22 +99,6 @@ namespace Game.Controllers.Gameplay
             return _players[playerId];
         }
 
-        public void RegisterInventory(EntityInventory entityInventory, bool isOwner)
-        {
-            if (isOwner)
-            {
-                _playerInventoryContainer.SetPlayerInventory(entityInventory);
-            }
-        }
-
-        public void UnregisterInventory(EntityInventory entityInventory, bool isOwner)
-        {
-            if (isOwner)
-            {
-                _playerInventoryContainer.UnregisterInventory(entityInventory);
-            }
-        }
-
         public void RegisterPlayer(PlayerView playerView, bool isOwner)
         {
             if (isOwner)
@@ -120,6 +108,8 @@ namespace Game.Controllers.Gameplay
                 _interactionController.SetPlayerView(playerView);
 
                 _playerStatsContainer.SetPlayer(playerView);
+                _playerInventoryContainer.SetPlayerInventory(playerView.Inventory);
+                _equipmentUiView.SetPlayerEquipment(playerView.Equipment);
 
                 _playerView = playerView;
             }
@@ -138,6 +128,8 @@ namespace Game.Controllers.Gameplay
                 _playerMoveController.SetPlayerMoveActive(false);
                 
                 _playerStatsContainer.UnregisterPlayer(playerView);
+                _playerInventoryContainer.UnregisterInventory(playerView.Inventory);
+                _equipmentUiView.UnregisterEquipment(playerView.Equipment);
 
                 _playerView = null;
             }

@@ -1,9 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Controllers;
 using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Items;
+using Game.Items.Equipment;
+using Game.UI.Equipment;
+using Game.UI.Inventory;
 using Game.Views.Player;
 using ModestTree;
 using Unity.Netcode;
@@ -14,16 +18,18 @@ using Zenject;
 public class PlayerInventoryContainer : MonoBehaviour
 {
     private MouseController _mouseController;
-    private KeyboardController _keyboardController;
-    
+    private EquipmentUiView _equipmentUi;
+
     [SerializeField] private InventorySlotView[] _inventorySlots;
     [SerializeField] private RectTransform _draggableParent;
-    
+
     private EntityInventory _playerEntityInventory;
 
     private bool _isDragging = false;
     private InventorySlotView _draggableSlot;
-    
+
+    public event Action<bool, byte> ItemDragged;
+
     private void Awake()
     {
         for (byte i = 0; i < _inventorySlots.Length; i++)
@@ -33,13 +39,15 @@ public class PlayerInventoryContainer : MonoBehaviour
             _inventorySlots[i].DragEnd += EndDrag;
             _inventorySlots[i].ItemCleared += ResetDraggableSlotItem;
         }
+
+        _equipmentUi.SetInventoryUi(this);
     }
 
     [Inject]
-    public void Construct(MouseController mouseController, KeyboardController keyboardController)
+    public void Construct(MouseController mouseController, KeyboardController keyboardController, EquipmentUiView equipmentUi)
     {
         _mouseController = mouseController;
-        _keyboardController = keyboardController;
+        _equipmentUi = equipmentUi;
 
         foreach (var slotKeyPair in keyboardController.SlotKeys)
         {
@@ -56,6 +64,8 @@ public class PlayerInventoryContainer : MonoBehaviour
         _draggableSlot.ItemObjectTransform.SetParent(_draggableParent);
         AbilitiesController.Singleton.UseItemAbilityInSlot(255);
         Network.Singleton.PlayerView.SetPlayerState(default);
+        
+        ItemDragged?.Invoke(true, slotNum);
     }
 
     private void EndDrag(byte slotNum)
@@ -65,8 +75,26 @@ public class PlayerInventoryContainer : MonoBehaviour
         var slot = _inventorySlots.FirstOrDefault(x =>
             RectTransformUtility.RectangleContainsScreenPoint(x.transform as RectTransform,
                 _mouseController.MousePosition, null));
-
-        if (slot != null && slot != _draggableSlot)
+        
+        var item = _playerEntityInventory.GetItemInSlot(slotNum);
+        if (item is EquipmentItem equipmentItem && slot == null)
+        {
+            var equipSlot = _equipmentUi.Slots.FirstOrDefault(x =>
+                RectTransformUtility.RectangleContainsScreenPoint(x.transform as RectTransform,
+                    _mouseController.MousePosition, null));
+            if (equipSlot != null)
+            {
+                if (equipSlot.SlotType == equipmentItem.SlotType)
+                {
+                    AbilitiesController.Singleton.UseItemAbilityInSlot(slotNum);
+                }
+            }
+            else
+            {
+                _playerEntityInventory.TryToDropItemRpc(slotNum);
+            }
+        }
+        else if (slot != null && slot != _draggableSlot)
         {
             _playerEntityInventory.TryToSwapItemsRpc(slotNum, (byte)_inventorySlots.IndexOf(slot));
         }
@@ -76,6 +104,8 @@ public class PlayerInventoryContainer : MonoBehaviour
         }
 
         ResetDraggableSlotItem(slotNum);
+        
+        ItemDragged?.Invoke(false, slotNum);
     }
 
     private void ResetDraggableSlotItem(byte slotNum)
@@ -117,8 +147,6 @@ public class PlayerInventoryContainer : MonoBehaviour
             {
                 slot.RemoveItem();   
             }
-
-            _playerEntityInventory = null;
         }
         AbilitiesController.Singleton.ActiveSlotChanged -= ChangeSlotActivity;
     }

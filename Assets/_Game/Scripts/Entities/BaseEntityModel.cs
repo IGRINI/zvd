@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Game.Common;
 using Game.Controllers.Gameplay;
@@ -77,7 +78,9 @@ namespace Game.Entities
         private static readonly int AttackAnimationHash = Animator.StringToHash("Attack");
 
         #region Modifiers
-
+        
+        public event Action StatsUpdated;
+        
         private readonly List<Modifier> _modifiers = new();
 
         public IEnumerable<Modifier> Modifiers => _modifiers;
@@ -161,7 +164,7 @@ namespace Game.Entities
 
         protected float SetHealth(float health)
         {
-            health = Mathf.Clamp(health, 0, MaxHealth);
+            health = Mathf.Clamp(health, 0, GetMaxHealth());
             Health.Value = health;
             HealthChanged?.Invoke(health);
 
@@ -171,6 +174,18 @@ namespace Game.Entities
             }
 
             return health;
+        }
+
+        public float GetMaxHealth()
+        {
+            var baseMaxHealth = MaxHealth;
+            var healthModifiers = _modifiers.Where(modifier => modifier.Functions.Contains(Modifier.Type.MaxHealth));
+            var enumerable = healthModifiers as Modifier[] ?? healthModifiers.ToArray();
+            if (enumerable.Any())
+            {
+                baseMaxHealth += enumerable.Sum(modifier => modifier.GetMaxHealth());
+            }
+            return baseMaxHealth;
         }
 
         protected virtual void HandleDeath()
@@ -195,13 +210,13 @@ namespace Game.Entities
         private void DistributeExperienceToNearbyHeroes()
         {
             var nearbyHeroes = EntityRegistry.GetEntitiesInRange(transform.position, Network.Singleton.UnitsSettings.ExpirienceRadius)
-                .Where(e => e.IsHero && e != this);
+                .Where(e => e.IsHero && e != this).ToArray();
 
             int experienceReward = GetExperienceReward();
 
             foreach (var hero in nearbyHeroes)
             {
-                hero.AddExperience(experienceReward);
+                hero.AddExperience((int)((float)experienceReward / nearbyHeroes.Length));
             }
         }
 
@@ -256,12 +271,49 @@ namespace Game.Entities
 
         #endregion
 
+        [Rpc(SendTo.NotServer, Delivery = RpcDelivery.Reliable)]
+        public void AddModifierRpc(string modifierTypeName, float duration, NetworkObjectReference casterReference, byte[] parameters)
+        {
+            if(IsServer) return;
+            var modifierType = Type.GetType(modifierTypeName);
+            var modifier = (Modifier)Activator.CreateInstance(modifierType);
+            using (var memoryStream = new MemoryStream(parameters))
+            using (var reader = new BinaryReader(memoryStream))
+            {
+                modifier.LoadParameters(reader);
+            }
+            casterReference.TryGet(out var caster);
+            ModifiersManager.AddModifier(modifier, this, caster.GetComponent<BaseEntityModel>(), duration);
+            
+            UpdateStats();
+        }
+
+        [Rpc(SendTo.NotServer, Delivery = RpcDelivery.Reliable)]
+        public void RemoveModifierRpc(string modifierTypeName)
+        {
+            if(IsServer) return;
+            var modifierType = Type.GetType(modifierTypeName);
+            var modifier = _modifiers.FirstOrDefault(m => m.GetType() == modifierType);
+
+            if (modifier != null)
+            {
+                ModifiersManager.RemoveModifier(modifier);
+
+                UpdateStats();
+            }
+        }
+
+        public void UpdateStats()
+        {
+            StatsUpdated?.Invoke();
+        }
+        
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
             if (IsServer)
             {
-                SetHealth(MaxHealth);
+                SetHealth(GetMaxHealth());
                 _currentLevel = _levelNetwork.Value = _startLevel;
                 _experienceToNextLevel = Network.Singleton.GetExperienceForLevel(_startLevel);
             }

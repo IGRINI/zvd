@@ -3,11 +3,10 @@ using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Entities.Modifiers;
 using Game.PrefabsActions;
-using Game.Utils.HealthBars;
+using Game.UI.Equipment;
+using Game.UI.HealthBars;
 using Game.Utils.PlayerCharInfo;
-using Game.Views.Player;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace Game.Installers
@@ -16,12 +15,12 @@ namespace Game.Installers
     {
         [SerializeField] private CinemachineVirtualCamera _cinemachineVirtualCamera;
         [SerializeField] private Camera _camera;
-        [FormerlySerializedAs("_playerContainer")] [SerializeField] private PlayerStatsContainer playerStatsContainer;
+        [SerializeField] private PlayerStatsContainer _playerStatsContainer;
         [SerializeField] private PlayerInventoryContainer _playerInventoryContainer;
+        [SerializeField] private EquipmentUiView _equipmentUiView;
         [SerializeField] private HealthBar _healthBarPrefab;
         [SerializeField] private RectTransform _healthBarRoot;
         [SerializeField] private DroppedItemView _droppedItemViewPrefab;
-        [SerializeField] private Transform _deactivatedDroppedItems;
         [SerializeField] private Canvas _canvas;
         
         
@@ -37,8 +36,9 @@ namespace Game.Installers
 
             BindInstance(_cinemachineVirtualCamera);
             BindInstance(_camera);
-            BindInstance(playerStatsContainer);
+            BindInstance(_playerStatsContainer);
             BindInstance(_playerInventoryContainer);
+            BindInstance(_equipmentUiView);
             BindInstance(_canvas);
             BindInstance(_healthBarRoot);
             BindInstance(_droppedItemViewPrefab);

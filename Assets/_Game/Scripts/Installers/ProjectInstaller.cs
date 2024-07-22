@@ -18,6 +18,8 @@ namespace Game.Installers
         {
             // Container.BindInterfacesAndSelfTo<PrefabCreator>().AsSingle().MoveIntoAllSubContainers().NonLazy();
             
+            SignalBusInstaller.Install(Container);
+            
             _inputAsset.Enable();
             BindInstance(_inputAsset);
 

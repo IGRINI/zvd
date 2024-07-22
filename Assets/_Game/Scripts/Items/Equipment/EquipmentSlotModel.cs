@@ -9,14 +9,14 @@ namespace Game.Items.Equipment
 
         public void SetItem(EquipmentItem item)
         {
-            Item?.OnUnequipped();
+            Item?.Ability.Unequip();
             Item = item;
-            Item?.OnEquipped();
+            Item?.Ability.Equip();
         }
 
         public void ClearItem()
         {
-            Item?.OnUnequipped();
+            Item?.Ability.Unequip();
             Item = null;
         }
     }

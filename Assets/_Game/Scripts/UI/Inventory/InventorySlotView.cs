@@ -1,4 +1,3 @@
-
 using System;
 using Game.Abilities;
 using Game.Controllers.Gameplay;
@@ -8,30 +7,37 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandler, IDragHandler
+namespace Game.UI.Inventory
+{
+    public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
     public event Action<byte> DragStart;
     public event Action<byte> DragEnd;
-
     public event Action<byte> ItemCleared;
-    
+
     public Image ItemImage => _itemImage;
-    
-    [SerializeField] private Image _itemImage;
-    [SerializeField] private TextMeshProUGUI _itemName;
-    [SerializeField] private TextMeshProUGUI _charges;
-    [SerializeField] private Button _button;
-    [SerializeField] private RectTransform _keyNameTransform;
-    [SerializeField] private TMP_Text _keyNameText;
+
+    [SerializeField] protected Image _itemImage;
+    [SerializeField] protected TextMeshProUGUI _itemName;
+    [SerializeField] protected TextMeshProUGUI _charges;
+    [SerializeField] protected Button _button;
+    [SerializeField] protected RectTransform _keyNameTransform;
+    [SerializeField] protected TMP_Text _keyNameText;
+    [SerializeField] protected Image _inactiveBlocker;
     [SerializeField] private GameObject _activityBorder;
-    
-    private byte _slotNum;
+
+    protected byte _slotNum;
 
     public void SetItemSlot(byte slot)
     {
         _slotNum = slot;
     }
-    
+
+    public void SetInactive(bool isInactive)
+    {
+        _inactiveBlocker.gameObject.SetActive(isInactive);
+    }
+
     public override void SetItem(ItemNetworkData itemNetworkData)
     {
         _button.onClick.RemoveAllListeners();
@@ -41,26 +47,28 @@ public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandle
         if (itemNetworkData == null)
         {
             _itemName.SetText("");
-            _itemObjectTransform.gameObject.SetActive(false);
+            _itemImage.gameObject.SetActive(false);
             ItemCleared?.Invoke(_slotNum);
             _keyNameTransform.gameObject.SetActive(false);
             return;
         }
-        
+
         ItemNetworkData = itemNetworkData;
         // _itemImage.sprite = itemModel.ItemSprite;
         _itemName.SetText(itemNetworkData.Name);
-        if(ItemNetworkData.HasCharges)
+        if (ItemNetworkData.HasCharges)
         {
             _charges.gameObject.SetActive(true);
             _charges.SetText($"{ItemNetworkData.Charges}");
         }
         else
+        {
             _charges.gameObject.SetActive(false);
-        
-        _itemObjectTransform.gameObject.SetActive(true);
+        }
+
+        _itemImage.gameObject.SetActive(true);
         _keyNameTransform.gameObject.SetActive(ItemNetworkData.AbilityBehaviour != EAbilityBehaviour.Passive);
-        
+
         _button.onClick.AddListener(OnItemClick);
     }
 
@@ -75,23 +83,23 @@ public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandle
         _activityBorder.SetActive(isActive);
     }
 
-    private void OnItemClick()
+    protected virtual void OnItemClick()
     {
         AbilitiesController.Singleton.UseItemAbilityInSlot(_slotNum);
     }
 
     public override void RemoveItem()
     {
-        _itemObjectTransform.gameObject.SetActive(false);
+        _itemImage.gameObject.SetActive(false);
         _keyNameTransform.gameObject.SetActive(false);
-        
+
         _button.onClick.RemoveAllListeners();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if(!_itemObjectTransform.gameObject.activeSelf) return;
-        
+        if (!_itemImage.gameObject.activeSelf) return;
+
         DragStart?.Invoke(_slotNum);
     }
 
@@ -100,16 +108,15 @@ public class InventorySlotView : ItemSlotView, IBeginDragHandler, IEndDragHandle
         DragEnd?.Invoke(_slotNum);
     }
 
-
     public void OnDrag(PointerEventData eventData)
     {
-        
     }
 
     public void ResetItemPosition()
     {
-        _itemObjectTransform.SetParent(transform);
-        _itemObjectTransform.SetAsFirstSibling();
-        _itemObjectTransform.anchoredPosition = Vector2.zero;
+        _itemImage.transform.SetParent(transform);
+        _itemImage.transform.SetAsFirstSibling();
+        _itemImage.rectTransform.anchoredPosition = Vector2.zero;
     }
+}
 }
