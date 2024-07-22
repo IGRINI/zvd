@@ -79,7 +79,7 @@ namespace Game.Entities
 
         #region Modifiers
         
-        public event Action StatsUpdated;
+        public event Action ModifiersUpdated;
         
         private readonly List<Modifier> _modifiers = new();
 
@@ -112,17 +112,49 @@ namespace Game.Entities
         public void AddModifier(Modifier modifier) => _modifiers.Add(modifier);
         public void RemoveModifier(Modifier modifier) => _modifiers.Remove(modifier);
         public void RemoveModifiers<T>() where T : Modifier => _modifiers.RemoveAll(modifier => modifier is T);
+        
+        [Rpc(SendTo.NotServer, Delivery = RpcDelivery.Reliable)]
+        public void AddModifierRpc(string modifierTypeName, float duration, NetworkObjectReference casterReference, byte[] parameters)
+        {
+            if(IsServer) return;
+            var modifierType = Type.GetType(modifierTypeName);
+            var modifier = (Modifier)Activator.CreateInstance(modifierType);
+            using (var memoryStream = new MemoryStream(parameters))
+            using (var reader = new BinaryReader(memoryStream))
+            {
+                modifier.LoadParameters(reader);
+            }
+            casterReference.TryGet(out var caster);
+            ModifiersManager.AddModifier(modifier, this, caster.GetComponent<BaseEntityModel>(), duration);
+            
+            ModifiersUpdate();
+        }
+
+        [Rpc(SendTo.NotServer, Delivery = RpcDelivery.Reliable)]
+        public void RemoveModifierRpc(string modifierTypeName)
+        {
+            if(IsServer) return;
+            var modifierType = Type.GetType(modifierTypeName);
+            var modifier = _modifiers.FirstOrDefault(m => m.GetType() == modifierType);
+
+            if (modifier != null)
+            {
+                ModifiersManager.RemoveModifier(modifier);
+
+                ModifiersUpdate();
+            }
+        }
 
         public float GetSpeedMultiplier()
         {
-            var speedModifiers = Modifiers.Where(modifier => modifier.Functions.Contains(Modifier.Type.SpeedMultiplier));
+            var speedModifiers = Modifiers.Where(modifier => modifier.Functions.Contains(Modifier.EModifierFunction.SpeedMultiplier));
             var enumerable = speedModifiers as Modifier[] ?? speedModifiers.ToArray();
             return enumerable.Any() ? enumerable.Average(modifier => modifier.GetSpeedMultiplier()) : 1;
         }
 
         public float GetAttackDamage()
         {
-            var damageModifiers = Modifiers.Where(modifier => modifier.Functions.Contains(Modifier.Type.AttackDamage));
+            var damageModifiers = Modifiers.Where(modifier => modifier.Functions.Contains(Modifier.EModifierFunction.AttackDamage));
             var damage = _attackDamage + _currentAttributes.Value.Strength *
                 Network.Singleton.UnitsSettings.DamagePerStrength;
             var enumerable = damageModifiers as Modifier[] ?? damageModifiers.ToArray();
@@ -179,7 +211,7 @@ namespace Game.Entities
         public float GetMaxHealth()
         {
             var baseMaxHealth = MaxHealth;
-            var healthModifiers = _modifiers.Where(modifier => modifier.Functions.Contains(Modifier.Type.MaxHealth));
+            var healthModifiers = _modifiers.Where(modifier => modifier.Functions.Contains(Modifier.EModifierFunction.MaxHealth));
             var enumerable = healthModifiers as Modifier[] ?? healthModifiers.ToArray();
             if (enumerable.Any())
             {
@@ -271,41 +303,9 @@ namespace Game.Entities
 
         #endregion
 
-        [Rpc(SendTo.NotServer, Delivery = RpcDelivery.Reliable)]
-        public void AddModifierRpc(string modifierTypeName, float duration, NetworkObjectReference casterReference, byte[] parameters)
+        public void ModifiersUpdate()
         {
-            if(IsServer) return;
-            var modifierType = Type.GetType(modifierTypeName);
-            var modifier = (Modifier)Activator.CreateInstance(modifierType);
-            using (var memoryStream = new MemoryStream(parameters))
-            using (var reader = new BinaryReader(memoryStream))
-            {
-                modifier.LoadParameters(reader);
-            }
-            casterReference.TryGet(out var caster);
-            ModifiersManager.AddModifier(modifier, this, caster.GetComponent<BaseEntityModel>(), duration);
-            
-            UpdateStats();
-        }
-
-        [Rpc(SendTo.NotServer, Delivery = RpcDelivery.Reliable)]
-        public void RemoveModifierRpc(string modifierTypeName)
-        {
-            if(IsServer) return;
-            var modifierType = Type.GetType(modifierTypeName);
-            var modifier = _modifiers.FirstOrDefault(m => m.GetType() == modifierType);
-
-            if (modifier != null)
-            {
-                ModifiersManager.RemoveModifier(modifier);
-
-                UpdateStats();
-            }
-        }
-
-        public void UpdateStats()
-        {
-            StatsUpdated?.Invoke();
+            ModifiersUpdated?.Invoke();
         }
         
         public override void OnNetworkSpawn()

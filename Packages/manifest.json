@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.annulusgames.unity-codegen": "https://github.com/AnnulusGames/UnityCodeGen.git?path=/Assets/UnityCodeGen",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.addressables": "1.21.21",
     "com.unity.ai.navigation": "2.0.0",

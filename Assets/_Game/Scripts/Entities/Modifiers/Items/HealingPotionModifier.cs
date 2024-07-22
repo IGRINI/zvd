@@ -2,9 +2,9 @@
 
 namespace Game.Entities.Modifiers
 {
-    public class HealingPotionModifier : Modifier
+    public partial class HealingPotionModifier : Modifier
     {
-        public override Type[] Functions { get; } = {  };
+        public override EModifierFunction[] Functions { get; } = {  };
 
         private float _healing;
         
@@ -18,7 +18,7 @@ namespace Game.Entities.Modifiers
             StartIntervalTick(1f);
         }
 
-        public override void OnModifierTick()
+        public override void OnIntervalTick()
         {
             HealOwner();
         }

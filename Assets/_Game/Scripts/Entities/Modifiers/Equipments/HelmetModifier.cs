@@ -1,9 +1,8 @@
 ﻿using System.IO;
-using Unity.Netcode;
 
 namespace Game.Entities.Modifiers.Equipments
 {
-    public class HelmetModifier : Modifier
+    public partial class HelmetModifier : Modifier
     {
         private float _maxHealthIncrease;
 
@@ -12,11 +11,11 @@ namespace Game.Entities.Modifiers.Equipments
             _maxHealthIncrease = maxHealthIncrease;
         }
 
-        public HelmetModifier()
-        {
-        }
+        // public HelmetModifier()
+        // {
+        // }
 
-        public override Type[] Functions => new[] { Type.MaxHealth };
+        public override EModifierFunction[] Functions => new[] { EModifierFunction.MaxHealth };
 
         public override float GetMaxHealth()
         {

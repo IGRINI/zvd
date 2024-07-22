@@ -2,9 +2,9 @@
 
 namespace Game.Entities.Modifiers
 {
-    public class SprintModifier : Modifier
+    public partial class SprintModifier : Modifier
     {
-        public override Type[] Functions => new [] {Type.SpeedMultiplier};
+        public override EModifierFunction[] Functions => new [] {EModifierFunction.SpeedMultiplier};
 
         private readonly float _value;
 

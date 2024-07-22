@@ -38,11 +38,11 @@ namespace Game.UI.HealthBars
             if(_entity != null)
             {
                 _entity.HealthChanged -= OnHealthChanged;
-                _entity.StatsUpdated -= OnStatsUpdated;
+                _entity.ModifiersUpdated -= OnModifiersUpdated;
             }
         }
 
-        private void OnStatsUpdated()
+        private void OnModifiersUpdated()
         {
             OnHealthChanged(_entity.CurrentHealth);
         }
@@ -58,7 +58,7 @@ namespace Game.UI.HealthBars
             {
                 item._entity = entity;
                 item._entity.HealthChanged += item.OnHealthChanged;
-                item._entity.StatsUpdated += item.OnStatsUpdated;
+                item._entity.ModifiersUpdated += item.OnModifiersUpdated;
                 item.SetHealth(entity.CurrentHealth, entity.GetMaxHealth());
                 
                 var colors = Network.Singleton.UnitsSettings.HealthBarColors.First(x =>

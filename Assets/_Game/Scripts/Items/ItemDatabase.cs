@@ -15,11 +15,12 @@ namespace Game.Items
             var healingPotion = ItemModel.Create<HealingPotionItem>("Healing Potion", isConsumable: true, hasCharges: true, charges: 3);
             _itemReferences.Add(healingPotion.NetworkData.Name, healingPotion);
 
-            var helmet = EquipmentItem.Create<HelmetEquipment>("Helmet", EquipmentSlotType.Helmet);
-            _equipsReferences.Add(helmet.NetworkData.Name, helmet);
-
             var grenade = ItemModel.Create<GrenadeItem>("Grenade", isConsumable: true, hasCharges: true, charges: 5);
             _itemReferences.Add(grenade.NetworkData.Name, grenade);
+            
+            
+            var helmet = EquipmentItem.Create<HelmetEquipment>("Helmet", EquipmentSlotType.Helmet);
+            _equipsReferences.Add(helmet.NetworkData.Name, helmet);
         }
 
         private static ItemModel GetItemReference(string itemName)

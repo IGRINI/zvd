@@ -1,8 +1,8 @@
 ﻿namespace Game.Entities.Modifiers
 {
-    public class HeroKillModifier : Modifier
+    public partial class HeroKillModifier : Modifier
     {
-        public override Type[] Functions => new [] {Type.AttackDamage};
+        public override EModifierFunction[] Functions => new [] {EModifierFunction.AttackDamage};
         
         public int HeroKilled { get; protected set; }
 

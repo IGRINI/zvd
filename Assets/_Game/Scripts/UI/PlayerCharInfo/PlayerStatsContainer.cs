@@ -45,7 +45,7 @@ namespace Game.Utils.PlayerCharInfo
             _player.Level.OnValueChanged += OnLevelChanged;
             _player.CurrentExperience.OnValueChanged += OnExpirienceChanged;
             _player.CurrentAttributes.OnValueChanged += OnAttributesChanged;
-            _player.StatsUpdated += StatsUpdated;
+            _player.ModifiersUpdated += ModifiersUpdated;
             SetHealth(_player.CurrentHealth);
             OnExpirienceChanged(_player.CurrentExperience.Value, _player.CurrentExperience.Value);
             OnLevelChanged(_player.Level.Value, _player.Level.Value);
@@ -56,7 +56,7 @@ namespace Game.Utils.PlayerCharInfo
             _faceCamera.texture = _player.FaceCamera.targetTexture;
         }
 
-        private void StatsUpdated()
+        private void ModifiersUpdated()
         {
             SetHealth(_player.CurrentHealth);
             OnExpirienceChanged(_player.CurrentExperience.Value, _player.CurrentExperience.Value);

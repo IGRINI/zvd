@@ -6,7 +6,7 @@ namespace Game.Entities.Modifiers
 {
     public abstract class Modifier
     {
-        public enum Type
+        public enum EModifierFunction
         {
             SpeedMultiplier,
             Speed,
@@ -25,7 +25,7 @@ namespace Game.Entities.Modifiers
         public float GetDuration() => _endTime - Time.timeSinceLevelLoad;
         public float GetEndTime() => _endTime;
 
-        public abstract Type[] Functions { get; }
+        public abstract EModifierFunction[] Functions { get; }
 
         protected BaseEntityModel _caster;
         protected BaseEntityModel _owner;
@@ -45,7 +45,7 @@ namespace Game.Entities.Modifiers
 
         public virtual void OnAdded() { }
         public virtual void OnRemoved() { }
-        public virtual void OnModifierTick() { }
+        public virtual void OnIntervalTick() { }
 
         public void StartIntervalTick(float interval)
         {

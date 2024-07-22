@@ -1,8 +1,8 @@
 namespace Game.Entities.Modifiers
 {
-    public class HeavyAttackModifier : Modifier
+    public partial class HeavyAttackModifier : Modifier
     {
-        public override Type[] Functions => new [] {Type.AttackDamage};
+        public override EModifierFunction[] Functions => new [] {EModifierFunction.AttackDamage};
         
         public override float GetAttackDamage()
         {

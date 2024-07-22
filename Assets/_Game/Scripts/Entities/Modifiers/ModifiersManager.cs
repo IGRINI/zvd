@@ -22,7 +22,7 @@ namespace Game.Entities.Modifiers
                 {
                     if (_modifiers[i].IsTickDue())
                     {
-                        _modifiers[i].OnModifierTick();
+                        _modifiers[i].OnIntervalTick();
                         _modifiers[i].UpdateTickTime();
                     }
                 }
@@ -51,7 +51,7 @@ namespace Game.Entities.Modifiers
                     }
                 }
                 if(NetworkManager.Singleton.IsHost)
-                    target.UpdateStats();
+                    target.ModifiersUpdate();
             }
 
             return modifier;
@@ -67,7 +67,7 @@ namespace Game.Entities.Modifiers
             {
                 modifier.GetOwner().RemoveModifierRpc(modifier.GetType().AssemblyQualifiedName);
                 if(NetworkManager.Singleton.IsHost)
-                    modifier.GetOwner().UpdateStats();
+                    modifier.GetOwner().ModifiersUpdate();
             }
         }
     }
