@@ -5,6 +5,8 @@ public class ProjectileView : MonoBehaviour
 {
     public void Initialize(Vector3 fromPosition, Vector3 toPosition, float speed, ProjectileTrajectory trajectory)
     {
+        transform.position = fromPosition;
         
+        Debug.Log("INIT PROJECTILE");
     }
 }

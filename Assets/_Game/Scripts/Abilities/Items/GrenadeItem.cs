@@ -13,7 +13,7 @@ namespace Game.Abilities.Items
         protected override void OnSpellStart()
         {
             IThrowable throwable = this;
-            ProjectileManager.ThrowObjectRpc(throwable.ProjectileName, GetCaster().transform.position, GetTargetPoint().Value, throwable.Trajectory, throwable.ProjectileSpeed);
+            ProjectileManager.Singleton.ThrowObjectRpc(throwable.ProjectileName, GetCaster().transform.position, GetTargetPoint().Value, throwable.Trajectory, throwable.ProjectileSpeed);
         }
     }
 }
