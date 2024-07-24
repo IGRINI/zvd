@@ -119,13 +119,13 @@ namespace Game.Entities
             if(IsServer) return;
             var modifierType = Type.GetType(modifierTypeName);
             var modifier = (Modifier)Activator.CreateInstance(modifierType);
+            casterReference.TryGet(out var caster);
+            ModifiersManager.AddModifier(modifier, this, caster.GetComponent<BaseEntityModel>(), duration);
             using (var memoryStream = new MemoryStream(parameters))
             using (var reader = new BinaryReader(memoryStream))
             {
-                modifier.LoadParameters(reader);
+                modifier.DeserializeModifier(reader);
             }
-            casterReference.TryGet(out var caster);
-            ModifiersManager.AddModifier(modifier, this, caster.GetComponent<BaseEntityModel>(), duration);
             
             ModifiersUpdate();
         }

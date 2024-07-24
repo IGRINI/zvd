@@ -111,24 +111,35 @@ namespace Game.Controllers.Gameplay
                 if (Network.Singleton.PlayerView.PlayerState == PlayerState.Aiming)
                 {
                     var itemToUse = Network.Singleton.PlayerView.Inventory.GetItemInSlot(_slotUsing);
-
+                    var acceptTarget = false;
+                    
                     NetworkObjectReference target = default;
                     Vector3? point = null;
                 
                     if(itemToUse.Ability.AbilityBehaviour.HasFlagFast(EAbilityBehaviour.PointTarget))
+                    {
                         point = _mouseObjectDetectionController.PointerPosition;
+                        acceptTarget = true;
+                    }
 
                     if (itemToUse.Ability.AbilityBehaviour.HasFlagFast(EAbilityBehaviour.UnitTarget))
                     {
-                        if (_mouseObjectDetectionController.HoveredObject is NetworkBehaviour networkBehaviour)
+                        if (_mouseObjectDetectionController.HoveredObject is BaseEntityModel entity)
                         {
-                            target = networkBehaviour.NetworkObject;
-                            point = networkBehaviour.transform.position;
+                            target = entity.NetworkObject;
+                            point = entity.transform.position;
+                            acceptTarget = true;
                         }
                     }
 
-                    UseItemRpc(_slotUsing, point, target);
-                
+                    if(acceptTarget)
+                    {
+                        UseItemRpc(_slotUsing, point, target);
+                    }
+                    else
+                    {
+                        //TODO: Show target error
+                    }
                     ResetSlotUsing();
                 }
             }

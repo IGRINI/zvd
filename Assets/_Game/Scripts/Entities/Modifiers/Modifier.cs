@@ -15,21 +15,27 @@ namespace Game.Entities.Modifiers
             MaxHealth
         }
 
-        public void Init(BaseEntityModel caster, BaseEntityModel owner, float endTime)
+        public bool IsMultiple { get; protected set; } = false;
+        public bool IsHidden { get; protected set; } = false;
+
+        public void Init(BaseEntityModel caster, BaseEntityModel owner, double startTime, float duration)
         {
             _caster = caster;
             _owner = owner;
-            _endTime = endTime;
+            _startTime = startTime;
+            _endTime = startTime + duration;
         }
 
-        public float GetDuration() => _endTime - Time.timeSinceLevelLoad;
-        public float GetEndTime() => _endTime;
+        public float GetDuration() => (float)(_endTime - NetworkManager.Singleton.ServerTime.Time);
+        public double GetEndTime() => _endTime;
+        public double GetStartTime() => _startTime;
 
         public abstract EModifierFunction[] Functions { get; }
 
         protected BaseEntityModel _caster;
         protected BaseEntityModel _owner;
-        protected float _endTime;
+        protected double _startTime;
+        protected double _endTime;
         protected float _tickInterval;
         protected float _lastTickTime;
 
@@ -40,7 +46,6 @@ namespace Game.Entities.Modifiers
         public virtual float GetAttackAnimationTime() => 0;
         public virtual float GetSpeedMultiplier() => 0;
         public virtual float GetSpeed() => 0;
-        public virtual float GetJumpForce() => 0;
         public virtual float GetMaxHealth() => 0;
 
         public virtual void OnAdded() { }
@@ -68,14 +73,28 @@ namespace Game.Entities.Modifiers
             _lastTickTime = Time.timeSinceLevelLoad;
         }
 
-        public virtual void SerializeParameters(BinaryWriter writer)
+        public void SerializeModifier(BinaryWriter writer)
         {
-            
+            writer.Write(IsMultiple);
+            writer.Write(IsHidden);
+            writer.Write(_startTime);
+            SerializeParameters(writer);
         }
 
-        public virtual void LoadParameters(BinaryReader reader)
+        public void DeserializeModifier(BinaryReader reader)
         {
-            
+            IsMultiple = reader.ReadBoolean();
+            IsHidden = reader.ReadBoolean();
+            _startTime = reader.ReadDouble();
+            LoadParameters(reader);
+        }
+
+        protected virtual void SerializeParameters(BinaryWriter writer)
+        {
+        }
+
+        protected virtual void LoadParameters(BinaryReader reader)
+        {
         }
     }
 }

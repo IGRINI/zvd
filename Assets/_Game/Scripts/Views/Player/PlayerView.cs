@@ -1,6 +1,7 @@
 using System;
 using Cinemachine;
 using Cysharp.Threading.Tasks;
+using Game.Controllers;
 using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Entities.Modifiers;
@@ -81,6 +82,15 @@ namespace Game.Views.Player
         public void SetPlayerState(PlayerState playerState)
         {
             PlayerState = playerState;
+            switch (PlayerState)
+            {
+                case PlayerState.Default:
+                    CursorController.SetCursor(ECursorType.Normal);
+                    break;
+                case PlayerState.Aiming:
+                    CursorController.SetCursor(ECursorType.Target);
+                    break;
+            }
         }
 
         public override async void OnNetworkSpawn()

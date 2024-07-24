@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using Zenject;
@@ -14,7 +15,7 @@ namespace Game.Entities.Modifiers
         {
             for (var i = _modifiers.Count - 1; i >= 0; i--)
             {
-                if (_modifiers[i].GetEndTime() <= Time.timeSinceLevelLoad)
+                if (_modifiers[i].GetEndTime() <= NetworkManager.Singleton.ServerTime.Time)
                 {
                     RemoveModifier(_modifiers[i]);
                 }
@@ -33,24 +34,32 @@ namespace Game.Entities.Modifiers
         {
             caster ??= target;
 
-            modifier.Init(caster, target, duration == -1f ? float.PositiveInfinity : Time.timeSinceLevelLoad + duration);
+            var startTime = NetworkManager.Singleton.ServerTime.Time;
+            var existingModifier = target.Modifiers.FirstOrDefault(m => m.GetType() == modifier.GetType());
+
+            if (existingModifier is { IsMultiple: false })
+            {
+                existingModifier.Init(caster, target, startTime, duration);
+                return existingModifier as T;
+            }
+
+            modifier.Init(caster, target, startTime, duration == -1f ? float.PositiveInfinity : duration);
 
             target.AddModifier(modifier);
             _modifiers.Add(modifier);
 
-            modifier.OnAdded();
-
             if (NetworkManager.Singleton.IsServer)
             {
+                modifier.OnAdded();
                 using var memoryStream = new MemoryStream();
                 {
                     using (var writer = new BinaryWriter(memoryStream))
                     {
-                        modifier.SerializeParameters(writer);
+                        modifier.SerializeModifier(writer);
                         target.AddModifierRpc(modifier.GetType().AssemblyQualifiedName, duration, caster.NetworkObject, memoryStream.ToArray());
                     }
                 }
-                if(NetworkManager.Singleton.IsHost)
+                if (NetworkManager.Singleton.IsHost)
                     target.ModifiersUpdate();
             }
 
@@ -61,12 +70,12 @@ namespace Game.Entities.Modifiers
         {
             modifier.GetOwner().RemoveModifier(modifier);
             _modifiers.Remove(modifier);
-            modifier.OnRemoved();
-            
+
             if (NetworkManager.Singleton.IsServer)
             {
+                modifier.OnRemoved();
                 modifier.GetOwner().RemoveModifierRpc(modifier.GetType().AssemblyQualifiedName);
-                if(NetworkManager.Singleton.IsHost)
+                if (NetworkManager.Singleton.IsHost)
                     modifier.GetOwner().ModifiersUpdate();
             }
         }

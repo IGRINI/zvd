@@ -296,6 +296,15 @@
         "com.unity.render-pipelines.core": "16.0.5"
       }
     },
+    "com.utkaka.scale-nine-slicer": {
+      "version": "https://github.com/utkaka/ScaleNineSlicer.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.mathematics": "1.0.1"
+      },
+      "hash": "04168647fbb5aea07d4c05a2ccc7fc682a9c7f3f"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

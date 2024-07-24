@@ -22,12 +22,12 @@ namespace Game.Entities.Modifiers.Equipments
             return _maxHealthIncrease;
         }
 
-        public override void SerializeParameters(BinaryWriter writer)
+        protected override void SerializeParameters(BinaryWriter writer)
         {
             writer.Write(_maxHealthIncrease);
         }
 
-        public override void LoadParameters(BinaryReader reader)
+        protected override void LoadParameters(BinaryReader reader)
         {
             _maxHealthIncrease = reader.ReadSingle();
         }

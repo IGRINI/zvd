@@ -42,6 +42,7 @@ namespace Game.Installers
             BindInstance(_canvas);
             BindInstance(_healthBarRoot);
             BindInstance(_droppedItemViewPrefab);
+            
             BindSingle<PlayerMoveController>();
             BindSingle<MouseLookController>();
             BindSingle<Network>();
@@ -69,7 +70,7 @@ namespace Game.Installers
 
         private IfNotBoundBinder BindInstance<T>(T instance)
         {
-            return Container.Bind<T>().FromInstance(instance).AsSingle().NonLazy();
+            return Container.BindInstance(instance).AsSingle().NonLazy();
         }
     }
 }
