@@ -236,9 +236,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inputAsset: {fileID: -944628639613478452, guid: 0666fc79afd072c47840d6136d2ee5b5, type: 3}
-  _normal: {fileID: 2800000, guid: a914f265224e26b4cba6f696749da905, type: 3}
-  _target: {fileID: 2800000, guid: 7422629d1444be14bb412ac3cdc0fec3, type: 3}
+  _normal: {fileID: 2800000, guid: 79b50dcf69e2b8f4abfa294b0068d442, type: 3}
+  _enemy: {fileID: 2800000, guid: a914f265224e26b4cba6f696749da905, type: 3}
+  _neutral: {fileID: 2800000, guid: 81d67a7f3245a624b99a127502201f25, type: 3}
+  _friendly: {fileID: 2800000, guid: 447cdd4a871e60448800066dc479ca9f, type: 3}
+  _normalTarget: {fileID: 2800000, guid: 7422629d1444be14bb412ac3cdc0fec3, type: 3}
   _enemyTarget: {fileID: 2800000, guid: d5777d8bde6cb144d9b9edb9848f357e, type: 3}
+  _friendlyTarget: {fileID: 2800000, guid: 9f7909830cbc0ee47b71590e44ede898, type: 3}
+  _neutralTarget: {fileID: 2800000, guid: 6a2e6b2201e8cc248832c5618a12a17c, type: 3}
 --- !u!1 &2593729984454882820
 GameObject:
   m_ObjectHideFlags: 0

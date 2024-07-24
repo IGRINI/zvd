@@ -1,4 +1,5 @@
 using System;
+using Game.Entities;
 using Game.Interactables;
 using UnityEngine;
 using Zenject;
@@ -38,6 +39,22 @@ namespace Game.Controllers.Gameplay
                 HoveredObject.OnHoverStart();
                 HoveredObject.OutlineHandler.EnableOutline();
                 PointerPosition = hit.point;
+
+                if (hoverable is BaseEntityModel entity)
+                {
+                    var cursorHover = Network.GetRelationType(Network.Singleton.PlayerView.TeamNumber.Value, entity.TeamNumber.Value) switch
+                    {
+                        RelationType.Friendly => ECursorHover.Friendly,
+                        RelationType.Hostile => ECursorHover.Enemy,
+                        RelationType.Neutral => ECursorHover.Neutral,
+                    };
+                    
+                    CursorController.SetCursorHover(cursorHover);
+                }
+                else
+                {
+                    CursorController.SetCursorHover(ECursorHover.None);
+                }
             }
             else
             {
@@ -47,6 +64,8 @@ namespace Game.Controllers.Gameplay
                     _settings.Mouse.NonInteractionLayerMask, QueryTriggerInteraction.Ignore);
 
                 PointerPosition = pointerHit.point;
+                
+                CursorController.SetCursorHover(ECursorHover.None);
             }
             
             

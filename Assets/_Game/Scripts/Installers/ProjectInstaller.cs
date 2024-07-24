@@ -14,8 +14,13 @@ namespace Game.Installers
     {
         [SerializeField] private InputActionAsset _inputAsset;
         [SerializeField] private Texture2D _normal;
-        [SerializeField] private Texture2D _target;
+        [SerializeField] private Texture2D _enemy;
+        [SerializeField] private Texture2D _neutral;
+        [SerializeField] private Texture2D _friendly;
+        [SerializeField] private Texture2D _normalTarget;
         [SerializeField] private Texture2D _enemyTarget;
+        [SerializeField] private Texture2D _friendlyTarget;
+        [SerializeField] private Texture2D _neutralTarget;
         
         public override void InstallBindings()
         {
@@ -32,13 +37,22 @@ namespace Game.Installers
             Container.BindInterfacesAndSelfTo<SteamService>().AsSingle().MoveIntoAllSubContainers().NonLazy();
             
             
-            Container.BindInstance(_normal)
-                .WithId(ECursorType.Normal);
-            Container.BindInstance(_target)
-                .WithId(ECursorType.Target);
-            Container.BindInstance(_enemyTarget)
-                .WithId(ECursorType.EnemyTarget);
-
+            Container.BindInstance(_normal).WithId(ECursorId.Normal);
+            
+            Container.BindInstance(_neutral).WithId(ECursorId.Neutral);
+            
+            Container.BindInstance(_friendly).WithId(ECursorId.Friendly);
+            
+            Container.BindInstance(_enemy).WithId(ECursorId.Enemy);
+            
+            Container.BindInstance(_normalTarget).WithId(ECursorId.NormalTarget);
+            
+            Container.BindInstance(_neutralTarget).WithId(ECursorId.NeutralTarget);
+            
+            Container.BindInstance(_friendlyTarget).WithId(ECursorId.FriendlyTarget);
+            
+            Container.BindInstance(_enemyTarget).WithId(ECursorId.EnemyTarget);
+            
             BindSingle<CursorController>();
         }
 
