@@ -243,6 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Animator: {fileID: 1656999729054960078}
+  _networkAnimator: {fileID: 4756017968138296679}
   AnimationEventHandler: {fileID: 4839007527580462387}
   Weapon: {fileID: 3726846067177472379}
   _healthBarOffset: 2.5
@@ -254,10 +255,14 @@ MonoBehaviour:
     Strength: 15
     Agility: 15
     Intelligence: 15
+    PhysicalResistance: 0
+    MagicalResistance: 0
   _attributesPerLevel:
     Strength: 5
     Agility: 1
     Intelligence: 2
+    PhysicalResistance: 0
+    MagicalResistance: 0
   _experienceSettings:
     BaseExperienceReward: 50
     ExperiencePerLevel: 50
@@ -269,7 +274,6 @@ MonoBehaviour:
   _currentHealth: 0
   _faceCamera: {fileID: 9104942972097055702}
   _virtualCamera: {fileID: 7476549234789633918}
-  _aimingPlane: {fileID: 0}
   _isMoveOnServer: 0
 --- !u!143 &6909182062709583981
 CharacterController:
@@ -906,10 +910,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ddb90485e5b096545b85c587aa25f877, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4481320907412336712}
+      addedObject: {fileID: 4839007527580462387}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ddb90485e5b096545b85c587aa25f877, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4839007527580462387}
+      addedObject: {fileID: 4756017968138296679}
   m_SourcePrefab: {fileID: 100100000, guid: ddb90485e5b096545b85c587aa25f877, type: 3}
 --- !u!4 &1617467756759056695 stripped
 Transform:
@@ -931,20 +935,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ddb90485e5b096545b85c587aa25f877, type: 3}
   m_PrefabInstance: {fileID: 5157833031292941407}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4481320907412336712
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5428284514406287630}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TransitionStateInfoList: []
-  m_Animator: {fileID: 1656999729054960078}
 --- !u!114 &4839007527580462387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -957,6 +947,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4440b9e9482c4c24a604ade7928fa854, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4756017968138296679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5428284514406287630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09a41b2b502474848bf45da31a8af4c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 1656999729054960078}
+  m_SyncEnabled: 1
+  m_ClientSyncList: 
 --- !u!4 &6782950018829912983 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1852576806548013000, guid: ddb90485e5b096545b85c587aa25f877, type: 3}

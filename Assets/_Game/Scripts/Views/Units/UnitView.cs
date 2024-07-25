@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Game.Controllers.Gameplay;
 using Game.Entities;
 using Game.Utils;
 using UnityEngine;
@@ -40,6 +41,12 @@ namespace Game.Views.Units
             base.OnNetworkSpawn();
             if (IsServer)
             {
+                foreach (var (key, value) in NetworkManager.ConnectedClients)
+                {
+                    if(OwnerClientId != key)
+                        NetworkAnimator.AddClientToSyncList(key);
+                }
+                
                 TeamNumber.Value = _startTeam;
                 AiTick();
             }
@@ -50,7 +57,7 @@ namespace Game.Views.Units
             if (IsServer)
             {
                 var potentialTarget = other.GetComponentInParent<BaseEntityModel>();
-                if (potentialTarget != null && IsEnemyTeam(potentialTarget.TeamNumber.Value))
+                if (potentialTarget != null)
                 {
                     _nearbyEnemies.Add(potentialTarget);
                 }
@@ -72,7 +79,7 @@ namespace Game.Views.Units
         private void UpdateCurrentTarget()
         {
             _currentTarget = _nearbyEnemies
-                .Where(enemy => !enemy.IsDied)
+                .Where(enemy => !enemy.IsDied && IsEnemyTeam(enemy.TeamNumber.Value))
                 .OrderBy(enemy => (enemy.transform.position - transform.position).sqrMagnitude)
                 .FirstOrDefault();
         }

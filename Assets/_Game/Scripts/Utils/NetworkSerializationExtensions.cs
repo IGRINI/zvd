@@ -28,5 +28,12 @@ namespace Game.Utils
                 value = null;
             }
         }
+
+        public static void ForceUpdate<T>(this NetworkVariable<T> variable)
+        {
+            var old = variable.Value;
+            variable.Value = default;
+            variable.Value = old;
+        }
     }
 }

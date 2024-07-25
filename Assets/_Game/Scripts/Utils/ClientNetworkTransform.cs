@@ -5,8 +5,6 @@ using UnityEngine;
 
 namespace Game.Utils
 {
-    
-    
     public class ClientNetworkTransform : NetworkTransform
     {
         private Vector3 _lastSentPosition;
@@ -24,11 +22,11 @@ namespace Game.Utils
         {
             base.Update();
             
-            // if (IsClient && IsOwner)
-            // {
-            //     ClientSync();
-            // }
-            // else
+            if (IsClient && IsOwner)
+            {
+                ClientSync();
+            }
+            else
             if (IsServer && !IsOwner)
             {
                 ServerSync();

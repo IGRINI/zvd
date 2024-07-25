@@ -102,12 +102,22 @@ namespace Game.Views.Player
             
             if(IsServer)
             {
+                foreach (var (key, value) in NetworkManager.ConnectedClients)
+                {
+                    if(OwnerClientId != key)
+                        NetworkAnimator.AddClientToSyncList(key);
+                }
+                
                 await UniTask.Delay(100);
                 Network.Singleton.SpawnDroppedItem(transform.position,
                     ItemDatabase.CreateItemInstance("Healing Potion"));
                 Network.Singleton.SpawnDroppedItem(new Vector3(transform.position.x + .5f, transform.position.y, transform.position.z), ItemDatabase.CreateItemInstance("Grenade"));
                 Network.Singleton.SpawnDroppedItem(transform.position,
                     ItemDatabase.CreateItemInstance("Helmet"));
+            }
+            else if(IsClient && !IsOwner)
+            {
+                NetworkAnimator.SyncEnabled = false;
             }
         }
 
@@ -244,15 +254,18 @@ namespace Game.Views.Player
 
         public void SetSprint(bool sprint)
         {
-            if (sprint)
+            if (IsServer)
             {
-                _sprintModifier = ModifiersManager.AddModifier(
-                    new SprintModifier(Network.Singleton.MoveSettings.SprintMultuplier), this);
-            }
-            else
-            {
-                ModifiersManager.RemoveModifier(_sprintModifier);
-                _sprintModifier = null;
+                if (sprint)
+                {
+                    _sprintModifier = ModifiersManager.AddModifier(
+                        new SprintModifier(Network.Singleton.MoveSettings.SprintMultuplier), this);
+                }
+                else
+                {
+                    ModifiersManager.RemoveModifier(_sprintModifier);
+                    _sprintModifier = null;
+                }
             }
 
             if (IsOwner && !IsServer)

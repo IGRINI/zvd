@@ -36,6 +36,7 @@ namespace Game.Editor
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Team Relations Matrix", EditorStyles.boldLabel);
 
+            // Draw column headers
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("", GUILayout.Width(60));
             for (int i = 0; i < teamCount; i++)
@@ -45,6 +46,7 @@ namespace Game.Editor
 
             EditorGUILayout.EndHorizontal();
 
+            // Draw rows
             for (int i = 0; i < teamCount; i++)
             {
                 EditorGUILayout.BeginHorizontal();

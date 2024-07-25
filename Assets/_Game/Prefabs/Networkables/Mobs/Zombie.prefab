@@ -84,6 +84,8 @@ GameObject:
   - component: {fileID: 6029585041516458000}
   - component: {fileID: 1014808829915581958}
   - component: {fileID: 5621035496942357837}
+  - component: {fileID: 6356244691365604431}
+  - component: {fileID: 5990953662715099939}
   m_Layer: 10
   m_Name: Zombie
   m_TagString: Untagged
@@ -143,7 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2702067243
+  GlobalObjectIdHash: 1108412334
   InScenePlacedSourceGlobalObjectIdHash: 2702067243
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -165,6 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Animator: {fileID: 1326610638441609461}
+  _networkAnimator: {fileID: 382649952069338165}
   AnimationEventHandler: {fileID: 1559605221147389563}
   Weapon: {fileID: 1840670960196140504}
   _healthBarOffset: 2.5
@@ -176,10 +179,14 @@ MonoBehaviour:
     Strength: 0
     Agility: 0
     Intelligence: 0
+    PhysicalResistance: 0
+    MagicalResistance: 0
   _attributesPerLevel:
     Strength: 0
     Agility: 0
     Intelligence: 0
+    PhysicalResistance: 0
+    MagicalResistance: 0
   _experienceSettings:
     BaseExperienceReward: 75
     ExperiencePerLevel: 0
@@ -307,6 +314,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e8bd53d4b461a6748a735a92ec6e281b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6356244691365604431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6655770506991135080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f754bd038709a1c48ab14665601ceded, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5990953662715099939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6655770506991135080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 360f5ab6001f4073a376b7523ce22a5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &359723947800333335
@@ -649,6 +680,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1b327f37a9fdeca44982aad1063050e1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1559605221147389563}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1b327f37a9fdeca44982aad1063050e1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 382649952069338165}
   m_SourcePrefab: {fileID: 100100000, guid: 1b327f37a9fdeca44982aad1063050e1, type: 3}
 --- !u!95 &1326610638441609461 stripped
 Animator:
@@ -691,6 +725,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4440b9e9482c4c24a604ade7928fa854, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &382649952069338165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5747416799601588277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09a41b2b502474848bf45da31a8af4c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 1326610638441609461}
+  m_SyncEnabled: 1
+  m_ClientSyncList: 
 --- !u!4 &6536456144674339500 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1852576806548013000, guid: 1b327f37a9fdeca44982aad1063050e1, type: 3}

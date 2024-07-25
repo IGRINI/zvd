@@ -11,10 +11,6 @@ namespace Game.Entities.Modifiers.Equipments
             _maxHealthIncrease = maxHealthIncrease;
         }
 
-        // public HelmetModifier()
-        // {
-        // }
-
         public override EModifierFunction[] Functions => new[] { EModifierFunction.MaxHealth };
 
         public override float GetMaxHealth()

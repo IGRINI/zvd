@@ -39,6 +39,7 @@ namespace Game.UI.HealthBars
             {
                 _entity.HealthChanged -= OnHealthChanged;
                 _entity.ModifiersUpdated -= OnModifiersUpdated;
+                _entity.TeamChanged -= OnTeamChanged;
             }
         }
 
@@ -51,6 +52,15 @@ namespace Game.UI.HealthBars
         {
             SetHealth(health, _entity.GetMaxHealth());
         }
+        
+        public void OnTeamChanged(Team team)
+        {
+            var colors = Network.Singleton.UnitsSettings.HealthBarColors.First(x =>
+                x.RelationType == TeamRelations.GetRelationType(
+                    Network.Singleton.PlayerView.TeamNumber.Value, team));
+
+            SetHealthBarColors(colors.HealthColor, colors.BgColor);
+        }
 
         public class Pool : MonoMemoryPool<BaseEntityModel, HealthBar>
         {
@@ -59,13 +69,9 @@ namespace Game.UI.HealthBars
                 item._entity = entity;
                 item._entity.HealthChanged += item.OnHealthChanged;
                 item._entity.ModifiersUpdated += item.OnModifiersUpdated;
+                item._entity.TeamChanged += item.OnTeamChanged;
                 item.SetHealth(entity.CurrentHealth, entity.GetMaxHealth());
-                
-                var colors = Network.Singleton.UnitsSettings.HealthBarColors.First(x =>
-                    x.RelationType == Network.GetRelationType(
-                        Network.Singleton.PlayerView.TeamNumber.Value, entity.TeamNumber.Value));
-
-                item.SetHealthBarColors(colors.HealthColor, colors.BgColor);
+                item.OnTeamChanged(entity.TeamNumber.Value);
             }
         }
     }

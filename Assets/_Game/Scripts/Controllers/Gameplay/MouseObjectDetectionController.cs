@@ -42,7 +42,7 @@ namespace Game.Controllers.Gameplay
 
                 if (hoverable is BaseEntityModel entity)
                 {
-                    var cursorHover = Network.GetRelationType(Network.Singleton.PlayerView.TeamNumber.Value, entity.TeamNumber.Value) switch
+                    var cursorHover = TeamRelations.GetRelationType(Network.Singleton.PlayerView.TeamNumber.Value, entity.TeamNumber.Value) switch
                     {
                         RelationType.Friendly => ECursorHover.Friendly,
                         RelationType.Hostile => ECursorHover.Enemy,

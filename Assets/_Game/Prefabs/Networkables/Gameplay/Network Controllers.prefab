@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 7676507607504758170}
   - component: {fileID: 8434020320846552505}
   - component: {fileID: 5596400247213969157}
+  - component: {fileID: 6049408936554710948}
   m_Layer: 0
-  m_Name: Abilities Controller
+  m_Name: Network Controllers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,8 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3292748266
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 2892542393
+  InScenePlacedSourceGlobalObjectIdHash: 2554553588
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
   ActiveSceneSynchronization: 0
@@ -64,5 +65,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4382f99bfec04ec988f012aa488ad600, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6049408936554710948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9140601443085860126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 864225c5d72db844fbf9f1487468ead0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

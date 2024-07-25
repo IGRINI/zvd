@@ -21,7 +21,9 @@ namespace Game.Utils
         {
             if(_networkManager.IsServer || !_networkManager.IsConnectedClient) return;
             
-            _ping.SetText($"Ping: {_networkManager.NetworkConfig.NetworkTransport.GetCurrentRtt(0):F2} ms");
+            var ping = _networkManager.NetworkTickSystem.ServerTime.TimeAsFloat - _networkManager.NetworkTickSystem.LocalTime.TimeAsFloat;
+            ping *= 1000;
+            _ping.SetText($"Ping: {ping:F2} ms");
         }
 
         private void Awake()

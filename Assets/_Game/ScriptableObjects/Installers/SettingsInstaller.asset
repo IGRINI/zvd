@@ -19,7 +19,7 @@ MonoBehaviour:
     Acceleration: 2
     JumpForce: 5
     SprintMultuplier: 2.5
-    MoveSyncThreshold: 1
+    MoveSyncThreshold: 2
     RotateSyncThreshold: 20
     GroundCheck:
       SphereRadius: 0.5
@@ -38,6 +38,15 @@ MonoBehaviour:
       Relation: 2
     - TeamA: 2
       TeamB: 1
+      Relation: 2
+    - TeamA: 3
+      TeamB: 1
+      Relation: 2
+    - TeamA: 4
+      TeamB: 1
+      Relation: 2
+    - TeamA: 4
+      TeamB: 3
       Relation: 2
     HealthBarColors:
     - RelationType: 0

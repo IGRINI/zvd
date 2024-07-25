@@ -1,4 +1,5 @@
-﻿using Game.Player;
+﻿using System.IO;
+using Game.Player;
 
 namespace Game.Entities.Modifiers
 {
@@ -6,7 +7,7 @@ namespace Game.Entities.Modifiers
     {
         public override EModifierFunction[] Functions => new [] {EModifierFunction.SpeedMultiplier};
 
-        private readonly float _value;
+        private float _value;
 
         public override float GetSpeedMultiplier()
         {
@@ -16,6 +17,16 @@ namespace Game.Entities.Modifiers
         public SprintModifier(float value)
         {
             _value = value;
+        }
+
+        protected override void SerializeParameters(BinaryWriter writer)
+        {
+            writer.Write(_value);
+        }
+
+        protected override void LoadParameters(BinaryReader reader)
+        {
+            _value = reader.ReadSingle();
         }
     }
 }

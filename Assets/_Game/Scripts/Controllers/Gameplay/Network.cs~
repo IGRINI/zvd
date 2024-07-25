@@ -16,7 +16,7 @@ using Object = UnityEngine.Object;
 
 namespace Game.Controllers.Gameplay
 {
-    public class Network : IInitializable
+    public class Network : IDisposable, IInitializable
     {
         public static Network Singleton { get; private set; }
 

@@ -7,7 +7,9 @@ using Game.Controllers.Gameplay;
 using Game.Entities.Modifiers;
 using Game.Interactables;
 using Game.Utils;
+using Game.Utils.NetcodeAdditionals;
 using Game.Views.Player;
+using Game.Views.Units;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -30,8 +32,12 @@ namespace Game.Entities
             set => _isOutlineActive = value;
         }
 
+        public ZvdNetworkAnimator NetworkAnimator => _networkAnimator;
+
         [SerializeField]
         protected Animator Animator;
+        [SerializeField]
+        private ZvdNetworkAnimator _networkAnimator;
         [SerializeField] 
         protected AnimationEventHandler AnimationEventHandler;
         [SerializeField] 
@@ -188,6 +194,7 @@ namespace Game.Entities
         #region Health
 
         public event Action<float> HealthChanged;
+        public event Action<Team> TeamChanged;
         public float MaxHealth { protected set; get; }
         public float CurrentHealth => Health.Value;
         public bool IsDied { protected set; get; }
@@ -275,7 +282,7 @@ namespace Game.Entities
             if (target.TeamNumber.Value == TeamNumber.Value || IsFriendlyTeam(target.TeamNumber.Value))
                 return;
 
-            target.ApplyDamage(GetAttackDamage());
+            target.ApplyDamage(GetAttackDamage(), this);
         }
         
         protected void Attack(int attackAnimationHash)
@@ -289,10 +296,31 @@ namespace Game.Entities
             }
         }
         
-        public void ApplyDamage(float damage)
+        public void ApplyDamage(float damage, BaseEntityModel attacker, DamageType damageType = DamageType.Physical)
         {
             if (!IsServer || _invulnerable || damage < 0) return;
-            SetHealth(Health.Value - damage);
+
+            float finalDamage = damage;
+
+            switch (damageType)
+            {
+                case DamageType.Physical:
+                    finalDamage *= 1 - _currentAttributes.Value.PhysicalResistance;
+                    break;
+                case DamageType.Magical:
+                    finalDamage *= 1 - _currentAttributes.Value.MagicalResistance;
+                    break;
+            }
+
+            SetHealth(Health.Value - finalDamage);
+
+            if (IsServer)
+            {
+                if (this is UnitView unit && unit.IsNeutralTeam(attacker.TeamNumber.Value))
+                {
+                    TeamRelations.UpdateRelationType(unit.TeamNumber.Value, attacker.TeamNumber.Value, RelationType.Hostile);
+                }
+            }
         }
         
         public void Heal(float heal)
@@ -321,10 +349,16 @@ namespace Game.Entities
             {
                 _isOutlineActive = true;
                 Health.OnValueChanged += OnHealthChanged;
+                TeamNumber.OnValueChanged += OnTeamChanged;
                 EntityRegistry.RegisterEntity(this);
             }
         }
-        
+
+        private void OnTeamChanged(Team previousTeam, Team newTeam)
+        {
+            TeamChanged?.Invoke(newTeam);
+        }
+
         private void InitializeAttributes()
         {
             _currentAttributes.Value = new Attributes
@@ -366,12 +400,10 @@ namespace Game.Entities
             _currentLevel++;
             _experienceToNextLevel = Network.Singleton.GetExperienceForLevel(_currentLevel);
 
-            var updatedAttributes = _currentAttributes.Value;
-            _currentAttributes.Value = null;
-            updatedAttributes.Strength += _attributesPerLevel.Strength;
-            updatedAttributes.Agility += _attributesPerLevel.Agility;
-            updatedAttributes.Intelligence += _attributesPerLevel.Intelligence;
-            _currentAttributes.Value = updatedAttributes;
+            _currentAttributes.Value.Strength += _attributesPerLevel.Strength;
+            _currentAttributes.Value.Agility += _attributesPerLevel.Agility;
+            _currentAttributes.Value.Intelligence += _attributesPerLevel.Intelligence;
+            _currentAttributes.SetDirty(true);
 
             _levelNetwork.Value = _currentLevel;
         }
@@ -396,9 +428,9 @@ namespace Game.Entities
 
         public void OnHealthChanged(float previous, float current) => SetHealth(current);
 
-        public bool IsFriendlyTeam(Team teamNumber) => Network.IsFriendlyTeam(TeamNumber.Value, teamNumber);
-        public bool IsEnemyTeam(Team teamNumber) => Network.IsEnemyTeam(TeamNumber.Value, teamNumber);
-        public bool IsNeutralTeam(Team teamNumber) => Network.IsNeutralTeam(TeamNumber.Value, teamNumber);
+        public bool IsFriendlyTeam(Team teamNumber) => TeamRelations.IsFriendlyTeam(TeamNumber.Value, teamNumber);
+        public bool IsEnemyTeam(Team teamNumber) => TeamRelations.IsEnemyTeam(TeamNumber.Value, teamNumber);
+        public bool IsNeutralTeam(Team teamNumber) => TeamRelations.IsNeutralTeam(TeamNumber.Value, teamNumber);
 
         [Serializable]
         public class Attributes : INetworkSerializable
@@ -406,6 +438,8 @@ namespace Game.Entities
             public int Strength;
             public int Agility;
             public int Intelligence;
+            public float PhysicalResistance;
+            public float MagicalResistance;
 
             public override bool Equals(object obj)
             {
@@ -413,11 +447,13 @@ namespace Game.Entities
                 {
                     return Strength == other.Strength &&
                            Agility == other.Agility &&
-                           Intelligence == other.Intelligence;
+                           Intelligence == other.Intelligence &&
+                           PhysicalResistance == other.PhysicalResistance &&
+                           MagicalResistance == other.MagicalResistance;
                 }
                 return false;
             }
-            
+
             public override int GetHashCode()
             {
                 unchecked
@@ -426,15 +462,19 @@ namespace Game.Entities
                     hash = hash * 23 + Strength.GetHashCode();
                     hash = hash * 23 + Agility.GetHashCode();
                     hash = hash * 23 + Intelligence.GetHashCode();
+                    hash = hash * 23 + PhysicalResistance.GetHashCode();
+                    hash = hash * 23 + MagicalResistance.GetHashCode();
                     return hash;
                 }
             }
-            
+
             public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
             {
                 serializer.SerializeValue(ref Strength);
                 serializer.SerializeValue(ref Agility);
                 serializer.SerializeValue(ref Intelligence);
+                serializer.SerializeValue(ref PhysicalResistance);
+                serializer.SerializeValue(ref MagicalResistance);
             }
         }
 
@@ -444,12 +484,14 @@ namespace Game.Entities
             public int BaseExperienceReward;
             public int ExperiencePerLevel;
         }
-    }
 
-    public enum Team : int
-    {
-        Villagers = 0,
-        Zombies = 1,
-        Animals = 2,
+        private void OnDestroy()
+        {
+            _levelNetwork?.Dispose();
+            _currentExperienceNetwork?.Dispose();
+            _currentAttributes?.Dispose();
+            Health?.Dispose();
+            TeamNumber?.Dispose();
+        }
     }
 }

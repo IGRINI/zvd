@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Game.Entities;
 using Game.UI.HealthBars;
+using Unity.Netcode;
 using UnityEngine;
 using Zenject;
 
 namespace Game.Controllers.Gameplay
 {
-    public class HealthBarController : ITickable
+    public class HealthBarController : ITickable, IInitializable, IDisposable
     {
         private readonly Canvas _canvas;
         private readonly HealthBar.Pool _healthBarPool;
@@ -67,31 +69,52 @@ namespace Game.Controllers.Gameplay
 
         private void UpdateHealthBarPosition(BaseEntityModel entity, HealthBar healthBar)
         {
-            Vector3 worldPosition = entity.transform.position + Vector3.up * entity.HealthBarOffset;
-            Vector3 screenPosition = _camera.WorldToScreenPoint(worldPosition);
+            var worldPosition = entity.transform.position + Vector3.up * entity.HealthBarOffset;
+            var screenPosition = _camera.WorldToScreenPoint(worldPosition);
 
-            // Check if the entity is in front of the camera
             if (screenPosition.z > 0)
             {
                 RectTransform canvasRectTransform = _canvas.GetComponent<RectTransform>();
                 RectTransform healthBarRectTransform = healthBar.GetComponent<RectTransform>();
 
-                // Convert screen position to Canvas/RectTransform position
-                Vector2 localPoint;
-                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, screenPosition, null, out localPoint))
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, screenPosition, null, out var localPoint))
                 {
                     healthBarRectTransform.anchoredPosition = localPoint;
                 }
             }
             else
             {
-                // Remove the health bar from the dictionary and despawn it
                 if (_healthBars.ContainsKey(entity))
                 {
                     _healthBarPool.Despawn(_healthBars[entity]);
                     _healthBars.Remove(entity);
                 }
             }
+        }
+
+        private void OnRelationsChanged(TeamRelations.NetworkRelations old, TeamRelations.NetworkRelations current)
+        {
+            if(current == null) return;
+            foreach (var (key, value) in _healthBars)
+            {
+                value.OnTeamChanged(key.TeamNumber.Value);
+            }
+        }
+
+        public void Initialize()
+        {
+            TeamRelations.TeamRelationsSpawned += OnTeamRelationsSpawned;
+        }
+
+        private void OnTeamRelationsSpawned()
+        {
+            TeamRelations.TeamRelationsSpawned -= OnTeamRelationsSpawned;
+            TeamRelations.GetTeamRelations().OnValueChanged += OnRelationsChanged;
+        }
+
+        public void Dispose()
+        {
+            TeamRelations.GetTeamRelations().OnValueChanged -= OnRelationsChanged;
         }
     }
 }
